@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#004b82;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a78bfa;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#276199;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#c4b5fd;stop-opacity:0.08" />
+    </linearGradient>
+    <linearGradient id="grad3" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#004b82;stop-opacity:0.5" />
+      <stop offset="100%" style="stop-color:#a78bfa;stop-opacity:0.2" />
+    </linearGradient>
+    <linearGradient id="grad4" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6d28d9;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#276199;stop-opacity:0.4" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.12" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.04" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="20" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <clipPath id="cardClip">
+      <rect x="220" y="110" width="360" height="380" rx="24" />
+    </clipPath>
+  </defs>
+
+  <!-- Background orbs -->
+  <circle cx="150" cy="150" r="180" fill="#004b82" opacity="0.04">
+    <animate attributeName="r" values="180;195;180" dur="6s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="650" cy="450" r="200" fill="#a78bfa" opacity="0.05">
+    <animate attributeName="r" values="200;215;200" dur="8s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="400" cy="300" r="260" fill="url(#grad2)" opacity="0.6">
+    <animate attributeName="r" values="260;270;260" dur="7s" repeatCount="indefinite" />
+  </circle>
+
+  <!-- Floating grid dots -->
+  <g opacity="0.12">
+    <circle cx="120" cy="200" r="2" fill="#276199" />
+    <circle cx="160" cy="200" r="2" fill="#276199" />
+    <circle cx="200" cy="200" r="2" fill="#276199" />
+    <circle cx="120" cy="240" r="2" fill="#276199" />
+    <circle cx="160" cy="240" r="2" fill="#276199" />
+    <circle cx="200" cy="240" r="2" fill="#276199" />
+    <circle cx="120" cy="280" r="2" fill="#276199" />
+    <circle cx="160" cy="280" r="2" fill="#276199" />
+    <circle cx="200" cy="280" r="2" fill="#276199" />
+    <circle cx="600" cy="140" r="2" fill="#276199" />
+    <circle cx="640" cy="140" r="2" fill="#276199" />
+    <circle cx="680" cy="140" r="2" fill="#276199" />
+    <circle cx="600" cy="180" r="2" fill="#276199" />
+    <circle cx="640" cy="180" r="2" fill="#276199" />
+    <circle cx="680" cy="180" r="2" fill="#276199" />
+    <circle cx="600" cy="220" r="2" fill="#276199" />
+    <circle cx="640" cy="220" r="2" fill="#276199" />
+    <circle cx="680" cy="220" r="2" fill="#276199" />
+  </g>
+
+  <!-- Main card -->
+  <g filter="url(#glow)">
+    <rect x="220" y="110" width="360" height="380" rx="24" fill="#1a1625" stroke="url(#grad3)" stroke-width="1" opacity="0.95" />
+  </g>
+  <rect x="220" y="110" width="360" height="380" rx="24" fill="url(#cardGrad)" />
+
+  <!-- Card inner glow line at top -->
+  <line x1="244" y1="111" x2="556" y2="111" stroke="url(#grad1)" stroke-width="1.5" opacity="0.6" stroke-linecap="round" />
+
+  <!-- Shield / Lock icon -->
+  <g transform="translate(400, 195)" filter="url(#glow)">
+    <path d="M0-40 L28-28 L28 8 C28 28 0 44 0 44 C0 44 -28 28 -28 8 L-28-28 Z" fill="none" stroke="url(#grad1)" stroke-width="2.5" opacity="0.9">
+      <animate attributeName="opacity" values="0.9;0.6;0.9" dur="3s" repeatCount="indefinite" />
+    </path>
+    <rect x="-8" y="-8" width="16" height="14" rx="3" fill="none" stroke="#c4b5fd" stroke-width="2" />
+    <path d="M-6-8 L-6-14 C-6-22 6-22 6-14 L6-8" fill="none" stroke="#c4b5fd" stroke-width="2" stroke-linecap="round" />
+    <circle cx="0" cy="1" r="2.5" fill="#a78bfa" />
+  </g>
+
+  <!-- Input fields -->
+  <g opacity="0.9">
+    <!-- User field -->
+    <rect x="264" y="248" width="272" height="44" rx="10" fill="#ffffff" fill-opacity="0.06" stroke="#276199" stroke-opacity="0.2" stroke-width="1" />
+    <circle cx="288" cy="270" r="8" fill="none" stroke="#276199" stroke-width="1.5" opacity="0.5" />
+    <line x1="294" y1="276" x2="298" y2="280" stroke="#276199" stroke-width="1.5" opacity="0.5" stroke-linecap="round" />
+    <rect x="310" y="265" width="80" height="10" rx="5" fill="#ffffff" fill-opacity="0.12" />
+
+    <!-- Password field -->
+    <rect x="264" y="308" width="272" height="44" rx="10" fill="#ffffff" fill-opacity="0.06" stroke="#276199" stroke-opacity="0.2" stroke-width="1" />
+    <rect x="280" y="264" width="0" height="0" />
+    <g transform="translate(288, 330)">
+      <rect x="-6" y="-4" width="12" height="10" rx="2.5" fill="none" stroke="#276199" stroke-width="1.5" opacity="0.5" />
+      <path d="M-3.5-4 L-3.5-7 C-3.5-11 3.5-11 3.5-7 L3.5-4" fill="none" stroke="#276199" stroke-width="1.5" stroke-linecap="round" opacity="0.5" />
+    </g>
+    <circle cx="314" cy="330" r="2" fill="#276199" opacity="0.4" />
+    <circle cx="324" cy="330" r="2" fill="#276199" opacity="0.4" />
+    <circle cx="334" cy="330" r="2" fill="#276199" opacity="0.4" />
+    <circle cx="344" cy="330" r="2" fill="#276199" opacity="0.4" />
+    <circle cx="354" cy="330" r="2" fill="#276199" opacity="0.4" />
+    <circle cx="364" cy="330" r="2" fill="#276199" opacity="0.4" />
+  </g>
+
+  <!-- Login button -->
+  <rect x="264" y="374" width="272" height="44" rx="10" fill="url(#grad1)" opacity="0.9">
+    <animate attributeName="opacity" values="0.9;0.75;0.9" dur="4s" repeatCount="indefinite" />
+  </rect>
+  <rect x="370" y="391" width="60" height="10" rx="5" fill="#ffffff" fill-opacity="0.9" />
+
+  <!-- Floating elements -->
+  <g opacity="0.5">
+    <!-- Top-right key -->
+    <g transform="translate(620, 100) rotate(15)">
+      <circle cx="0" cy="0" r="10" fill="none" stroke="#a78bfa" stroke-width="1.5" />
+      <circle cx="0" cy="0" r="3" fill="#a78bfa" opacity="0.3" />
+      <line x1="10" y1="0" x2="28" y2="0" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round" />
+      <line x1="24" y1="0" x2="24" y2="6" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round" />
+      <line x1="20" y1="0" x2="20" y2="5" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round" />
+      <animateTransform attributeName="transform" type="translate" values="620,100;622,96;620,100" dur="5s" repeatCount="indefinite" />
+    </g>
+
+    <!-- Bottom-left fingerprint -->
+    <g transform="translate(160, 420)">
+      <path d="M-12 4 C-12-8 0-16 0-16 C0-16 12-8 12 4" fill="none" stroke="#276199" stroke-width="1.5" stroke-linecap="round" />
+      <path d="M-7 4 C-7-4 0-10 0-10 C0-10 7-4 7 4" fill="none" stroke="#276199" stroke-width="1.5" stroke-linecap="round" />
+      <path d="M-2 4 C-2 0 0-3 0-3 C0-3 2 0 2 4" fill="none" stroke="#276199" stroke-width="1.5" stroke-linecap="round" />
+      <animateTransform attributeName="transform" type="translate" values="160,420;158,416;160,420" dur="6s" repeatCount="indefinite" />
+    </g>
+
+    <!-- Checkmark badge -->
+    <g transform="translate(640, 360)">
+      <circle cx="0" cy="0" r="16" fill="#004b82" opacity="0.15" />
+      <circle cx="0" cy="0" r="11" fill="none" stroke="#a78bfa" stroke-width="1.5" />
+      <polyline points="-5,0 -1,4 6,-4" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <animateTransform attributeName="transform" type="translate" values="640,360;642,356;640,360" dur="4.5s" repeatCount="indefinite" />
+    </g>
+  </g>
+
+  <!-- Orbiting particles -->
+  <circle cx="0" cy="0" r="3" fill="#a78bfa" opacity="0.6">
+    <animateMotion dur="12s" repeatCount="indefinite" path="M400,300 C500,200 600,300 500,400 C400,500 300,400 400,300" />
+  </circle>
+  <circle cx="0" cy="0" r="2" fill="#004b82" opacity="0.4">
+    <animateMotion dur="15s" repeatCount="indefinite" path="M350,250 C450,150 550,250 450,350 C350,450 250,350 350,250" />
+  </circle>
+  <circle cx="0" cy="0" r="2.5" fill="#c4b5fd" opacity="0.35">
+    <animateMotion dur="10s" repeatCount="indefinite" path="M420,280 C520,180 620,280 520,380 C420,480 320,380 420,280" />
+  </circle>
+
+  <!-- Connecting lines -->
+  <g opacity="0.08">
+    <line x1="150" y1="150" x2="244" y2="200" stroke="#276199" stroke-width="1" />
+    <line x1="650" y1="450" x2="556" y2="400" stroke="#276199" stroke-width="1" />
+    <line x1="620" y1="100" x2="556" y2="140" stroke="#276199" stroke-width="1" />
+    <line x1="160" y1="420" x2="244" y2="380" stroke="#276199" stroke-width="1" />
+  </g>
+</svg>

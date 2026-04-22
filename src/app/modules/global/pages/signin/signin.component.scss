@@ -1,0 +1,208 @@
+@use '../../styles/auth-split' as *;
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--auth-divider);
+  border-radius: 0.25rem;
+  background: var(--auth-input-bg);
+  overflow: hidden;
+}
+
+.auth-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 52px;
+  padding: 0 1rem;
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--auth-divider);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--auth-muted-strong);
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:last-child {
+    border-right: none;
+  }
+
+  i {
+    font-size: 1.05rem;
+    opacity: 0.9;
+  }
+
+  &:hover {
+    background: var(--auth-cta-hover);
+    color: var(--auth-heading);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: -2px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .auth-tab {
+    height: 56px;
+    font-size: 1rem;
+  }
+}
+
+.auth-tab--active {
+  background: var(--primary-color);
+  color: #fff;
+
+  &:hover {
+    background: var(--primary-strong);
+    color: #fff;
+  }
+
+  i {
+    opacity: 1;
+  }
+}
+
+.auth-tab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  animation: authFadeUp 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.auth-tab-panel__hint {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--auth-muted-strong);
+  margin: 0;
+}
+
+.auth-tab-panel__meta {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--auth-muted);
+  margin: 0;
+
+  strong {
+    color: var(--auth-heading);
+    font-weight: 600;
+  }
+}
+
+.auth-social-btn--block {
+  width: 100%;
+}
+
+.auth-google-btn {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 64px;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--auth-social-border);
+  background: var(--auth-social-bg);
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--auth-text);
+  text-align: left;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+
+  &:hover {
+    border-color: var(--primary-color);
+    background: var(--auth-cta-bg);
+
+    .auth-google-btn__arrow {
+      transform: translateX(3px);
+      opacity: 1;
+    }
+  }
+
+  &:active {
+    transform: scale(0.995);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+}
+
+.auth-google-btn__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 0.25rem;
+  background: #fff;
+  flex-shrink: 0;
+
+  svg {
+    display: block;
+  }
+}
+
+.auth-google-btn__label {
+  display: flex;
+  flex-direction: column;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+  color: var(--auth-heading);
+
+  &::after {
+    content: 'Conta institucional UNIRIO';
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    color: var(--auth-muted);
+    margin-top: 2px;
+  }
+}
+
+.auth-google-btn__arrow {
+  font-size: 0.95rem;
+  color: var(--auth-muted);
+  opacity: 0.7;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+@media (min-width: 1600px) {
+  .auth-google-btn {
+    min-height: 72px;
+    padding: 0.85rem 1.5rem;
+    gap: 16px;
+  }
+
+  .auth-google-btn__icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .auth-google-btn__label {
+    font-size: 1.0625rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .auth-tab span {
+    font-size: 0.75rem;
+  }
+
+  .auth-tab i {
+    font-size: 0.85rem;
+  }
+}

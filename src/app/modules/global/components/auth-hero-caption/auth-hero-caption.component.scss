@@ -1,0 +1,43 @@
+.auth-hero-caption {
+  position: absolute;
+  bottom: 4rem;
+  left: 3rem;
+  z-index: 20;
+  max-width: 28rem;
+  pointer-events: none;
+
+  @media (max-width: 1023px) {
+    display: none;
+  }
+}
+
+.auth-hero-caption__label {
+  display: block;
+  margin-bottom: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.78);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
+}
+
+.auth-hero-caption__title {
+  margin: 0;
+  font-size: clamp(2.25rem, 4.2vw, 3.15rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.96);
+  text-shadow: 0 2px 28px rgba(0, 0, 0, 0.5);
+}
+
+.auth-hero-caption__lead {
+  margin: 1.5rem 0 0;
+  font-size: 0.9375rem;
+  font-weight: 300;
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.58);
+  text-shadow: 0 1px 16px rgba(0, 0, 0, 0.45);
+}

@@ -1,0 +1,33 @@
+<div class="card">
+  <p-toolbar
+    styleClass=""
+    [hidden]="false"
+  >
+    <ng-template pTemplate="start">
+      <app-sidebar></app-sidebar>
+    </ng-template>
+
+    <ng-template pTemplate="end">
+        <div (click)="openNotification()" class="flex justify-content-center align-items-center mr-4 cursor-pointer">
+          <span class="pi pi-bell notification"></span>
+        </div>
+        <div class="flex align-items-center justify-content-center gap-2">
+          <div class="flex flex-column">
+            <h3 class="font-medium">{{userData?.user?.firstName}} {{userData?.user?.lastName}}</h3>
+            <span class="text-sm font-semibold" [ngStyle]="{color: 'var(--header-role)'}">{{getUserRole(userData?.user?.roles)}}</span>
+          </div>
+
+        <p-avatar
+          image='https://avatars.githubusercontent.com/u/42438006?v=4'
+          shape="circle"
+          [size]="'large'"
+        />
+        <!-- <p-avatar
+          image={{userData?.user?.avatar}}
+          shape="circle"
+          [size]="'large'"
+        /> -->
+        </div>
+    </ng-template>
+  </p-toolbar>
+</div>

@@ -1,0 +1,12 @@
+<div class="theme-toggle-shell">
+  <p-toggleButton
+    [(ngModel)]="isDarkTheme"
+    (onChange)="toggleLightDark()"
+    [onLabel]="compact ? ' ' : 'Dark'"
+    [offLabel]="compact ? ' ' : 'Light'"
+    onIcon="pi pi-moon"
+    offIcon="pi pi-sun"
+    [styleClass]="compact ? 'theme-toggle-btn-compact' : 'theme-toggle-btn'"
+    ariaLabel="Toggle light or dark theme"
+  />
+</div>

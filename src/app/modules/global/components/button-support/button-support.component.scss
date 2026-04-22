@@ -1,0 +1,85 @@
+.button-support {
+  box-sizing: border-box;
+  border-radius: 50%;
+  bottom: 0;
+  right: 0;
+  position: fixed;
+  margin-right: 14px !important;
+  margin-bottom: 18px !important;
+  z-index: 9999;
+
+  .button-open {
+    overflow: hidden;
+  }
+}
+
+:host ::ng-deep .button-support .p-button {
+  background: var(--accent-gradient);
+  color: var(--secondary-color);
+  border: none;
+  box-shadow: 0 4px 16px var(--shadow-color);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 24px var(--shadow-color);
+  }
+}
+
+.dialog-support {
+  display: block;
+  position: fixed;
+  bottom: 60px;
+  z-index: 1000000;
+  right: 20px !important;
+  direction: ltr;
+  overflow: visible;
+  animation: dialogSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.shadow-div {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
+}
+
+.custom-card ::ng-deep .p-card {
+  border: 1px solid #c2c7d1;
+  box-shadow: 0 8px 32px var(--shadow-color);
+  border-radius: 14px;
+}
+
+.custom-card ::ng-deep .p-card-title {
+  color: var(--primary-color);
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+:host ::ng-deep .dialog-support .p-button {
+  background: var(--accent-gradient);
+  color: var(--secondary-color);
+  border: none;
+  border-radius: 10px;
+  font-weight: 500;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px var(--shadow-color);
+  }
+}
+
+@keyframes dialogSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

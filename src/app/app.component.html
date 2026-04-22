@@ -1,0 +1,13 @@
+<p-toast
+  styleClass="app-toast-stack"
+  position="top-right"
+  [life]="4400"
+  [baseZIndex]="13000"
+  [preventOpenDuplicates]="true"
+  [showTransformOptions]="'translate3d(20px, 0, 0)'"
+  [hideTransformOptions]="'translate3d(12px, -8px, 0)'"
+  [showTransitionOptions]="'380ms cubic-bezier(0.22, 1, 0.36, 1)'"
+  [hideTransitionOptions]="'260ms cubic-bezier(0.4, 0, 1, 1)'"
+/>
+<app-notification-dialog></app-notification-dialog>
+<router-outlet />

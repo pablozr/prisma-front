@@ -1,0 +1,9 @@
+.loading-component {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+:host ::ng-deep .p-progress-spinner-circle {
+  stroke: var(--primary-color) !important;
+}

@@ -1,0 +1,38 @@
+.main-div {
+  z-index: 999 !important;
+}
+
+.shadow-div {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay-bg);
+  backdrop-filter: blur(2px);
+  z-index: 99;
+  transition: opacity 0.3s ease;
+}
+
+.notification-text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+
+  .personalized {
+    color: var(--primary-color);
+    font-weight: 600;
+  }
+}
+
+.custom-dialog ::ng-deep .p-dialog {
+  border-radius: 14px;
+  border: 1px solid #e4e2e1;
+  box-shadow: 0 8px 32px var(--shadow-color);
+}
+
+.custom-dialog ::ng-deep .p-dialog-title {
+  color: var(--primary-color);
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}

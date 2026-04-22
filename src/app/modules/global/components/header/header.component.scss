@@ -1,0 +1,68 @@
+.p-toolbar {
+  position: sticky;
+  position: -webkit-sticky;
+  z-index: 10000;
+  top: 0;
+
+  background: var(--header-bg);
+  color: var(--header-text);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0;
+  box-shadow: none;
+  transition: background 0.2s ease;
+}
+
+:host ::ng-deep .p-toolbar {
+  background: var(--header-bg);
+  color: var(--header-text);
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0;
+}
+
+:host ::ng-deep .p-toolbar .p-toolbar-start,
+:host ::ng-deep .p-toolbar .p-toolbar-end {
+  color: inherit;
+}
+
+:host ::ng-deep .p-toolbar h3 {
+  color: var(--header-text);
+  font-weight: 600;
+}
+
+:host ::ng-deep .p-toolbar .pi {
+  color: var(--header-text);
+}
+
+.notification {
+  font-size: 1.3rem;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  transition: transform 0.2s ease;
+
+  &::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgb(231, 43, 43);
+    position: absolute;
+    top: -4px;
+    right: -1px;
+  }
+
+  & {
+    animation: balancar 2.5s ease-in-out infinite;
+  }
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  @keyframes balancar {
+    0% { transform: rotate(12deg); }
+    50% { transform: rotate(-12deg); }
+    100% { transform: rotate(12deg); }
+  }
+}

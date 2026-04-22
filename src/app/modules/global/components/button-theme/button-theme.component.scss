@@ -1,0 +1,166 @@
+.theme-toggle-shell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+:host ::ng-deep .theme-toggle-btn {
+  min-width: 7.5rem;
+}
+
+:host ::ng-deep .p-togglebutton .pi-moon,
+:host ::ng-deep .p-togglebutton .pi-sun {
+  color: var(--secondary-color);
+  --p-togglebutton-icon-hover-color: var(--secondary-color);
+}
+
+:host ::ng-deep .p-togglebutton,
+:host ::ng-deep .p-togglebutton-checked,
+:host ::ng-deep .p-togglebutton-checked::before {
+  background: var(--primary-color) !important;
+  color: var(--secondary-color) !important;
+  border: 1px solid transparent !important;
+  border-radius: 0.25rem !important;
+  transition: background-color 0.15s ease !important;
+}
+
+:host ::ng-deep .p-togglebutton:hover {
+  background: var(--primary-strong) !important;
+}
+
+/* FAB compact — anel em gradiente + núcleo escuro (auth) */
+:host(.button-theme--compact) {
+  border-radius: 50%;
+}
+
+:host(.button-theme--compact) .theme-toggle-shell {
+  margin: 0;
+  padding: 2px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 200deg at 50% 50%,
+    #bee9ff 0deg,
+    #004b82 120deg,
+    #276199 220deg,
+    #a0caff 320deg,
+    #bee9ff 360deg
+  );
+  box-shadow:
+    0 2px 8px rgba(0, 52, 93, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  transition:
+    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:host(.button-theme--compact):hover .theme-toggle-shell {
+  box-shadow:
+    0 4px 16px rgba(0, 52, 93, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+:host(.button-theme--compact):focus-within .theme-toggle-shell {
+  outline: 2px solid color-mix(in srgb, var(--primary-color) 65%, transparent);
+  outline-offset: 4px;
+}
+
+:host(.button-theme--compact) ::ng-deep .theme-toggle-btn-compact {
+  width: 3rem !important;
+  min-width: 3rem !important;
+  max-width: 3rem !important;
+  height: 3rem !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  border: none !important;
+  transition:
+    transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1),
+    box-shadow 0.25s ease !important;
+}
+
+:host(.button-theme--compact) ::ng-deep .theme-toggle-btn-compact::before {
+  display: none !important;
+}
+
+:host(.button-theme--compact) ::ng-deep .theme-toggle-btn-compact .p-togglebutton-label,
+:host(.button-theme--compact) ::ng-deep .theme-toggle-btn-compact .p-button-label {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+:host(.button-theme--compact) ::ng-deep .theme-toggle-btn-compact,
+:host(.button-theme--compact) ::ng-deep .theme-toggle-btn-compact.p-togglebutton-checked {
+  background: linear-gradient(165deg, #24222c 0%, #141218 48%, #1a1722 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+    0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+:host(.button-theme--compact) ::ng-deep .theme-toggle-btn-compact .pi {
+  margin: 0 !important;
+  font-size: 1.125rem !important;
+  transition: transform 0.35s cubic-bezier(0.34, 1.3, 0.64, 1), filter 0.25s ease;
+}
+
+/* Sol: tom âmbar suave */
+:host(.button-theme--compact) ::ng-deep .theme-toggle-btn-compact:not(.p-togglebutton-checked) .pi-sun {
+  color: #fde68a !important;
+  filter: drop-shadow(0 0 5px rgba(252, 211, 77, 0.45));
+  --p-togglebutton-icon-hover-color: #fef3c7 !important;
+}
+
+:host(.button-theme--compact) ::ng-deep .theme-toggle-btn-compact.p-togglebutton-checked .pi-moon {
+  color: #bee9ff !important;
+  filter: drop-shadow(0 0 4px rgba(0, 140, 180, 0.45));
+  --p-togglebutton-icon-hover-color: #d2e4ff !important;
+}
+
+:host(.button-theme--compact) ::ng-deep .theme-toggle-btn-compact:hover {
+  transform: scale(1.06) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(0, 75, 130, 0.35) !important;
+}
+
+:host(.button-theme--compact) ::ng-deep .theme-toggle-btn-compact:hover .pi {
+  transform: rotate(-8deg) scale(1.05);
+}
+
+:host(.button-theme--compact) ::ng-deep .theme-toggle-btn-compact:active {
+  transform: scale(0.96) !important;
+}
+
+:host(.button-theme--compact) ::ng-deep .theme-toggle-btn-compact:active .pi {
+  transform: scale(0.95);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host(.button-theme--compact) .theme-toggle-shell,
+  :host(.button-theme--compact) ::ng-deep .theme-toggle-btn-compact,
+  :host(.button-theme--compact) ::ng-deep .theme-toggle-btn-compact .pi {
+    transition: none;
+  }
+
+  :host(.button-theme--compact) ::ng-deep .theme-toggle-btn-compact:hover,
+  :host(.button-theme--compact) ::ng-deep .theme-toggle-btn-compact:hover .pi {
+    transform: none;
+  }
+}
+
