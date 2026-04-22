@@ -37,7 +37,7 @@ export class SigninComponent implements OnInit {
   ngOnInit() {
     this.loginForm = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [Validators.required])
+      password: new FormControl('', [Validators.required, Validators.maxLength(128)])
     })
   }
 
@@ -53,7 +53,9 @@ export class SigninComponent implements OnInit {
       return
     }
     this.isLoading = true
-    const response = await this.usersServices.signin(this.loginForm.value)
+    const email = (this.loginForm.value.email as string).trim().toLowerCase()
+    const password = (this.loginForm.value.password as string).trim()
+    const response = await this.usersServices.signin({ email, password })
     this.isInvalid = true
     this.isLoading = false
 
@@ -67,7 +69,14 @@ export class SigninComponent implements OnInit {
     this.visiblePassword = !this.visiblePassword
   }
 
-  signinWithGoogle() {
-    this.toast.info('Google', 'A autenticação com Google ainda não está disponível.')
+  async signinWithGoogle(credential?: string) {
+    if (!credential) {
+      this.toast.info('Google', 'Aguardando credencial do Google.')
+      return
+    }
+    this.isLoading = true
+    const ok = await this.usersServices.signinWithGoogle({ credential })
+    this.isLoading = false
+    if (ok) this.router.navigate(['/home'])
   }
 }

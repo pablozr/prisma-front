@@ -1,21 +1,5 @@
-export interface ISigninRequest {
-  email: string
-  password: string
-}
+import { IAuthUserData, ILoginRequest, ILoginResponse } from './IAuth'
 
-export interface ISigninResponse {
-  message: string,
-  data: ISigninData
-}
-
-export interface ISigninData {
-  user: {
-    accessId: number;
-    email: string;
-    username: string;
-    firstName: string;
-    lastName: string;
-    active: boolean;
-    roles: string[];
-  }
-}
+export type ISigninRequest = ILoginRequest
+export type ISigninResponse = ILoginResponse
+export type ISigninData = IAuthUserData

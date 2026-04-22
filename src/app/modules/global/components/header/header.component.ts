@@ -48,11 +48,7 @@ export class HeaderComponent {
     this.notificationsService.toggleVisibility();
   }
 
-  getUserRole(roles: string[] | undefined) {
-    if (roles) {
-      return roles[0]
-    } else {
-      return 'SEM CARGO'
-    }
+  getUserRole(role: string | undefined) {
+    return role ? role.toUpperCase() : 'SEM CARGO'
   }
 }

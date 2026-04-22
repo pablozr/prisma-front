@@ -118,17 +118,15 @@ export class SidebarComponent implements OnInit {
 
     if (rolesCanAccess.includes('ALL')) return true;
 
-    return this.userData?.user?.roles?.some((pr: any) =>
-      rolesCanAccess.includes(pr.role)
-    ) ?? false;
+    const role = this.userData?.user?.role;
+    return !!role && rolesCanAccess.includes(role);
   }
 
   canAccessRoute(routeRoles: string[]): boolean {
     if (routeRoles.includes('ALL')) return true;
 
-    return this.userData?.user?.roles?.some((pr: any) =>
-      routeRoles.includes(pr.role)
-    ) ?? false;
+    const role = this.userData?.user?.role;
+    return !!role && routeRoles.includes(role);
   }
 
   customClose() {
