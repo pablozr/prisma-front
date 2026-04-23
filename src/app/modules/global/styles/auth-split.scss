@@ -81,6 +81,177 @@
   }
 }
 
+/* =========================================================================
+   Banner institucional mobile — só aparece em telas ≤ 1024px,
+   quando o hero lateral é ocultado. Composição tipográfica com logo
+   UNIRIO, marca d'água e overlap do painel para profundidade sóbria.
+   ========================================================================= */
+
+.auth-mobile-banner {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .auth-mobile-banner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    padding: 1.5rem clamp(1.25rem, 5vw, 2rem) clamp(2.25rem, 6vw, 3rem);
+    background: var(--primary-color);
+    color: #fff;
+    overflow: hidden;
+    isolation: isolate;
+
+    /* Filete verde na base aludindo à identidade UNIRIO */
+    &::after {
+      content: '';
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 3px;
+      background: var(--secondary-green);
+      z-index: 2;
+    }
+  }
+
+  .auth-mobile-banner__top {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .auth-mobile-banner__logo {
+    height: 38px;
+    width: auto;
+    object-fit: contain;
+    flex-shrink: 0;
+    display: block;
+  }
+
+  .auth-mobile-banner__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+    line-height: 1.1;
+  }
+
+  .auth-mobile-banner__year {
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  .auth-mobile-banner__year-sub {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .auth-mobile-banner__body {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding-top: 0.5rem;
+  }
+
+  .auth-mobile-banner__kicker {
+    margin: 0;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  .auth-mobile-banner__title {
+    position: relative;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    font-size: clamp(2rem, 8vw, 2.4rem);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: #fff;
+  }
+
+  .auth-mobile-banner__title-bar {
+    flex: 1;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.22);
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 28px;
+      height: 100%;
+      background: var(--secondary-green);
+    }
+  }
+
+  .auth-mobile-banner__lead {
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.78);
+    max-width: 44ch;
+  }
+
+  /* Marca d'água tipográfica — "SIEPA" gigante e muito sutil atrás */
+  .auth-mobile-banner__watermark {
+    position: absolute;
+    right: -12%;
+    bottom: -26%;
+    font-size: clamp(9rem, 30vw, 14rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.045);
+    pointer-events: none;
+    user-select: none;
+    z-index: 1;
+    white-space: nowrap;
+  }
+
+  /* Card de conteúdo "sobe" sobre o banner para criar profundidade.
+     Especificidade reforçada para vencer as regras base do .auth-split__inner
+     que aparecem mais abaixo no arquivo. */
+  .auth-split__panel > .auth-split__inner {
+    position: relative;
+    z-index: 3;
+    background: var(--auth-panel-bg);
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    margin-top: -1.25rem;
+    padding-top: 1.85rem;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08);
+  }
+}
+
+:host-context(.my-app-dark) .auth-mobile-banner {
+  background: var(--header-bg);
+}
+
+:host-context(.my-app-dark) .auth-mobile-banner__watermark {
+  color: rgba(255, 255, 255, 0.035);
+}
+
 .auth-split__inner {
   display: flex;
   flex-direction: column;
@@ -122,6 +293,10 @@
   margin: 0;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--auth-divider);
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
 }
 
 .auth-panel-header {

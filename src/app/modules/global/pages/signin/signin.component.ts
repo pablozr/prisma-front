@@ -61,7 +61,7 @@ export class SigninComponent implements OnInit {
 
     if (response) {
       this.isInvalid = false
-      this.router.navigate(['/home'])
+      this.router.navigate([this.usersServices.getDefaultRoute()])
     }
   }
 
@@ -77,6 +77,6 @@ export class SigninComponent implements OnInit {
     this.isLoading = true
     const ok = await this.usersServices.signinWithGoogle({ credential })
     this.isLoading = false
-    if (ok) this.router.navigate(['/home'])
+    if (ok) this.router.navigate([this.usersServices.getDefaultRoute()])
   }
 }
