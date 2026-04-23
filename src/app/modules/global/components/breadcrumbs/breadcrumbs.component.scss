@@ -1,0 +1,90 @@
+/* =========================================================================
+   SIEPA Breadcrumbs — trilha de navegação sóbria
+   ========================================================================= */
+
+.siepa-breadcrumbs {
+  width: 100%;
+}
+
+.siepa-breadcrumbs__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--on-surface-variant);
+}
+
+.siepa-breadcrumbs__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  max-width: 100%;
+
+  > span,
+  > a > span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 32ch;
+  }
+}
+
+.siepa-breadcrumbs__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  color: var(--on-surface-variant);
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: rgba(0, 75, 130, 0.06);
+    color: var(--primary-strong);
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 1px;
+  }
+}
+
+:host-context(.my-app-dark) .siepa-breadcrumbs__link:hover {
+  background: rgba(137, 188, 250, 0.1);
+  color: var(--primary-color);
+}
+
+.siepa-breadcrumbs__current {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  font-weight: 600;
+  color: var(--on-surface);
+}
+
+.siepa-breadcrumbs__icon {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.siepa-breadcrumbs__sep {
+  font-size: 0.65rem;
+  color: var(--on-surface-variant);
+  opacity: 0.45;
+  margin: 0 2px;
+}
+
+.siepa-breadcrumbs__item--current .siepa-breadcrumbs__icon {
+  color: var(--primary-color);
+  opacity: 1;
+}
