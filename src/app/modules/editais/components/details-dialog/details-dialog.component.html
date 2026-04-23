@@ -1,0 +1,203 @@
+<p-dialog
+  [visible]="visible"
+  (visibleChange)="visibleChange.emit($event); visible = $event"
+  [modal]="true"
+  [draggable]="false"
+  [dismissableMask]="true"
+  [closable]="false"
+  [closeOnEscape]="true"
+  styleClass="details-dialog"
+  [breakpoints]="{ '960px': '94vw', '640px': '100vw' }"
+  [style]="{ width: '820px', maxWidth: '94vw' }"
+>
+  <ng-template pTemplate="header">
+    <div class="details-dialog__header">
+      @if (project) {
+        <div class="details-dialog__header-body">
+          <span class="details-dialog__kicker">
+            <i class="pi pi-hashtag" aria-hidden="true"></i>
+            {{ project.process_code || 'Edital' }}
+          </span>
+          <h2 class="details-dialog__title">{{ project.title }}</h2>
+          @if (project.executing_unit) {
+            <span class="details-dialog__unit">
+              <i class="pi pi-sitemap" aria-hidden="true"></i>
+              {{ project.executing_unit.name }}
+            </span>
+          }
+        </div>
+        <span
+          class="details-dialog__deadline"
+          [class.details-dialog__deadline--closing]="deadlineState === 'closing_soon'"
+          [class.details-dialog__deadline--closed]="deadlineState === 'closed'"
+          [class.details-dialog__deadline--upcoming]="deadlineState === 'upcoming'"
+        >
+          <i [class]="deadlineIcon" aria-hidden="true"></i>
+          {{ deadlineLabel }}
+        </span>
+      }
+      <button
+        type="button"
+        class="details-dialog__close"
+        (click)="close()"
+        aria-label="Fechar"
+      >
+        <i class="pi pi-times" aria-hidden="true"></i>
+      </button>
+    </div>
+  </ng-template>
+
+  @if (project) {
+    <div class="details-dialog__body">
+      @if (project.cover?.image_url) {
+        <figure class="details-dialog__cover">
+          <img
+            class="details-dialog__cover-img"
+            [src]="project.cover!.image_url"
+            [alt]="project.cover!.alt_text || project.title"
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
+      }
+
+      @if (project.areas.length) {
+        <ul class="details-dialog__areas" role="list">
+          @for (area of project.areas; track area.id) {
+            <li class="details-dialog__area">{{ area.name }}</li>
+          }
+        </ul>
+      }
+
+      <section class="details-dialog__section">
+        <h3 class="details-dialog__section-title">Sobre o projeto</h3>
+        <p class="details-dialog__desc">
+          {{ project.full_description || project.short_description || 'Descrição detalhada ainda não foi publicada para este edital.' }}
+        </p>
+      </section>
+
+      <section class="details-dialog__section">
+        <h3 class="details-dialog__section-title">Informações</h3>
+        <dl class="details-dialog__facts">
+          <div class="details-dialog__fact">
+            <dt>
+              <i [class]="modalityIcon" aria-hidden="true"></i>
+              Modalidade
+            </dt>
+            <dd>{{ modalityLabel }}</dd>
+          </div>
+
+          @if (project.vacancies != null) {
+            <div class="details-dialog__fact">
+              <dt>
+                <i class="pi pi-users" aria-hidden="true"></i>
+                Vagas
+              </dt>
+              <dd>{{ project.vacancies }}</dd>
+            </div>
+          }
+
+          @if (project.weekly_hours != null) {
+            <div class="details-dialog__fact">
+              <dt>
+                <i class="pi pi-stopwatch" aria-hidden="true"></i>
+                Carga semanal
+              </dt>
+              <dd>{{ project.weekly_hours }}h</dd>
+            </div>
+          }
+
+          @if (project.starts_at) {
+            <div class="details-dialog__fact">
+              <dt>
+                <i class="pi pi-calendar-plus" aria-hidden="true"></i>
+                Início
+              </dt>
+              <dd>{{ formatDate(project.starts_at) }}</dd>
+            </div>
+          }
+
+          @if (project.ends_at) {
+            <div class="details-dialog__fact">
+              <dt>
+                <i class="pi pi-calendar-minus" aria-hidden="true"></i>
+                Encerramento
+              </dt>
+              <dd>{{ formatDate(project.ends_at) }}</dd>
+            </div>
+          }
+
+          @if (project.published_at) {
+            <div class="details-dialog__fact">
+              <dt>
+                <i class="pi pi-megaphone" aria-hidden="true"></i>
+                Publicado em
+              </dt>
+              <dd>{{ formatDate(project.published_at) }}</dd>
+            </div>
+          }
+        </dl>
+      </section>
+
+      @if (project.courses?.length) {
+        <section class="details-dialog__section">
+          <h3 class="details-dialog__section-title">Cursos elegíveis</h3>
+          <ul class="details-dialog__courses" role="list">
+            @for (course of project.courses; track course.id) {
+              <li class="details-dialog__course">
+                <i class="pi pi-graduation-cap" aria-hidden="true"></i>
+                <div class="details-dialog__course-body">
+                  <span class="details-dialog__course-name">{{ course.name }}</span>
+                  <span class="details-dialog__course-level">
+                    {{ course.level === 'pos' ? 'Pós-graduação' : 'Graduação' }}
+                  </span>
+                </div>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+
+      <section class="details-dialog__section details-dialog__section--prof">
+        <h3 class="details-dialog__section-title">Professor(a) responsável</h3>
+        <div class="details-dialog__prof">
+          <img
+            class="details-dialog__prof-avatar"
+            [src]="professorAvatar"
+            alt=""
+            aria-hidden="true"
+          />
+          <div class="details-dialog__prof-body">
+            <span class="details-dialog__prof-name">{{ project.owner_professor.full_name }}</span>
+            <span class="details-dialog__prof-email">
+              <i class="pi pi-at" aria-hidden="true"></i>
+              {{ project.contact_email || project.owner_professor.institutional_email }}
+            </span>
+            @if (project.owner_professor.siape) {
+              <span class="details-dialog__prof-meta">SIAPE · {{ project.owner_professor.siape }}</span>
+            }
+          </div>
+        </div>
+      </section>
+    </div>
+  }
+
+  <ng-template pTemplate="footer">
+    <div class="details-dialog__footer">
+      <button type="button" class="details-dialog__btn details-dialog__btn--ghost" (click)="close()">
+        Fechar
+      </button>
+      @if (canContact) {
+        <button type="button" class="details-dialog__btn details-dialog__btn--primary" (click)="onContact()">
+          <i class="pi pi-envelope" aria-hidden="true"></i>
+          <span>Contatar professor(a)</span>
+        </button>
+      } @else {
+        <span class="details-dialog__hint">
+          <i class="pi pi-info-circle" aria-hidden="true"></i>
+          Entre com sua conta de aluno ou administrador para contatar o professor.
+        </span>
+      }
+    </div>
+  </ng-template>
+</p-dialog>

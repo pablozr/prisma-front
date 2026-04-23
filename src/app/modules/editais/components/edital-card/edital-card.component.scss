@@ -1,0 +1,535 @@
+/* =========================================================================
+   Edital Card — cores explícitas, sem dependência de vars ambíguas
+   ========================================================================= */
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.edital-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.25rem 1.25rem 1rem;
+  background: #ffffff;
+  color: #1b1c1c;
+  border: 1px solid rgba(15, 23, 32, 0.1);
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(15, 23, 32, 0.05);
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: #004b82;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    border-top-left-radius: 14px;
+    border-bottom-left-radius: 14px;
+    z-index: 2;
+  }
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(15, 23, 32, 0.12);
+    border-color: rgba(0, 75, 130, 0.28);
+    outline: none;
+
+    &::before {
+      opacity: 1;
+    }
+
+    .edital-card__title {
+      color: #00345d;
+    }
+
+    .edital-card__cover-img {
+      transform: scale(1.04);
+    }
+  }
+}
+
+/* ----- Cover (imagem de preview) ----- */
+
+.edital-card__cover {
+  position: relative;
+  margin: -1.25rem -1.25rem 1rem;
+  padding: 0;
+  width: calc(100% + 2.5rem);
+  height: 160px;
+  background: #e9eef3;
+  overflow: hidden;
+}
+
+:host-context(.my-app-dark) .edital-card__cover {
+  background: #2a313b;
+}
+
+.edital-card__cover-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.edital-card__cover-shade {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 46%;
+  background: linear-gradient(to top, rgba(15, 23, 32, 0.22), rgba(15, 23, 32, 0));
+  pointer-events: none;
+}
+
+:host-context(.my-app-dark) .edital-card__cover-shade {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+}
+
+:host-context(.my-app-dark) .edital-card {
+  background: #1f262f;
+  color: #f3f0f0;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+
+  &::before {
+    background: #89bcfa;
+  }
+
+  &:hover,
+  &:focus-visible {
+    border-color: rgba(137, 188, 250, 0.32);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+
+    .edital-card__title {
+      color: #a0caff;
+    }
+  }
+}
+
+.edital-card--closing::before {
+  background: #c57a0a;
+  opacity: 1;
+}
+
+.edital-card--closed::before {
+  background: #727781;
+  opacity: 1;
+}
+
+.edital-card--upcoming::before {
+  background: #0d6d38;
+  opacity: 1;
+}
+
+:host-context(.my-app-dark) .edital-card--closing::before {
+  background: #fcd34d;
+}
+
+:host-context(.my-app-dark) .edital-card--closed::before {
+  background: #9ca3af;
+}
+
+:host-context(.my-app-dark) .edital-card--upcoming::before {
+  background: #83d998;
+}
+
+/* ----- Topo ----- */
+
+.edital-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.edital-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.edital-card__process,
+.edital-card__unit {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #565c64;
+  text-transform: uppercase;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  i {
+    font-size: 0.65rem;
+    opacity: 0.75;
+  }
+}
+
+:host-context(.my-app-dark) .edital-card__process,
+:host-context(.my-app-dark) .edital-card__unit {
+  color: #c2c7d1;
+}
+
+.edital-card__deadline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(13, 109, 56, 0.14);
+  color: #0a5c30;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  i {
+    font-size: 0.7rem;
+  }
+}
+
+:host-context(.my-app-dark) .edital-card__deadline {
+  background: rgba(131, 217, 152, 0.18);
+  color: #83d998;
+}
+
+.edital-card__deadline--closing {
+  background: rgba(197, 122, 10, 0.14);
+  color: #8a4d00;
+}
+
+:host-context(.my-app-dark) .edital-card__deadline--closing {
+  background: rgba(252, 211, 77, 0.16);
+  color: #fcd34d;
+}
+
+.edital-card__deadline--closed {
+  background: rgba(114, 119, 129, 0.18);
+  color: #565c64;
+}
+
+:host-context(.my-app-dark) .edital-card__deadline--closed {
+  background: rgba(194, 199, 209, 0.14);
+  color: #c2c7d1;
+}
+
+.edital-card__deadline--upcoming {
+  background: rgba(0, 75, 130, 0.12);
+  color: #00345d;
+}
+
+:host-context(.my-app-dark) .edital-card__deadline--upcoming {
+  background: rgba(137, 188, 250, 0.18);
+  color: #a0caff;
+}
+
+/* ----- Título e descrição ----- */
+
+.edital-card__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  color: #1b1c1c;
+  transition: color 0.2s ease;
+}
+
+:host-context(.my-app-dark) .edital-card__title {
+  color: #ffffff;
+}
+
+.edital-card__desc {
+  margin: 0 0 0.9rem;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: #424750;
+}
+
+:host-context(.my-app-dark) .edital-card__desc {
+  color: #c2c7d1;
+}
+
+/* ----- Áreas (chips) ----- */
+
+.edital-card__areas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 0 0 0.9rem;
+  padding: 0;
+  list-style: none;
+}
+
+.edital-card__area {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  background: rgba(0, 75, 130, 0.1);
+  color: #00345d;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+:host-context(.my-app-dark) .edital-card__area {
+  background: rgba(137, 188, 250, 0.18);
+  color: #a0caff;
+}
+
+/* ----- Facts ----- */
+
+.edital-card__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem 1rem;
+  margin: 0 0 1rem;
+  padding: 0.75rem 0.95rem;
+  background: rgba(15, 23, 32, 0.04);
+  border-radius: 10px;
+}
+
+:host-context(.my-app-dark) .edital-card__facts {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.edital-card__fact {
+  margin: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  dt {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #565c64;
+    text-transform: uppercase;
+
+    i {
+      font-size: 0.7rem;
+    }
+  }
+
+  dd {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #1b1c1c;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+:host-context(.my-app-dark) .edital-card__fact dt {
+  color: #c2c7d1;
+}
+
+:host-context(.my-app-dark) .edital-card__fact dd {
+  color: #f3f0f0;
+}
+
+.edital-card__fact--courses {
+  grid-column: 1 / -1;
+
+  dd {
+    font-weight: 500;
+    white-space: normal;
+  }
+}
+
+/* ----- Footer ----- */
+
+.edital-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(15, 23, 32, 0.08);
+}
+
+:host-context(.my-app-dark) .edital-card__footer {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.edital-card__prof {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.edital-card__prof-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 2px rgba(0, 75, 130, 0.18);
+  flex-shrink: 0;
+}
+
+:host-context(.my-app-dark) .edital-card__prof-avatar {
+  box-shadow: 0 0 0 2px rgba(137, 188, 250, 0.3);
+}
+
+.edital-card__prof-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.edital-card__prof-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #1b1c1c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:host-context(.my-app-dark) .edital-card__prof-name {
+  color: #f3f0f0;
+}
+
+.edital-card__prof-role {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #565c64;
+  letter-spacing: 0.02em;
+}
+
+:host-context(.my-app-dark) .edital-card__prof-role {
+  color: #c2c7d1;
+}
+
+.edital-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.edital-card__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0.5rem 0.8rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease,
+    transform 0.15s ease, box-shadow 0.15s ease;
+
+  i {
+    font-size: 0.8rem;
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #004b82;
+    outline-offset: 2px;
+  }
+}
+
+.edital-card__btn--ghost {
+  color: #424750;
+  border-color: rgba(15, 23, 32, 0.14);
+
+  &:hover {
+    background: rgba(15, 23, 32, 0.05);
+    color: #00345d;
+    border-color: rgba(0, 75, 130, 0.28);
+  }
+
+  @media (max-width: 560px) {
+    span {
+      display: none;
+    }
+  }
+}
+
+:host-context(.my-app-dark) .edital-card__btn--ghost {
+  color: #c2c7d1;
+  border-color: rgba(255, 255, 255, 0.14);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #a0caff;
+    border-color: rgba(137, 188, 250, 0.32);
+  }
+}
+
+.edital-card__btn--primary {
+  background: #004b82;
+  color: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 75, 130, 0.22);
+
+  &:hover {
+    background: #00345d;
+    box-shadow: 0 4px 12px rgba(0, 75, 130, 0.3);
+    transform: translateY(-1px);
+  }
+}
+
+:host-context(.my-app-dark) .edital-card__btn--primary {
+  background: #89bcfa;
+  color: #0c1722;
+
+  &:hover {
+    background: #a3c9fb;
+    box-shadow: 0 4px 12px rgba(137, 188, 250, 0.35);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .edital-card,
+  .edital-card__btn,
+  .edital-card__cover-img {
+    transition: none !important;
+  }
+
+  .edital-card:hover,
+  .edital-card:focus-visible {
+    transform: none !important;
+
+    .edital-card__cover-img {
+      transform: none !important;
+    }
+  }
+}

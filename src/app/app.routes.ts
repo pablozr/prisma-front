@@ -27,6 +27,10 @@ export const routes: Routes = [
     canActivate: [AuthService]
   },
   {
+    path: 'editais',
+    loadComponent: () => import('./modules/editais/pages/editais/editais.component').then(m => m.EditaisComponent)
+  },
+  {
     path: '**',
     loadComponent: () => import('./modules/global/pages/not-found/not-found.component').then(m => m.NotFoundComponent)
   }

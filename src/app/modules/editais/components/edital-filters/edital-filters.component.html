@@ -1,0 +1,170 @@
+<section class="edital-filters" aria-label="Filtros e busca">
+  <div class="edital-filters__search">
+    <i class="pi pi-search edital-filters__search-icon" aria-hidden="true"></i>
+    <input
+      type="search"
+      pInputText
+      class="edital-filters__input"
+      placeholder="Buscar por título, professor ou código do processo..."
+      [(ngModel)]="filters.search"
+      (ngModelChange)="onChange()"
+      [attr.aria-label]="'Buscar editais'"
+    />
+    @if (filters.search.trim()) {
+      <button
+        type="button"
+        class="edital-filters__clear"
+        (click)="filters.search = ''; onChange()"
+        aria-label="Limpar busca"
+      >
+        <i class="pi pi-times" aria-hidden="true"></i>
+      </button>
+    }
+  </div>
+
+  <div class="edital-filters__grid">
+    <label class="edital-filters__field">
+      <span class="edital-filters__label">Áreas de conhecimento</span>
+      <p-multiSelect
+        styleClass="edital-filters__select"
+        [options]="areaOptions"
+        [(ngModel)]="filters.areaIds"
+        (onChange)="onChange()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Todas as áreas"
+        display="chip"
+        [showToggleAll]="true"
+        [filter]="true"
+        emptyMessage="Nenhuma área encontrada"
+        emptyFilterMessage="Nenhuma área corresponde"
+      />
+    </label>
+
+    <label class="edital-filters__field">
+      <span class="edital-filters__label">Cursos</span>
+      <p-multiSelect
+        styleClass="edital-filters__select"
+        [options]="courseOptions"
+        [(ngModel)]="filters.courseIds"
+        (onChange)="onChange()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Todos os cursos"
+        display="chip"
+        [filter]="true"
+        emptyMessage="Nenhum curso encontrado"
+        emptyFilterMessage="Nenhum curso corresponde"
+      />
+    </label>
+
+    <label class="edital-filters__field">
+      <span class="edital-filters__label">Unidade acadêmica</span>
+      <p-multiSelect
+        styleClass="edital-filters__select"
+        [options]="unitOptions"
+        [(ngModel)]="filters.unitIds"
+        (onChange)="onChange()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Todas as unidades"
+        display="chip"
+        [filter]="true"
+        emptyMessage="Nenhuma unidade encontrada"
+        emptyFilterMessage="Nenhuma unidade corresponde"
+      />
+    </label>
+
+    <label class="edital-filters__field edital-filters__field--short">
+      <span class="edital-filters__label">Nível</span>
+      <p-select
+        styleClass="edital-filters__select"
+        [options]="levelOptions"
+        [(ngModel)]="filters.level"
+        (onChange)="onChange()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Todos"
+        [showClear]="true"
+      />
+    </label>
+
+    <label class="edital-filters__field edital-filters__field--short">
+      <span class="edital-filters__label">Modalidade</span>
+      <p-select
+        styleClass="edital-filters__select"
+        [options]="modalityOptions"
+        [(ngModel)]="filters.modality"
+        (onChange)="onChange()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Qualquer"
+        [showClear]="true"
+      />
+    </label>
+
+    <label class="edital-filters__field edital-filters__field--short">
+      <span class="edital-filters__label">Ordenar por</span>
+      <p-select
+        styleClass="edital-filters__select"
+        [options]="sortOptions"
+        [(ngModel)]="filters.sort"
+        (onChange)="onChange()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecionar"
+      />
+    </label>
+  </div>
+
+  <div class="edital-filters__footer">
+    <div class="edital-filters__chips" role="tablist" aria-label="Filtro de prazo">
+      <button
+        type="button"
+        class="edital-filters__chip"
+        [class.edital-filters__chip--active]="!filters.deadline"
+        (click)="filters.deadline = null; onChange()"
+        role="tab"
+        [attr.aria-selected]="!filters.deadline"
+      >
+        <i class="pi pi-list" aria-hidden="true"></i>
+        Todos
+      </button>
+      @for (opt of deadlineOptions; track opt.value) {
+        <button
+          type="button"
+          class="edital-filters__chip"
+          [class.edital-filters__chip--active]="filters.deadline === opt.value"
+          (click)="filters.deadline = opt.value; onChange()"
+          role="tab"
+          [attr.aria-selected]="filters.deadline === opt.value"
+        >
+          <i [class]="opt.icon" aria-hidden="true"></i>
+          {{ opt.label }}
+        </button>
+      }
+    </div>
+
+    <div class="edital-filters__summary">
+      <span class="edital-filters__count" aria-live="polite">
+        <strong>{{ resultCount }}</strong>
+        {{ resultCount === 1 ? 'edital' : 'editais' }}
+        @if (activeCount > 0) {
+          <span>· {{ activeCount }} {{ activeCount === 1 ? 'filtro ativo' : 'filtros ativos' }}</span>
+        }
+      </span>
+
+      @if (activeCount > 0) {
+        <button
+          type="button"
+          class="edital-filters__reset"
+          (click)="onReset()"
+          aria-label="Limpar todos os filtros"
+        >
+          <i class="pi pi-refresh" aria-hidden="true"></i>
+          Limpar filtros
+        </button>
+      }
+    </div>
+  </div>
+</section>

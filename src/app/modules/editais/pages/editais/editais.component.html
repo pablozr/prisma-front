@@ -1,0 +1,88 @@
+<div class="editais-shell">
+  <app-header></app-header>
+
+  <main class="editais-page">
+    <app-breadcrumbs [items]="breadcrumbs"></app-breadcrumbs>
+
+    <header class="editais-hero">
+      <div class="editais-hero__body">
+        <span class="editais-hero__eyebrow">SIEPA · Iniciação e Extensão</span>
+        <h1 class="editais-hero__title">Editais abertos</h1>
+        <p class="editais-hero__lead">
+          Explore oportunidades de pesquisa, iniciação científica e extensão
+          disponibilizadas pelos departamentos da UNIRIO. Fale diretamente com
+          o(a) professor(a) responsável pelo projeto.
+        </p>
+      </div>
+      <aside class="editais-hero__scope" aria-label="Total de editais">
+        <span class="editais-hero__scope-value">{{ allProjects.length }}</span>
+        <span class="editais-hero__scope-label">editais publicados</span>
+      </aside>
+    </header>
+
+    <app-edital-filters
+      [filters]="filters"
+      [areas]="areas"
+      [courses]="courses"
+      [units]="units"
+      [resultCount]="filteredProjects.length"
+      (filtersChange)="onFiltersChange($event)"
+      (reset)="onReset()"
+    ></app-edital-filters>
+
+    <section class="editais-results" aria-label="Lista de editais">
+      @if (loading) {
+        <ul class="editais-grid" role="list">
+          @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+            <li class="editais-skeleton" aria-hidden="true">
+              <span class="editais-skeleton__line editais-skeleton__line--short"></span>
+              <span class="editais-skeleton__line editais-skeleton__line--title"></span>
+              <span class="editais-skeleton__line editais-skeleton__line--title"></span>
+              <span class="editais-skeleton__line"></span>
+              <span class="editais-skeleton__line"></span>
+              <span class="editais-skeleton__block"></span>
+              <span class="editais-skeleton__footer"></span>
+            </li>
+          }
+        </ul>
+      } @else if (filteredProjects.length === 0) {
+        <div class="editais-empty" role="status">
+          <div class="editais-empty__icon" aria-hidden="true">
+            <i class="pi pi-search"></i>
+          </div>
+          <h2 class="editais-empty__title">Nenhum edital encontrado</h2>
+          <p class="editais-empty__desc">
+            Tente ajustar os filtros ou limpar a busca para ver todos os editais abertos.
+          </p>
+          <button type="button" class="editais-empty__btn" (click)="onReset()">
+            <i class="pi pi-refresh" aria-hidden="true"></i>
+            Limpar filtros
+          </button>
+        </div>
+      } @else {
+        <ul class="editais-grid" role="list">
+          @for (project of filteredProjects; track project.id) {
+            <li class="editais-grid__item">
+              <app-edital-card
+                [project]="project"
+                (contact)="openContact($event)"
+                (details)="onDetails($event)"
+              ></app-edital-card>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  </main>
+
+  <app-email-dialog
+    [(visible)]="emailDialogVisible"
+    [project]="emailProject"
+  ></app-email-dialog>
+
+  <app-details-dialog
+    [(visible)]="detailsDialogVisible"
+    [project]="detailsProject"
+    (contact)="onDetailsContact($event)"
+  ></app-details-dialog>
+</div>

@@ -1,0 +1,138 @@
+<article
+  class="edital-card"
+  [class.edital-card--closing]="deadlineState === 'closing_soon'"
+  [class.edital-card--closed]="deadlineState === 'closed'"
+  [class.edital-card--upcoming]="deadlineState === 'upcoming'"
+  (click)="onDetails()"
+  (keydown.enter)="onDetails()"
+  tabindex="0"
+  [attr.aria-label]="'Abrir detalhes do edital ' + project.title"
+>
+  @if (project.cover?.image_url) {
+    <figure class="edital-card__cover">
+      <img
+        class="edital-card__cover-img"
+        [src]="project.cover!.image_url"
+        [alt]="project.cover!.alt_text || project.title"
+        loading="lazy"
+        decoding="async"
+      />
+      <span class="edital-card__cover-shade" aria-hidden="true"></span>
+    </figure>
+  }
+
+  <header class="edital-card__top">
+    <div class="edital-card__meta">
+      <span class="edital-card__process" [title]="project.process_code">
+        <i class="pi pi-hashtag" aria-hidden="true"></i>
+        {{ project.process_code || '—' }}
+      </span>
+      <span class="edital-card__unit">
+        <i class="pi pi-sitemap" aria-hidden="true"></i>
+        {{ unitShort }}
+      </span>
+    </div>
+
+    <span
+      class="edital-card__deadline"
+      [class.edital-card__deadline--closing]="deadlineState === 'closing_soon'"
+      [class.edital-card__deadline--closed]="deadlineState === 'closed'"
+      [class.edital-card__deadline--upcoming]="deadlineState === 'upcoming'"
+      [attr.aria-label]="'Prazo: ' + deadlineLabel"
+    >
+      <i
+        class="pi"
+        [class.pi-clock]="deadlineState === 'open' || deadlineState === 'upcoming'"
+        [class.pi-exclamation-triangle]="deadlineState === 'closing_soon'"
+        [class.pi-times-circle]="deadlineState === 'closed'"
+        aria-hidden="true"
+      ></i>
+      {{ deadlineLabel }}
+    </span>
+  </header>
+
+  <h3 class="edital-card__title">{{ project.title }}</h3>
+
+  @if (project.short_description) {
+    <p class="edital-card__desc">{{ project.short_description }}</p>
+  }
+
+  @if (project.areas.length) {
+    <ul class="edital-card__areas" role="list">
+      @for (area of project.areas; track area.id) {
+        <li class="edital-card__area">{{ area.name }}</li>
+      }
+    </ul>
+  }
+
+  <dl class="edital-card__facts">
+    <div class="edital-card__fact">
+      <dt>
+        <i [class]="modalityIcon" aria-hidden="true"></i>
+        Modalidade
+      </dt>
+      <dd>{{ modalityLabel }}</dd>
+    </div>
+
+    @if (project.vacancies != null) {
+      <div class="edital-card__fact">
+        <dt>
+          <i class="pi pi-users" aria-hidden="true"></i>
+          Vagas
+        </dt>
+        <dd>{{ project.vacancies }}</dd>
+      </div>
+    }
+
+    @if (project.weekly_hours != null) {
+      <div class="edital-card__fact">
+        <dt>
+          <i class="pi pi-stopwatch" aria-hidden="true"></i>
+          Carga
+        </dt>
+        <dd>{{ project.weekly_hours }}h / sem.</dd>
+      </div>
+    }
+
+    <div class="edital-card__fact edital-card__fact--courses">
+      <dt>
+        <i class="pi pi-graduation-cap" aria-hidden="true"></i>
+        Cursos
+      </dt>
+      <dd>{{ coursesShort }}</dd>
+    </div>
+  </dl>
+
+  <footer class="edital-card__footer">
+    <div class="edital-card__prof">
+      <img class="edital-card__prof-avatar" [src]="professorAvatar" alt="" aria-hidden="true" />
+      <div class="edital-card__prof-body">
+        <span class="edital-card__prof-name">{{ project.owner_professor.full_name }}</span>
+        <span class="edital-card__prof-role">Professor(a) responsável</span>
+      </div>
+    </div>
+
+    <div class="edital-card__actions">
+      <button
+        type="button"
+        class="edital-card__btn edital-card__btn--ghost"
+        (click)="onDetails(); $event.stopPropagation()"
+        [attr.aria-label]="'Ver detalhes de ' + project.title"
+      >
+        <i class="pi pi-arrow-up-right" aria-hidden="true"></i>
+        <span>Detalhes</span>
+      </button>
+      @if (canContact) {
+        <button
+          type="button"
+          class="edital-card__btn edital-card__btn--primary"
+          (click)="onContact($event)"
+          [attr.aria-label]="'Enviar email para ' + project.owner_professor.full_name"
+        >
+          <i class="pi pi-envelope" aria-hidden="true"></i>
+          <span>Contatar</span>
+        </button>
+      }
+    </div>
+  </footer>
+</article>

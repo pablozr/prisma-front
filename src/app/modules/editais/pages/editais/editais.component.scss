@@ -1,0 +1,322 @@
+/* =========================================================================
+   Página Editais — cores explícitas, sem dependência de vars ambíguas
+   ========================================================================= */
+
+.editais-shell {
+  min-height: 100vh;
+  background: #fbf9f8;
+  color: #1b1c1c;
+}
+
+:host-context(.my-app-dark) .editais-shell {
+  background: #151a21;
+  color: #f3f0f0;
+}
+
+.editais-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.5rem clamp(1rem, 3vw, 2rem) 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ----- Hero ----- */
+
+.editais-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.75rem 0 1.5rem;
+  border-bottom: 1px solid rgba(15, 23, 32, 0.08);
+
+  @media (max-width: 720px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+:host-context(.my-app-dark) .editais-hero {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.editais-hero__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  max-width: 720px;
+  min-width: 0;
+}
+
+.editais-hero__eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #00345d;
+}
+
+:host-context(.my-app-dark) .editais-hero__eyebrow {
+  color: #a0caff;
+}
+
+.editais-hero__title {
+  margin: 0;
+  font-size: clamp(1.65rem, 2.8vw, 2.1rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: #1b1c1c;
+}
+
+:host-context(.my-app-dark) .editais-hero__title {
+  color: #ffffff;
+}
+
+.editais-hero__lead {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #424750;
+  max-width: 640px;
+}
+
+:host-context(.my-app-dark) .editais-hero__lead {
+  color: #c2c7d1;
+}
+
+.editais-hero__scope {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 0.9rem 1.35rem;
+  background: rgba(0, 75, 130, 0.06);
+  border: 1px solid rgba(0, 75, 130, 0.14);
+  border-radius: 12px;
+  line-height: 1.1;
+
+  @media (max-width: 720px) {
+    flex-direction: row;
+    align-self: stretch;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+}
+
+:host-context(.my-app-dark) .editais-hero__scope {
+  background: rgba(137, 188, 250, 0.1);
+  border-color: rgba(137, 188, 250, 0.22);
+}
+
+.editais-hero__scope-value {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #00345d;
+  letter-spacing: -0.01em;
+}
+
+:host-context(.my-app-dark) .editais-hero__scope-value {
+  color: #89bcfa;
+}
+
+.editais-hero__scope-label {
+  margin-top: 2px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #424750;
+}
+
+:host-context(.my-app-dark) .editais-hero__scope-label {
+  color: #c2c7d1;
+}
+
+/* ----- Resultados: grid ----- */
+
+.editais-results {
+  min-height: 200px;
+}
+
+.editais-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.1rem;
+}
+
+.editais-grid__item {
+  min-width: 0;
+}
+
+/* ----- Empty state ----- */
+
+.editais-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 3.5rem 1.5rem;
+  background: #ffffff;
+  border: 1px dashed rgba(15, 23, 32, 0.14);
+  border-radius: 14px;
+  text-align: center;
+  color: #1b1c1c;
+}
+
+:host-context(.my-app-dark) .editais-empty {
+  background: #1f262f;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f3f0f0;
+}
+
+.editais-empty__icon {
+  width: 56px;
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  background: rgba(0, 75, 130, 0.1);
+  border-radius: 50%;
+  color: #00345d;
+
+  i {
+    font-size: 1.35rem;
+  }
+}
+
+:host-context(.my-app-dark) .editais-empty__icon {
+  background: rgba(137, 188, 250, 0.14);
+  color: #89bcfa;
+}
+
+.editais-empty__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1b1c1c;
+}
+
+:host-context(.my-app-dark) .editais-empty__title {
+  color: #ffffff;
+}
+
+.editais-empty__desc {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #424750;
+  max-width: 480px;
+  line-height: 1.55;
+}
+
+:host-context(.my-app-dark) .editais-empty__desc {
+  color: #c2c7d1;
+}
+
+.editais-empty__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 0.75rem;
+  padding: 0.55rem 1.2rem;
+  background: #004b82;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+
+  i {
+    font-size: 0.8rem;
+  }
+
+  &:hover {
+    background: #00345d;
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #004b82;
+    outline-offset: 2px;
+  }
+}
+
+:host-context(.my-app-dark) .editais-empty__btn {
+  background: #89bcfa;
+  color: #0c1722;
+
+  &:hover {
+    background: #a3c9fb;
+  }
+}
+
+/* ----- Skeleton ----- */
+
+.editais-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 1.25rem;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 32, 0.08);
+  border-radius: 14px;
+  min-height: 320px;
+}
+
+:host-context(.my-app-dark) .editais-skeleton {
+  background: #1f262f;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.editais-skeleton__line,
+.editais-skeleton__block,
+.editais-skeleton__footer {
+  display: block;
+  background: rgba(15, 23, 32, 0.08);
+  border-radius: 6px;
+}
+
+:host-context(.my-app-dark) .editais-skeleton__line,
+:host-context(.my-app-dark) .editais-skeleton__block,
+:host-context(.my-app-dark) .editais-skeleton__footer {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.editais-skeleton__line {
+  height: 12px;
+  width: 100%;
+}
+
+.editais-skeleton__line--short {
+  width: 35%;
+  height: 10px;
+}
+
+.editais-skeleton__line--title {
+  height: 18px;
+  width: 90%;
+}
+
+.editais-skeleton__block {
+  height: 72px;
+  border-radius: 10px;
+  margin-top: 4px;
+}
+
+.editais-skeleton__footer {
+  height: 44px;
+  border-radius: 10px;
+  margin-top: auto;
+}

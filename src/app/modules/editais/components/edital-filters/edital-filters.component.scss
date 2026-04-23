@@ -1,0 +1,350 @@
+/* =========================================================================
+   Edital Filters — busca + filtros em painel sóbrio
+   ========================================================================= */
+
+:host {
+  display: block;
+}
+
+.edital-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 32, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(15, 23, 32, 0.04);
+}
+
+:host-context(.my-app-dark) .edital-filters {
+  background: #1f262f;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+/* ----- Busca grande ----- */
+
+.edital-filters__search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.edital-filters__search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.95rem;
+  color: var(--on-surface-variant);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.edital-filters__input {
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 2.5rem !important;
+  border-radius: 10px !important;
+  font-size: 0.9rem !important;
+  background: #ffffff !important;
+  color: #1b1c1c !important;
+  border: 1px solid rgba(15, 23, 32, 0.16) !important;
+
+  &::placeholder {
+    color: rgba(66, 71, 80, 0.5);
+    opacity: 1;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(0, 75, 130, 0.15) !important;
+    border-color: var(--primary-color) !important;
+  }
+}
+
+:host-context(.my-app-dark) .edital-filters__input {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+
+  &::placeholder {
+    color: rgba(243, 240, 240, 0.4);
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(137, 188, 250, 0.2) !important;
+    border-color: var(--primary-color) !important;
+  }
+}
+
+.edital-filters__clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  i {
+    font-size: 0.75rem;
+  }
+
+  &:hover {
+    background: rgba(15, 23, 32, 0.08);
+    color: var(--on-surface);
+  }
+}
+
+:host-context(.my-app-dark) .edital-filters__clear:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ----- Grid de selects ----- */
+
+.edital-filters__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem 1rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.edital-filters__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.edital-filters__field--short {
+  @media (min-width: 901px) {
+    grid-column: span 1;
+  }
+}
+
+.edital-filters__label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--on-surface-variant);
+  opacity: 0.75;
+}
+
+/* PrimeNG multiselect/select overrides (scoped) */
+
+:host ::ng-deep .p-multiselect,
+:host ::ng-deep .p-select {
+  width: 100%;
+  border-radius: 10px !important;
+  min-height: 42px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:not(.p-disabled):hover {
+    border-color: rgba(0, 75, 130, 0.35);
+  }
+
+  &:not(.p-disabled).p-focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 3px rgba(0, 75, 130, 0.15) !important;
+  }
+}
+
+:host-context(.my-app-dark) :host ::ng-deep .p-multiselect:not(.p-disabled):hover,
+:host-context(.my-app-dark) :host ::ng-deep .p-select:not(.p-disabled):hover {
+  border-color: rgba(137, 188, 250, 0.3);
+}
+
+:host-context(.my-app-dark) :host ::ng-deep .p-multiselect:not(.p-disabled).p-focus,
+:host-context(.my-app-dark) :host ::ng-deep .p-select:not(.p-disabled).p-focus {
+  box-shadow: 0 0 0 3px rgba(137, 188, 250, 0.2) !important;
+}
+
+:host ::ng-deep .p-multiselect-label,
+:host ::ng-deep .p-select-label {
+  font-size: 0.85rem;
+  padding: 0.55rem 0.85rem;
+}
+
+:host ::ng-deep .p-multiselect-chip-item {
+  background: rgba(0, 75, 130, 0.1);
+  color: var(--primary-strong);
+  border-radius: 999px !important;
+  font-size: 0.75rem;
+  padding: 2px 10px;
+}
+
+:host-context(.my-app-dark) :host ::ng-deep .p-multiselect-chip-item {
+  background: rgba(137, 188, 250, 0.16);
+  color: var(--primary-color);
+}
+
+/* ----- Footer: chips de prazo + contagem ----- */
+
+.edital-filters__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(15, 23, 32, 0.06);
+}
+
+:host-context(.my-app-dark) .edital-filters__footer {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+.edital-filters__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.edital-filters__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.45rem 0.85rem;
+  background: transparent;
+  border: 1px solid rgba(15, 23, 32, 0.12);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease,
+    transform 0.15s ease;
+
+  i {
+    font-size: 0.75rem;
+  }
+
+  &:hover {
+    background: rgba(0, 75, 130, 0.05);
+    border-color: rgba(0, 75, 130, 0.25);
+    color: var(--primary-strong);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+}
+
+.edital-filters__chip--active {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #ffffff;
+
+  &:hover {
+    background: var(--primary-strong, #003d6b);
+    border-color: var(--primary-strong, #003d6b);
+    color: #ffffff;
+  }
+}
+
+:host-context(.my-app-dark) .edital-filters__chip {
+  border-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.75);
+
+  &:hover {
+    background: rgba(137, 188, 250, 0.08);
+    border-color: rgba(137, 188, 250, 0.3);
+    color: var(--primary-color);
+  }
+}
+
+:host-context(.my-app-dark) .edital-filters__chip--active {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #0c1722;
+
+  &:hover {
+    background: #a3c9fb;
+    border-color: #a3c9fb;
+    color: #0c1722;
+  }
+}
+
+/* ----- Contagem + reset ----- */
+
+.edital-filters__summary {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.edital-filters__count {
+  font-size: 0.8125rem;
+  color: var(--on-surface-variant);
+  opacity: 0.85;
+
+  strong {
+    color: var(--on-surface);
+    font-weight: 700;
+  }
+}
+
+:host-context(.my-app-dark) .edital-filters__count strong {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.edital-filters__reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.45rem 0.85rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary-strong);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  i {
+    font-size: 0.75rem;
+  }
+
+  &:hover {
+    background: rgba(0, 75, 130, 0.08);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+}
+
+:host-context(.my-app-dark) .edital-filters__reset {
+  color: var(--primary-color);
+
+  &:hover {
+    background: rgba(137, 188, 250, 0.1);
+  }
+}
