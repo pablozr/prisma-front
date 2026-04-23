@@ -33,8 +33,21 @@ export class UsersService {
   private userSubject = new BehaviorSubject<ISigninData | null>(null)
   user$ = this.userSubject.asObservable()
 
+  private initializedSubject = new BehaviorSubject<boolean>(false)
+  /** Emite `true` assim que a primeira tentativa de rehidratação terminou (sucesso ou falha). */
+  initialized$ = this.initializedSubject.asObservable()
+
   get currentUser(): ISigninData | null {
     return this.userSubject.value
+  }
+
+  get isInitialized(): boolean {
+    return this.initializedSubject.value
+  }
+
+  /** Rota inicial conforme o papel do utilizador autenticado. */
+  getDefaultRoute(): string {
+    return this.currentUser?.user?.role === 'admin' ? '/admin' : '/home'
   }
 
   private withCreds = { withCredentials: true } as const
@@ -134,16 +147,20 @@ export class UsersService {
   }
 
   async rehydrateSession() {
-    const hydrated = await this.me()
-    if (hydrated) return true
+    try {
+      const hydrated = await this.me()
+      if (hydrated) return true
 
-    const refreshed = await this.refresh()
-    if (!refreshed) {
-      this.setSession(null)
-      return false
+      const refreshed = await this.refresh()
+      if (!refreshed) {
+        this.setSession(null)
+        return false
+      }
+
+      return this.me()
+    } finally {
+      if (!this.initializedSubject.value) this.initializedSubject.next(true)
     }
-
-    return this.me()
   }
 
   // ----- Forget password flow -----

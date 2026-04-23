@@ -28,7 +28,7 @@ export class AuthService {
     const publicRoutes = ['signin', 'forget-password']
 
     if (publicRoutes.includes(path) && isAuthenticated) {
-      this.router.navigate(['/home'])
+      this.router.navigate([this.usersService.getDefaultRoute()])
       return false
     }
 
@@ -36,11 +36,19 @@ export class AuthService {
       return true
     }
 
-    if (isAuthenticated) {
-      return true
+    if (!isAuthenticated) {
+      this.router.navigate(['/signin'])
+      return false
     }
 
-    this.router.navigate(['/signin'])
-    return false
+    const role = this.usersService.currentUser?.user?.role
+
+    // Somente /admin exige papel admin. Home é pública (acessível a visitantes também).
+    if (path === 'admin' && role !== 'admin') {
+      this.router.navigate(['/home'])
+      return false
+    }
+
+    return true
   }
 }

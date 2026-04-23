@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideZoneChangeDetection, LOCALE_ID } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection, LOCALE_ID, inject, provideAppInitializer } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
@@ -9,6 +9,7 @@ import { providePrimeNG } from 'primeng/config';
 import { InstitutionalPortal } from '../styles';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
+import { UsersService } from './modules/global/services/users/users.service';
 
 registerLocaleData(localePt, 'pt-BR');
 
@@ -28,6 +29,10 @@ export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideHttpClient(), provideAnimations(), BrowserAnimationsModule, MessageService,
     { provide: LOCALE_ID, useValue: 'pt-BR' },
     provideAnimationsAsync(),
+    provideAppInitializer(() => {
+      const users = inject(UsersService)
+      return users.rehydrateSession().catch(() => false)
+    }),
     providePrimeNG({
         translation: ptBR,
         theme: {
