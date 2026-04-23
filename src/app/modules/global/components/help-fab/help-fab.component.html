@@ -1,0 +1,16 @@
+<button
+  type="button"
+  class="help-fab"
+  (click)="toggle()"
+  [class.help-fab--active]="open"
+  aria-label="Abrir central de ajuda"
+  title="Central de ajuda"
+>
+  <span class="help-fab__icon" aria-hidden="true">
+    <i class="pi pi-question"></i>
+  </span>
+  <span class="help-fab__label">Ajuda</span>
+  <span class="help-fab__ping" aria-hidden="true"></span>
+</button>
+
+<app-help-dialog [(visible)]="open"></app-help-dialog>

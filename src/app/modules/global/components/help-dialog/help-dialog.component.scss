@@ -1,0 +1,413 @@
+/* =========================================================================
+   Help Dialog — central de ajuda contextual
+   Encapsulation: None (p-dialog é renderizado no body)
+   ========================================================================= */
+
+.help-dialog.p-dialog {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 48px rgba(15, 23, 32, 0.25);
+  background: #ffffff;
+  color: #1b1c1c;
+  max-height: 82vh;
+  height: auto;
+}
+
+.my-app-dark .help-dialog.p-dialog {
+  background: #1f262f;
+  color: #f3f0f0;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
+}
+
+@media (max-width: 640px) {
+  .help-dialog.p-dialog {
+    max-height: 90vh;
+    border-radius: 12px;
+  }
+}
+
+.help-dialog .p-dialog-header {
+  padding: 0;
+  background: transparent;
+  border-bottom: 1px solid rgba(15, 23, 32, 0.08);
+  flex-shrink: 0;
+  display: block;
+}
+
+.my-app-dark .help-dialog .p-dialog-header {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.help-dialog .p-dialog-content {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.help-dialog .p-dialog-footer {
+  padding: 1rem 1.5rem 1.25rem;
+  border-top: 1px solid rgba(15, 23, 32, 0.06);
+  background: rgba(15, 23, 32, 0.02);
+  flex-shrink: 0;
+}
+
+.my-app-dark .help-dialog .p-dialog-footer {
+  background: rgba(0, 0, 0, 0.22);
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ----- Header banner ----- */
+
+.help-dialog__header {
+  position: relative;
+  isolation: isolate;
+  padding: 1.6rem 4.25rem 1.5rem 1.75rem;
+  background: linear-gradient(135deg, #004b82 0%, #00345d 100%);
+  color: #ffffff;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 92% 24%, rgba(255, 255, 255, 0.14) 0%, transparent 55%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  @media (max-width: 640px) {
+    padding: 1.4rem 3.5rem 1.3rem 1.25rem;
+  }
+}
+
+.help-dialog__header-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.help-dialog__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  i {
+    font-size: 0.75rem;
+  }
+}
+
+.help-dialog__title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.help-dialog__lead {
+  margin: 0;
+  font-size: 0.875rem;
+  opacity: 0.88;
+  line-height: 1.45;
+  max-width: 52ch;
+}
+
+.help-dialog__close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 0;
+  line-height: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, transform 0.15s ease;
+
+  i.pi {
+    font-size: 14px;
+    line-height: 1;
+    display: block;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.26);
+    transform: scale(1.05);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+  }
+}
+
+/* ----- Body / accordion ----- */
+
+.help-dialog__body {
+  padding: 1.25rem 1.5rem 0.5rem;
+}
+
+.help-dialog__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.help-dialog__item {
+  border: 1px solid rgba(15, 23, 32, 0.1);
+  border-radius: 12px;
+  background: #ffffff;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  overflow: hidden;
+}
+
+.my-app-dark .help-dialog__item {
+  background: #242c36;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.help-dialog__item--open {
+  border-color: rgba(0, 75, 130, 0.3);
+  background: #f8fbfe;
+}
+
+.my-app-dark .help-dialog__item--open {
+  border-color: rgba(137, 188, 250, 0.32);
+  background: #2a3340;
+}
+
+.help-dialog__item-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.85rem 1rem;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba(0, 75, 130, 0.06);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #004b82;
+    outline-offset: -2px;
+  }
+}
+
+.my-app-dark .help-dialog__item-head:hover {
+  background: rgba(137, 188, 250, 0.08);
+}
+
+.help-dialog__item-icon {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(0, 75, 130, 0.1);
+  color: #004b82;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+}
+
+.my-app-dark .help-dialog__item-icon {
+  background: rgba(137, 188, 250, 0.18);
+  color: #a0caff;
+}
+
+.help-dialog__item-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.help-dialog__item-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1b1c1c;
+  letter-spacing: -0.005em;
+}
+
+.my-app-dark .help-dialog__item-title {
+  color: #ffffff;
+}
+
+.help-dialog__item-summary {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #565c64;
+  line-height: 1.4;
+}
+
+.my-app-dark .help-dialog__item-summary {
+  color: #c2c7d1;
+}
+
+.help-dialog__item-chev {
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  color: #565c64;
+  transition: transform 0.2s ease;
+}
+
+.my-app-dark .help-dialog__item-chev {
+  color: #c2c7d1;
+}
+
+.help-dialog__item--open .help-dialog__item-chev {
+  transform: rotate(180deg);
+}
+
+.help-dialog__item-body {
+  padding: 0 1rem 1rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  animation: help-accordion-in 0.18s ease-out both;
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: #424750;
+  }
+
+  @media (max-width: 540px) {
+    padding-left: 1rem;
+  }
+}
+
+.my-app-dark .help-dialog__item-body p {
+  color: #c2c7d1;
+}
+
+@keyframes help-accordion-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ----- Footer ----- */
+
+.help-dialog__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.help-dialog__hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  color: #565c64;
+
+  i {
+    font-size: 0.85rem;
+  }
+
+  a {
+    color: #004b82;
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.my-app-dark .help-dialog__hint {
+  color: #c2c7d1;
+
+  a {
+    color: #a0caff;
+  }
+}
+
+.help-dialog__btn {
+  padding: 0.55rem 1.1rem;
+  background: #004b82;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+
+  &:hover {
+    background: #00345d;
+    box-shadow: 0 4px 12px rgba(0, 75, 130, 0.3);
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #004b82;
+    outline-offset: 2px;
+  }
+}
+
+.my-app-dark .help-dialog__btn {
+  background: #89bcfa;
+  color: #0c1722;
+
+  &:hover {
+    background: #a3c9fb;
+    box-shadow: 0 4px 12px rgba(137, 188, 250, 0.35);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .help-dialog__item,
+  .help-dialog__item-head,
+  .help-dialog__item-chev,
+  .help-dialog__close,
+  .help-dialog__btn {
+    transition: none !important;
+  }
+
+  .help-dialog__item-body {
+    animation: none !important;
+  }
+}

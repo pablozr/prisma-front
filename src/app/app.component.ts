@@ -6,11 +6,12 @@ import { UsersService } from './modules/global/services/users/users.service'
 import { ToastModule } from 'primeng/toast'
 import { NotificationsService } from './modules/global/services/notifications/notifications.service'
 import { NotificationDialogComponent } from './modules/global/components/notification-dialog/notification-dialog.component'
+import { HelpFabComponent } from './modules/global/components/help-fab/help-fab.component'
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ToastModule, NotificationDialogComponent],
+  imports: [RouterOutlet, ToastModule, NotificationDialogComponent, HelpFabComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

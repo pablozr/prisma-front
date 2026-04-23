@@ -1,0 +1,81 @@
+<p-dialog
+  [visible]="visible"
+  (visibleChange)="visibleChange.emit($event); visible = $event"
+  [modal]="true"
+  [draggable]="false"
+  [dismissableMask]="true"
+  [closable]="false"
+  [closeOnEscape]="true"
+  styleClass="help-dialog"
+  [breakpoints]="{ '960px': '92vw', '640px': '100vw' }"
+  [style]="{ width: '720px', maxWidth: '92vw' }"
+>
+  <ng-template pTemplate="header">
+    <div class="help-dialog__header">
+      <div class="help-dialog__header-body">
+        <span class="help-dialog__kicker">
+          <i class="pi pi-compass" aria-hidden="true"></i>
+          Central de ajuda
+        </span>
+        <h2 class="help-dialog__title">Como usar o SIEPA</h2>
+        <p class="help-dialog__lead">
+          Descubra o que você pode fazer na plataforma e tire suas dúvidas rapidamente.
+        </p>
+      </div>
+      <button
+        type="button"
+        class="help-dialog__close"
+        (click)="close()"
+        aria-label="Fechar"
+      >
+        <i class="pi pi-times" aria-hidden="true"></i>
+      </button>
+    </div>
+  </ng-template>
+
+  <div class="help-dialog__body">
+    <ul class="help-dialog__list" role="list">
+      @for (item of items; track item.id) {
+        <li class="help-dialog__item" [class.help-dialog__item--open]="openId === item.id">
+          <button
+            type="button"
+            class="help-dialog__item-head"
+            (click)="toggle(item.id)"
+            [attr.aria-expanded]="openId === item.id"
+          >
+            <span class="help-dialog__item-icon" aria-hidden="true">
+              <i class="pi" [class]="item.icon"></i>
+            </span>
+            <span class="help-dialog__item-copy">
+              <span class="help-dialog__item-title">{{ item.title }}</span>
+              <span class="help-dialog__item-summary">{{ item.summary }}</span>
+            </span>
+            <i
+              class="pi pi-chevron-down help-dialog__item-chev"
+              aria-hidden="true"
+            ></i>
+          </button>
+
+          @if (openId === item.id) {
+            <div class="help-dialog__item-body">
+              @for (p of item.body; track p) {
+                <p>{{ p }}</p>
+              }
+            </div>
+          }
+        </li>
+      }
+    </ul>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="help-dialog__footer">
+      <span class="help-dialog__hint">
+        <i class="pi pi-info-circle" aria-hidden="true"></i>
+        Ainda com dúvidas? Fale com a equipe do SIEPA em
+        <a href="mailto:siepa@unirio.br">siepa&#64;unirio.br</a>.
+      </span>
+      <button type="button" class="help-dialog__btn" (click)="close()">Entendi</button>
+    </div>
+  </ng-template>
+</p-dialog>
