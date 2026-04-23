@@ -1,10 +1,134 @@
-<div class="all-container">
+<div class="home-shell">
   <app-header></app-header>
-  <div class="home-page">
-    <div class="welcome-content">
-      <h2>Seja bem-vindo(a),</h2>
-      <h1>{{userData?.user?.firstName}} {{userData?.user?.lastName}}</h1>
-      <p>Selecione um modulo no menu lateral para comecar.</p>
-    </div>
-  </div>
+
+  <main class="home-page" id="conteudo">
+    <a class="skip-link" href="#acesso-rapido">Saltar para acessos rápidos</a>
+
+    @if (isAuthenticated) {
+      <app-breadcrumbs [items]="breadcrumbs"></app-breadcrumbs>
+    }
+
+    @if (isAuthenticated) {
+      <section class="home-welcome" aria-labelledby="home-welcome-title">
+        <p class="home-welcome__kicker">{{ greeting }}</p>
+        <h1 id="home-welcome-title" class="home-welcome__title">
+          Olá, <span class="home-welcome__firstname">{{ firstName }}</span>.
+        </h1>
+        <p class="home-welcome__lead">
+          Este é o seu portal da UNIRIO para acompanhar projetos de iniciação científica, extensão e
+          atividades acadêmicas. Escolha por onde começar.
+        </p>
+      </section>
+    } @else {
+      <section class="home-visitor" aria-labelledby="home-visitor-title">
+        <div class="home-visitor__body">
+          <p class="home-visitor__kicker">Portal acadêmico UNIRIO</p>
+          <h1 id="home-visitor-title" class="home-visitor__title">
+            Bem-vindo(a) ao <span class="home-visitor__brand">SIEPA</span>.
+          </h1>
+          <p class="home-visitor__lead">
+            Um espaço público da UNIRIO para divulgar editais, projetos de iniciação científica,
+            extensão e atividades acadêmicas. Explore os conteúdos abertos ou entre com sua conta
+            institucional para acessar os recursos completos.
+          </p>
+          <div class="home-visitor__actions">
+            <a class="home-visitor__cta home-visitor__cta--primary" routerLink="/signin">
+              <i class="pi pi-sign-in" aria-hidden="true"></i>
+              <span>Entrar com conta institucional</span>
+            </a>
+            <a class="home-visitor__cta home-visitor__cta--ghost" href="#acesso-rapido">
+              <span>Explorar como visitante</span>
+              <i class="pi pi-arrow-down" aria-hidden="true"></i>
+            </a>
+          </div>
+          <p class="home-visitor__note">
+            <i class="pi pi-info-circle" aria-hidden="true"></i>
+            <span>O login é destinado a <strong>estudantes</strong> e <strong>docentes</strong> da UNIRIO.</span>
+          </p>
+        </div>
+        <aside class="home-visitor__meta" aria-label="Informações rápidas">
+          <div class="home-visitor__meta-item">
+            <span class="home-visitor__meta-kicker">Instituição</span>
+            <span class="home-visitor__meta-value">UNIRIO</span>
+          </div>
+          <div class="home-visitor__meta-item">
+            <span class="home-visitor__meta-kicker">Contato</span>
+            <a class="home-visitor__meta-link" href="mailto:siepa@unirio.br">siepa&#64;unirio.br</a>
+          </div>
+        </aside>
+      </section>
+    }
+
+    <section class="home-quick" id="acesso-rapido" aria-labelledby="home-quick-title">
+      <h2 id="home-quick-title" class="home-quick__title">Acessos rápidos</h2>
+      <p class="home-quick__desc">
+        @if (isAuthenticated) {
+          Clique num dos blocos abaixo para ir direto ao módulo.
+        } @else {
+          Conheça os módulos disponíveis. Alguns exigem login institucional.
+        }
+      </p>
+
+      <ul class="home-quick__grid" role="list">
+        @for (card of quickAccess; track card.label) {
+          <li>
+            <button
+              type="button"
+              class="home-card"
+              (click)="navigateTo(card.route, card.requiresAuth)"
+              [attr.aria-label]="card.label + '. ' + card.description"
+            >
+              <span class="home-card__icon" aria-hidden="true">
+                <i [class]="card.icon"></i>
+              </span>
+              <span class="home-card__body">
+                <span class="home-card__label">{{ card.label }}</span>
+                <span class="home-card__desc">{{ card.description }}</span>
+              </span>
+              @if (card.requiresAuth && !isAuthenticated) {
+                <span class="home-card__lock" aria-label="Requer login">
+                  <i class="pi pi-lock" aria-hidden="true"></i>
+                </span>
+              } @else {
+                <i class="home-card__arrow pi pi-arrow-right" aria-hidden="true"></i>
+              }
+            </button>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <section class="home-announcements" aria-labelledby="home-announcements-title">
+      <header class="home-announcements__header">
+        <h2 id="home-announcements-title" class="home-announcements__title">Avisos recentes</h2>
+        <p class="home-announcements__desc">Informações importantes da sua universidade.</p>
+      </header>
+
+      <ul class="home-announcements__list" role="list">
+        @for (item of announcements; track item.title) {
+          <li class="home-announcement">
+            <span class="home-announcement__tag">{{ item.tag }}</span>
+            <div class="home-announcement__body">
+              <p class="home-announcement__title">{{ item.title }}</p>
+              <p class="home-announcement__text">{{ item.body }}</p>
+            </div>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <section class="home-help" aria-label="Precisa de ajuda">
+      <div class="home-help__body">
+        <h2 class="home-help__title">Precisa de ajuda?</h2>
+        <p class="home-help__desc">
+          Se encontrar qualquer dificuldade ao utilizar o sistema, entre em contato com o suporte
+          institucional. Respondemos em dias úteis, das 9h às 17h.
+        </p>
+      </div>
+      <a class="home-help__link" href="mailto:siepa@unirio.br">
+        <i class="pi pi-envelope" aria-hidden="true"></i>
+        <span>siepa&#64;unirio.br</span>
+      </a>
+    </section>
+  </main>
 </div>
