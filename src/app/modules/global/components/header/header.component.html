@@ -1,33 +1,191 @@
-<div class="card">
-  <p-toolbar
-    styleClass=""
-    [hidden]="false"
-  >
-    <ng-template pTemplate="start">
-      <app-sidebar></app-sidebar>
-    </ng-template>
+<header class="siepa-header" role="banner">
+  <div class="siepa-header__inner">
+    <div class="siepa-header__left">
+      @if (isAuthenticated) {
+        <app-sidebar></app-sidebar>
+      }
 
-    <ng-template pTemplate="end">
-        <div (click)="openNotification()" class="flex justify-content-center align-items-center mr-4 cursor-pointer">
-          <span class="pi pi-bell notification"></span>
-        </div>
-        <div class="flex align-items-center justify-content-center gap-2">
-          <div class="flex flex-column">
-            <h3 class="font-medium">{{userData?.user?.full_name}}</h3>
-            <span class="text-sm font-semibold" [ngStyle]="{color: 'var(--header-role)'}">{{getUserRole(userData?.user?.role)}}</span>
-          </div>
-
-        <p-avatar
-          image='https://avatars.githubusercontent.com/u/42438006?v=4'
-          shape="circle"
-          [size]="'large'"
+      <a class="siepa-header__brand" routerLink="/" aria-label="SIEPA — Sistema de Iniciação, Extensão e Projetos Acadêmicos">
+        <img
+          src="assets/images/novo-logo.png"
+          alt=""
+          class="siepa-header__logo"
+          width="80"
+          height="52"
+          decoding="async"
         />
-        <!-- <p-avatar
-          image={{userData?.user?.avatar}}
-          shape="circle"
-          [size]="'large'"
-        /> -->
+        <span class="siepa-header__brand-copy">
+          <span class="siepa-header__title">SIEPA</span>
+          <span class="siepa-header__subtitle">Sistema de Iniciação, Extensão e Projetos Acadêmicos</span>
+        </span>
+      </a>
+    </div>
+
+    <div class="siepa-header__right">
+      <button
+        type="button"
+        class="siepa-header__theme"
+        (click)="toggleTheme()"
+        [attr.aria-label]="isDark ? 'Ativar tema claro' : 'Ativar tema escuro'"
+        [title]="isDark ? 'Tema claro' : 'Tema escuro'"
+      >
+        <i class="pi" [class.pi-sun]="isDark" [class.pi-moon]="!isDark" aria-hidden="true"></i>
+      </button>
+
+      @if (!sessionReady) {
+        <div class="siepa-header__skeleton" aria-hidden="true">
+          <span class="siepa-header__skeleton-avatar"></span>
+          <span class="siepa-header__skeleton-line"></span>
         </div>
-    </ng-template>
-  </p-toolbar>
-</div>
+      } @else if (isAuthenticated) {
+        <div class="siepa-account" [class.siepa-account--open]="menuOpen">
+          <button
+            type="button"
+            class="siepa-account__trigger"
+            (click)="toggleMenu($event)"
+            [attr.aria-label]="'Conta de ' + (userData?.user?.full_name || 'usuário')"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="menuOpen"
+          >
+            <img
+              class="siepa-account__trigger-img"
+              [src]="avatarUrl"
+              [alt]="userData?.user?.full_name || ''"
+            />
+            @if (firstName) {
+              <span class="siepa-account__trigger-name">{{ firstName }}</span>
+            }
+            <i class="pi pi-chevron-down siepa-account__trigger-chev" aria-hidden="true"></i>
+          </button>
+
+          @if (menuOpen) {
+            <div
+              class="siepa-account__menu"
+              role="menu"
+              [attr.aria-label]="'Menu da conta'"
+              (click)="$event.stopPropagation()"
+            >
+              <div class="siepa-account__top">
+                <span class="siepa-account__top-email">{{ userData?.user?.institutional_email }}</span>
+                <button
+                  type="button"
+                  class="siepa-account__close"
+                  (click)="closeMenu()"
+                  aria-label="Fechar menu"
+                >
+                  <i class="pi pi-times" aria-hidden="true"></i>
+                </button>
+              </div>
+
+              <div class="siepa-account__hero">
+                <div class="siepa-account__avatar-wrap">
+                  <div class="siepa-account__avatar-lg" aria-hidden="true">
+                    <img [src]="avatarUrl" [alt]="userData?.user?.full_name || ''" />
+                  </div>
+                  <button
+                    type="button"
+                    class="siepa-account__avatar-edit"
+                    (click)="goTo('/settings', { target: 'avatar' })"
+                    aria-label="Alterar foto"
+                    title="Alterar foto"
+                  >
+                    <i class="pi pi-camera" aria-hidden="true"></i>
+                  </button>
+                </div>
+                <p class="siepa-account__hi">Olá, {{ userData?.user?.full_name?.split(' ')?.[0] }}!</p>
+                <span class="siepa-account__role-pill">{{ roleLabel(userData?.user?.role) }}</span>
+              </div>
+
+              <button
+                type="button"
+                role="menuitem"
+                class="siepa-account__primary"
+                (click)="goTo('/settings')"
+              >
+                <span>Gerenciar sua conta institucional</span>
+              </button>
+
+              <div class="siepa-account__divider" role="separator"></div>
+
+              <ul class="siepa-account__list" role="none">
+                <li role="none">
+                  <button
+                    type="button"
+                    role="menuitem"
+                    class="siepa-account__item"
+                    (click)="goTo('/settings', { target: 'preferences' })"
+                  >
+                    <span class="siepa-account__item-icon" aria-hidden="true">
+                      <i class="pi pi-sliders-h"></i>
+                    </span>
+                    <span class="siepa-account__item-label">Preferências</span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button
+                    type="button"
+                    role="menuitem"
+                    class="siepa-account__item"
+                    (click)="goTo('/settings', { target: 'security' })"
+                  >
+                    <span class="siepa-account__item-icon" aria-hidden="true">
+                      <i class="pi pi-shield"></i>
+                    </span>
+                    <span class="siepa-account__item-label">Privacidade e segurança</span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button
+                    type="button"
+                    role="menuitem"
+                    class="siepa-account__item"
+                    (click)="goTo('/settings', { target: 'help' })"
+                  >
+                    <span class="siepa-account__item-icon" aria-hidden="true">
+                      <i class="pi pi-question-circle"></i>
+                    </span>
+                    <span class="siepa-account__item-label">Ajuda</span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button
+                    type="button"
+                    role="menuitem"
+                    class="siepa-account__item siepa-account__item--danger"
+                    (click)="logout()"
+                  >
+                    <span class="siepa-account__item-icon" aria-hidden="true">
+                      <i class="pi pi-sign-out"></i>
+                    </span>
+                    <span class="siepa-account__item-label">Sair da conta</span>
+                  </button>
+                </li>
+              </ul>
+
+              <footer class="siepa-account__footer">
+                <a href="#" (click)="$event.preventDefault()">Política de privacidade</a>
+                <span class="siepa-account__footer-sep" aria-hidden="true">·</span>
+                <a href="#" (click)="$event.preventDefault()">Termos de uso</a>
+              </footer>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="siepa-header__guest">
+          <div class="siepa-header__guest-copy">
+            <span class="siepa-header__guest-kicker">Aluno ou docente?</span>
+            <span class="siepa-header__guest-text">Entre com sua conta institucional</span>
+          </div>
+          <a
+            class="siepa-header__signin"
+            routerLink="/signin"
+            aria-label="Entrar com conta institucional UNIRIO"
+          >
+            <i class="pi pi-sign-in" aria-hidden="true"></i>
+            <span>Entrar</span>
+          </a>
+        </div>
+      }
+    </div>
+  </div>
+</header>
