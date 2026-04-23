@@ -1,22 +1,23 @@
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation, inject } from '@angular/core';
 import { DrawerModule, Drawer } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { AvatarModule } from 'primeng/avatar';
 import { StyleClassModule } from 'primeng/styleclass';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { UsersService } from '../../services/users/users.service';
-import { ButtonThemeComponent } from '../button-theme/button-theme.component';
 import { ISidebarRoute } from '../../interfaces/ISidebarRoute';
 import { ISigninData } from '../../interfaces/ISignin';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [DrawerModule, ButtonModule, RippleModule, AvatarModule, StyleClassModule, CommonModule, ButtonThemeComponent],
+  imports: [DrawerModule, ButtonModule, RippleModule, AvatarModule, StyleClassModule, CommonModule],
   templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.scss'
+  styleUrl: './sidebar.component.scss',
+  encapsulation: ViewEncapsulation.None
 })
 export class SidebarComponent implements OnInit {
   private usersService = inject(UsersService);
@@ -24,15 +25,29 @@ export class SidebarComponent implements OnInit {
 
   userData!: ISigninData | null;
   sidebarVisible: boolean = false;
+  currentUrl: string = '';
 
   availableRoutes!: ISidebarRoute[]
 
   @ViewChild('sidebarRef') sidebarRef!: Drawer;
 
+  private readonly roleMap: Record<string, string> = {
+    admin: 'Administrador',
+    student: 'Estudante',
+    professor: 'Docente'
+  }
+
   ngOnInit() {
     this.usersService.user$.subscribe((data) => {
       this.userData = data;
     });
+
+    this.currentUrl = this.router.url;
+    this.router.events
+      .pipe(filter(ev => ev instanceof NavigationEnd))
+      .subscribe((ev) => {
+        this.currentUrl = (ev as NavigationEnd).urlAfterRedirects || (ev as NavigationEnd).url;
+      });
 
     this.availableRoutes = [
       {
@@ -45,17 +60,27 @@ export class SidebarComponent implements OnInit {
           {
             route: '/home',
             routeQuery: [],
-            label: 'HOME',
-            class: 'pi pi-home mr-2',
+            label: 'Início',
+            class: 'pi pi-home',
             codesCanAccess: [],
-            rolesCanAccess: ['ALL'],
+            rolesCanAccess: ['student', 'professor'],
+            status: true,
+            routes: []
+          },
+          {
+            route: '/admin',
+            routeQuery: [],
+            label: 'Painel administrativo',
+            class: 'pi pi-shield',
+            codesCanAccess: [],
+            rolesCanAccess: ['admin'],
             status: true,
             routes: []
           }
         ]
       },
       {
-        label: 'MODULO 1',
+        label: 'ACADÊMICO',
         codesCanAccess: [],
         rolesCanAccess: ['ALL'],
         hidden: false,
@@ -64,27 +89,18 @@ export class SidebarComponent implements OnInit {
           {
             route: '/page1',
             routeQuery: [],
-            label: 'PAGINA 1',
-            class: 'pi pi-calendar mr-2',
+            label: 'Projetos',
+            class: 'pi pi-book',
             codesCanAccess: [],
             rolesCanAccess: ['ALL'],
             status: true,
             routes: []
           },
-        ]
-      },
-      {
-        label: 'MODULO 2',
-        codesCanAccess: [],
-        rolesCanAccess: ['ALL'],
-        hidden: false,
-        status: true,
-        routes: [
           {
-            route: '/page2',
+            route: '/editais',
             routeQuery: [],
-            label: 'PAGINA 2',
-            class: 'pi pi-users mr-2',
+            label: 'Editais abertos',
+            class: 'pi pi-file',
             codesCanAccess: [],
             rolesCanAccess: ['ALL'],
             status: true,
@@ -131,5 +147,23 @@ export class SidebarComponent implements OnInit {
 
   customClose() {
     this.sidebarVisible = false;
+  }
+
+  toggleSidebar() {
+    this.sidebarVisible = !this.sidebarVisible;
+  }
+
+  isActive(route?: string, target?: string): boolean {
+    if (!route) return false
+    const [path, query = ''] = this.currentUrl.split('?')
+    if (path !== route) return false
+    if (!target) return true
+    const params = new URLSearchParams(query)
+    return params.get('target') === target
+  }
+
+  roleLabel(role: string | undefined | null): string {
+    if (!role) return 'Sem cargo'
+    return this.roleMap[role] || role.charAt(0).toUpperCase() + role.slice(1)
   }
 }

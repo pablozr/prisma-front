@@ -1,103 +1,164 @@
-<div class="shadow-div" [ngStyle]="{'display': sidebarVisible ? 'inline': 'none', 'opacity': sidebarVisible ? '1': '0'}" (click)="customClose()"></div>
-<div class="main-div">
-  <p-drawer  #sidebarRef [(visible)]="sidebarVisible" [modal]=false>
+<div class="siepa-sidebar-root">
+  <p-drawer
+    #sidebarRef
+    [(visible)]="sidebarVisible"
+    [modal]="true"
+    styleClass="siepa-drawer"
+    maskStyleClass="siepa-drawer-mask"
+  >
     <ng-template pTemplate="headless">
-      <div class="flex flex-column h-full">
-        <div class="flex align-items-center justify-content-between px-4 pt-3 flex-shrink-0">
-          <span class="inline-flex align-items-center gap-2">
-            <!-- <img src="../../../assets/images/logo.png" class="logo-img" /> -->
-            <span class="text-2xl font-medium" [ngStyle]="{color: 'var(--primary-color)'}">NOME EMPRESA</span>
-          </span>
-          <span class="close-icon">
-            <button type="button" (click)="customClose()">
-            <i class="pi pi-times" [ngStyle]="{color: 'var(--primary-color)'}"></i>
-            </button>
-          </span>
-        </div>
-        <div class="overflow-y-auto">
-          @for (route of availableRoutes; track route.label){
+      <div class="siepa-sidebar">
+        <header class="siepa-sidebar__brand">
+          <img
+            src="assets/images/novo-logo.png"
+            alt=""
+            class="siepa-sidebar__brand-logo"
+            width="88"
+            height="44"
+            decoding="async"
+          />
+          <div class="siepa-sidebar__brand-copy">
+            <span class="siepa-sidebar__brand-title">SIEPA</span>
+            <span class="siepa-sidebar__brand-sub">Iniciação · Extensão · Projetos</span>
+          </div>
+          <button type="button" class="siepa-sidebar__close" (click)="customClose()" aria-label="Fechar menu">
+            <i class="pi pi-times"></i>
+          </button>
+        </header>
+
+        <section class="siepa-sidebar__profile" aria-label="Conta">
+          <button type="button" class="siepa-profile" (click)="navigateTo('settings')">
+            <img
+              class="siepa-profile__avatar"
+              [src]="'https://ui-avatars.com/api/?name=' + (userData?.user?.full_name || 'U') + '&background=004b82&color=FFF&size=128&bold=true'"
+              alt=""
+            />
+            <span class="siepa-profile__body">
+              <span class="siepa-profile__name">{{ userData?.user?.full_name || 'Utilizador' }}</span>
+              <span class="siepa-profile__email">{{ userData?.user?.institutional_email || '—' }}</span>
+              <span class="siepa-profile__role">{{ roleLabel(userData?.user?.role) }}</span>
+            </span>
+            <i class="pi pi-angle-right siepa-profile__chev" aria-hidden="true"></i>
+          </button>
+        </section>
+
+        <nav class="siepa-sidebar__nav" aria-label="Navegação principal">
+          @for (route of availableRoutes; track route.label) {
             @if (canAccessRoute(route.rolesCanAccess)) {
-              <ul class="list-none p-3 m-0">
-                <li>
-                  <div
-                    pRipple
-                    pStyleClass="@next"
-                    enterClass="hidden"
-                    enterActiveClass="slidedown"
-                    leaveToClass="hidden"
-                    leaveActiveClass="slideup"
-                    class="p-3 flex align-items-center justify-content-between text-600 cursor-pointer p-ripple"
-                  >
-                    <span class="font-medium">{{ route.label }}</span>
-                    <i class="pi pi-chevron-down"></i>
-                  </div>
-                  <ul class="list-none p-0 m-0 overflow-hidden" [ngClass]="{'hidden': route.hidden}">
-                    @for (childrenRoute of route.routes; track childrenRoute.label){
-                      @if (canAccess(childrenRoute.rolesCanAccess)) {
-                        @if (childrenRoute.routes.length > 0){
-                          <li>
-                            <a
-                              pRipple
-                              pStyleClass="@next"
-                              enterClass="hidden"
-                              enterActiveClass="slidedown"
-                              leaveToClass="hidden"
-                              leaveActiveClass="slideup"
-                              class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple"
-                            >
-                              <i [class]="childrenRoute.class"></i>
-                              <span class="font-medium">{{ childrenRoute.label }}</span>
-                              <i class="pi pi-chevron-down ml-auto"></i>
-                            </a>
-                            <ul class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
-                              @for (grandchildRoute of childrenRoute.routes; track grandchildRoute.label){
-                                <li>
-                                  @if (grandchildRoute.routeQuery.length > 0){
-                                    <a (click)="navigateToWithQuery(grandchildRoute.routeQuery[0], grandchildRoute.routeQuery[1])" pRipple class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
-                                        <i [class]="grandchildRoute.class"></i>
-                                      <span class="font-medium">{{ grandchildRoute.label }}</span>
-                                    </a>
-                                  }@else {
-                                    <a (click)="navigateTo(childrenRoute.route)" pRipple class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
-                                      <i [class]="grandchildRoute.class"></i>
-                                      <span class="font-medium">{{ grandchildRoute.label }}</span>
-                                    </a>
-                                  }
-                                </li>
-                              }
-                            </ul>
-                          </li>
-                        } @else {
-                          <li>
-                            <a (click)="childrenRoute.route ? navigateTo(childrenRoute.route) : navigateToWithQuery(childrenRoute.routeQuery[0], childrenRoute.routeQuery[1])" pRipple class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
-                              <i [class]="childrenRoute.class"></i>
-                              <span class="font-medium">{{ childrenRoute.label }}</span>
-                            </a>
-                          </li>
-                        }
+              <section class="siepa-nav-group">
+                <div class="siepa-nav-group__label">{{ route.label }}</div>
+
+                <ul class="siepa-nav-list">
+                  @for (childrenRoute of route.routes; track childrenRoute.label) {
+                    @if (canAccess(childrenRoute.rolesCanAccess)) {
+                      @if (childrenRoute.routes.length > 0) {
+                        <li class="siepa-nav-item siepa-nav-item--parent">
+                          <button
+                            type="button"
+                            pRipple
+                            pStyleClass="@next"
+                            enterClass="hidden"
+                            enterActiveClass="slidedown"
+                            leaveToClass="hidden"
+                            leaveActiveClass="slideup"
+                            class="siepa-nav-link"
+                          >
+                            <i class="siepa-nav-link__icon" [class]="childrenRoute.class"></i>
+                            <span class="siepa-nav-link__label">{{ childrenRoute.label }}</span>
+                            <i class="siepa-nav-link__chev pi pi-chevron-down"></i>
+                          </button>
+
+                          <ul class="siepa-nav-sublist hidden overflow-hidden">
+                            @for (grandchildRoute of childrenRoute.routes; track grandchildRoute.label) {
+                              <li>
+                                @if (grandchildRoute.routeQuery.length > 0) {
+                                  <button
+                                    type="button"
+                                    pRipple
+                                    class="siepa-nav-link siepa-nav-link--sub"
+                                    [class.siepa-nav-link--active]="isActive(grandchildRoute.routeQuery[0], grandchildRoute.routeQuery[1])"
+                                    (click)="navigateToWithQuery(grandchildRoute.routeQuery[0], grandchildRoute.routeQuery[1])"
+                                  >
+                                    <i class="siepa-nav-link__icon" [class]="grandchildRoute.class"></i>
+                                    <span class="siepa-nav-link__label">{{ grandchildRoute.label }}</span>
+                                  </button>
+                                } @else {
+                                  <button
+                                    type="button"
+                                    pRipple
+                                    class="siepa-nav-link siepa-nav-link--sub"
+                                    [class.siepa-nav-link--active]="isActive(childrenRoute.route)"
+                                    (click)="navigateTo(childrenRoute.route)"
+                                  >
+                                    <i class="siepa-nav-link__icon" [class]="grandchildRoute.class"></i>
+                                    <span class="siepa-nav-link__label">{{ grandchildRoute.label }}</span>
+                                  </button>
+                                }
+                              </li>
+                            }
+                          </ul>
+                        </li>
+                      } @else {
+                        <li class="siepa-nav-item">
+                          <button
+                            type="button"
+                            pRipple
+                            class="siepa-nav-link"
+                            [class.siepa-nav-link--active]="isActive(childrenRoute.route, childrenRoute.routeQuery[1])"
+                            (click)="childrenRoute.route ? navigateTo(childrenRoute.route) : navigateToWithQuery(childrenRoute.routeQuery[0], childrenRoute.routeQuery[1])"
+                          >
+                            <i class="siepa-nav-link__icon" [class]="childrenRoute.class"></i>
+                            <span class="siepa-nav-link__label">{{ childrenRoute.label }}</span>
+                          </button>
+                        </li>
                       }
                     }
-                  </ul>
-                </li>
-              </ul>
+                  }
+                </ul>
+              </section>
             }
           }
-        </div>
-        <div class="mt-auto">
-          <hr class="mb-3 mx-3 border-top-1 border-none surface-border" />
-          <a (click)="navigateTo('settings')" pRipple class="m-3 flex align-items-center cursor-pointer p-3 gap-2 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
-            <p-avatar [image]="`https://ui-avatars.com/api/?name=${userData?.user?.full_name}&background=004b82&color=FFF&size=128&bold=true`" shape="circle" />
-            <span class="font-bold">{{userData?.user?.full_name}}</span>
-          </a>
-          <div class="container-bottom">
-            <app-button-theme></app-button-theme>
-            <button (click)="logout()"><i class="pi pi-sign-out" style="font-size: 1.2rem"></i></button>
+        </nav>
+
+        <footer class="siepa-sidebar__footer">
+          <div class="siepa-sidebar__footer-actions">
+            <button
+              type="button"
+              class="siepa-sidebar__ghost"
+              (click)="navigateTo('settings')"
+              aria-label="Configurações"
+            >
+              <i class="pi pi-cog" aria-hidden="true"></i>
+              <span>Configurações</span>
+            </button>
+            <button
+              type="button"
+              class="siepa-sidebar__logout"
+              (click)="logout()"
+              aria-label="Terminar sessão"
+            >
+              <i class="pi pi-sign-out" aria-hidden="true"></i>
+              <span>Sair</span>
+            </button>
           </div>
-        </div>
+          <p class="siepa-sidebar__meta">
+            <span>SIEPA · UNIRIO</span>
+            <span class="siepa-sidebar__meta-sep" aria-hidden="true">·</span>
+            <span>v1.0</span>
+          </p>
+        </footer>
       </div>
     </ng-template>
   </p-drawer>
-  <p-button (click)="sidebarVisible = true" [severity]="'info'" [style]="{'padding': '0.5rem', 'backgroundColor': 'var(--primary-color)', 'color': 'var(--secondary-color)', 'border': 'none'}">
-    <i class="pi pi-bars" style="font-size: 1.5rem;"></i>
-  </p-button>
+
+  <button
+    type="button"
+    class="siepa-menu-trigger"
+    (click)="toggleSidebar()"
+    [attr.aria-label]="sidebarVisible ? 'Fechar menu' : 'Abrir menu'"
+    [attr.aria-expanded]="sidebarVisible"
+    [class.siepa-menu-trigger--active]="sidebarVisible"
+  >
+    <i class="pi" [class.pi-bars]="!sidebarVisible" [class.pi-times]="sidebarVisible"></i>
+  </button>
 </div>
