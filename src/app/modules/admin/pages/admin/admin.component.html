@@ -1,0 +1,91 @@
+<div class="admin-shell">
+  <app-header></app-header>
+
+  <main class="admin-page">
+    <app-breadcrumbs [items]="breadcrumbs"></app-breadcrumbs>
+
+    <header class="admin-header">
+      <span class="admin-header__rule" aria-hidden="true"></span>
+      <div class="admin-header__body">
+        <p class="admin-header__eyebrow">Área restrita · Administração</p>
+        <h1 class="admin-header__title">Painel administrativo</h1>
+        <p class="admin-header__lead">
+          Visão geral do sistema. Bem-vindo(a), <strong>{{ firstName }}</strong>.
+        </p>
+      </div>
+      <span class="admin-header__scope" aria-hidden="true">UNIRIO · SIEPA</span>
+    </header>
+
+    <section class="admin-metrics" aria-label="Indicadores">
+      @for (metric of metrics; track metric.label) {
+        <article class="admin-metric" [class]="'admin-metric--' + metric.trend">
+          <header>
+            <p class="admin-metric__label">{{ metric.label }}</p>
+            <span class="admin-metric__delta">
+              <i [class]="trendIcon(metric.trend)" aria-hidden="true"></i>
+              {{ metric.delta }}
+            </span>
+          </header>
+          <p class="admin-metric__value">{{ metric.value }}</p>
+          <p class="admin-metric__hint">{{ metric.hint }}</p>
+        </article>
+      }
+    </section>
+
+    <section class="admin-panels">
+      <article class="admin-panel admin-panel--activity" aria-label="Atividade recente">
+        <header class="admin-panel__header">
+          <h2 class="admin-panel__title">Atividade recente</h2>
+          <button type="button" class="admin-panel__action">Ver tudo</button>
+        </header>
+        <ul class="admin-activity">
+          @for (item of activities; track item.when + item.target) {
+            <li class="admin-activity__item">
+              <span class="admin-activity__bullet" aria-hidden="true"></span>
+              <div class="admin-activity__content">
+                <p class="admin-activity__line">
+                  <strong>{{ item.actor }}</strong>
+                  <span>{{ item.action }}</span>
+                  <em>{{ item.target }}</em>
+                </p>
+                <span class="admin-activity__when">{{ item.when }}</span>
+              </div>
+            </li>
+          }
+        </ul>
+      </article>
+
+      <article class="admin-panel admin-panel--tools" aria-label="Ações rápidas">
+        <header class="admin-panel__header">
+          <h2 class="admin-panel__title">Ações rápidas</h2>
+        </header>
+        <ul class="admin-tools">
+          <li>
+            <button type="button" class="admin-tool">
+              <i class="pi pi-user-plus"></i>
+              <span>Novo utilizador</span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="admin-tool">
+              <i class="pi pi-file-edit"></i>
+              <span>Abrir edital</span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="admin-tool">
+              <i class="pi pi-check-square"></i>
+              <span>Revisar pendentes</span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="admin-tool">
+              <i class="pi pi-chart-bar"></i>
+              <span>Relatórios</span>
+            </button>
+          </li>
+        </ul>
+      </article>
+    </section>
+  </main>
+</div>

@@ -22,6 +22,11 @@ export const routes: Routes = [
     loadComponent: () => import('./modules/global/pages/home/home.component').then(m => m.HomeComponent)
   },
   {
+    path: 'admin',
+    loadComponent: () => import('./modules/admin/pages/admin/admin.component').then(m => m.AdminComponent),
+    canActivate: [AuthService]
+  },
+  {
     path: '**',
     loadComponent: () => import('./modules/global/pages/not-found/not-found.component').then(m => m.NotFoundComponent)
   }
