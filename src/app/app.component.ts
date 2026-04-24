@@ -1,5 +1,5 @@
 import { Component } from '@angular/core'
-import { RouterOutlet } from '@angular/router'
+import { Router, RouterOutlet } from '@angular/router'
 import { PrimeNG } from 'primeng/config'
 import { ThemeService } from './modules/global/services/theme/theme.service'
 import { UsersService } from './modules/global/services/users/users.service'
@@ -18,7 +18,20 @@ import { HelpFabComponent } from './modules/global/components/help-fab/help-fab.
 export class AppComponent {
   title = 'Siepa Front'
 
-  constructor(private primeng: PrimeNG, private themeService: ThemeService, usersService: UsersService, private notificationsService: NotificationsService) {}
+  private readonly fabHiddenPrefixes = ['/signin', '/forget-password']
+
+  constructor(
+    private primeng: PrimeNG,
+    private themeService: ThemeService,
+    usersService: UsersService,
+    private notificationsService: NotificationsService,
+    private router: Router
+  ) {}
+
+  get showHelpFab(): boolean {
+    const path = this.router.url.split('?')[0].split('#')[0]
+    return !this.fabHiddenPrefixes.some(prefix => path.startsWith(prefix))
+  }
 
   ngOnInit() {
     this.primeng.ripple.set(true)
