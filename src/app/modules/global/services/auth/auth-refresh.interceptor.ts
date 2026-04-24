@@ -9,6 +9,7 @@ import { SessionRefreshService } from './session-refresh.service'
 const AUTH_BYPASS_ROUTES = new Set<string>([
   AUTH_ROUTES.login,
   AUTH_ROUTES.googleLogin,
+  AUTH_ROUTES.me,
   AUTH_ROUTES.refresh,
   AUTH_ROUTES.logout,
   AUTH_ROUTES.forgetPassword,
@@ -26,7 +27,10 @@ function shouldTryRefresh(request: HttpRequest<unknown>, error: HttpErrorRespons
 
 function handleSessionExpired(usersService: UsersService, router: Router): void {
   usersService.clearSession()
-  void router.navigate(['/signin'])
+  const alreadyOnPublicAuthRoute = router.url.startsWith('/signin') || router.url.startsWith('/forget-password')
+  if (!alreadyOnPublicAuthRoute) {
+    void router.navigate(['/signin'])
+  }
 }
 
 export const authRefreshInterceptor: HttpInterceptorFn = (request, next) => {

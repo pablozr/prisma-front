@@ -10,10 +10,16 @@ export class AuthService {
   private usersService = inject(UsersService)
   private router = inject(Router)
 
-  async isAuthenticated(): Promise<boolean> {
+  async isAuthenticated(validateServerSession = false): Promise<boolean> {
     let user = this.usersService.currentUser
 
-    if (!user) {
+    if (validateServerSession && user) {
+      await this.usersService.rehydrateSession()
+      user = this.usersService.currentUser
+      return !!user
+    }
+
+    if (!user && !this.usersService.isInitialized) {
       await this.usersService.rehydrateSession()
       user = this.usersService.currentUser
     }
@@ -22,8 +28,8 @@ export class AuthService {
   }
 
   async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree> {
-    const isAuthenticated = await this.isAuthenticated()
     const path = next.url[0]?.path
+    const isAuthenticated = await this.isAuthenticated(true)
 
     const publicRoutes = ['signin', 'forget-password']
 
