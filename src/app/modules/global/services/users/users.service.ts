@@ -64,6 +64,10 @@ export class UsersService {
     this.userSubject.next(session)
   }
 
+  clearSession() {
+    this.setSession(null)
+  }
+
   // ----- Auth -----
 
   signin(data: ISigninRequest) {
@@ -110,7 +114,7 @@ export class UsersService {
           }
         },
         error: () => {
-          this.setSession(null)
+          this.clearSession()
           resolve(false)
         }
       })
@@ -121,12 +125,12 @@ export class UsersService {
     return new Promise<boolean>((resolve) => {
       this.http.post<ILogoutResponse>(AUTH_ROUTES.logout, {}, this.withCreds).subscribe({
         next: () => {
-          this.setSession(null)
+          this.clearSession()
           this.router.navigate(['/signin'])
           resolve(true)
         },
         error: (err: HttpErrorResponse) => {
-          this.setSession(null)
+          this.clearSession()
           this.router.navigate(['/signin'])
           if (err.status !== 401) {
             this.toast.error('Falha no logout', this.extractDetail(err, 'Nao foi possivel encerrar a sessao.'))
@@ -153,7 +157,7 @@ export class UsersService {
 
       const refreshed = await this.refresh()
       if (!refreshed) {
-        this.setSession(null)
+        this.clearSession()
         return false
       }
 
