@@ -1,7 +1,7 @@
 import { ApplicationConfig, provideZoneChangeDetection, LOCALE_ID, inject, provideAppInitializer } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import { MessageService } from 'primeng/api';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -10,6 +10,7 @@ import { InstitutionalPortal } from '../styles';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { UsersService } from './modules/global/services/users/users.service';
+import { authRefreshInterceptor } from './modules/global/services/auth/auth-refresh.interceptor';
 
 registerLocaleData(localePt, 'pt-BR');
 
@@ -26,7 +27,7 @@ const ptBR = {
 };
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideHttpClient(), provideAnimations(), BrowserAnimationsModule, MessageService,
+  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideHttpClient(withInterceptors([authRefreshInterceptor])), provideAnimations(), BrowserAnimationsModule, MessageService,
     { provide: LOCALE_ID, useValue: 'pt-BR' },
     provideAnimationsAsync(),
     provideAppInitializer(() => {
