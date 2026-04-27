@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
-import { Observable, catchError, delay, forkJoin, map, of, shareReplay, throwError } from 'rxjs'
+import { Observable, catchError, delay, forkJoin, map, of, shareReplay, tap, throwError } from 'rxjs'
 import {
   ICourse,
   IEmailDispatch,
@@ -168,6 +168,9 @@ export class ProjectsService {
   private readonly projectDetailsCache = new Map<number, Observable<IProjectDetails>>()
   private readonly unitsByCenterCache = new Map<string, Observable<IOrganizationalUnit[]>>()
   private readonly coursesByUnitCache = new Map<string, Observable<ICourse[]>>()
+  private areasSnapshot: IProjectArea[] = []
+  private unitsSnapshot: IOrganizationalUnit[] = []
+  private coursesSnapshot: ICourse[] = []
 
   private readonly catalogueParams = new HttpParams({
     fromObject: {
@@ -188,6 +191,9 @@ export class ProjectsService {
           slug: area.slug
         }))
       ),
+      tap(areas => {
+        this.areasSnapshot = areas
+      }),
       catchError((err: unknown) => {
         if (!this.isCatalogueEmptyError(err)) {
           this.toast.error(
@@ -206,6 +212,9 @@ export class ProjectsService {
     })
     .pipe(
       map(res => this.mapCentersCatalogue(res?.data || [])),
+      tap(centers => {
+        this.rememberUnits(centers)
+      }),
       catchError((err: unknown) => {
         if (!this.isCatalogueEmptyError(err)) {
           this.toast.error(
@@ -240,40 +249,61 @@ export class ProjectsService {
   ): Observable<IProjectsListResponse> {
     const params = this.buildProjectsParams(filters, page, pageSize)
 
-    return forkJoin({
-      areas: this.listAreas(),
-      units: this.listUnits(),
-      courses: this.listCourses(),
-      projectsResponse: this.http.get<IApiResponse<IProjectsListPayload>>(EDITAIS_ROUTES.listProjects, {
+    return this.http
+      .get<IApiResponse<IProjectsListPayload>>(EDITAIS_ROUTES.listProjects, {
         params
       })
-    }).pipe(
-      map(({ areas, units, courses, projectsResponse }) => {
-        const payload = projectsResponse?.data
-        const summaries = this.extractProjectsList(payload)
-        const projects = this.mapSummariesToProjects(summaries, areas, units, courses)
+      .pipe(
+        map(projectsResponse => {
+          const payload = projectsResponse?.data
+          const summaries = this.extractProjectsList(payload)
+          const projects = this.mapSummariesToProjects(summaries)
 
-        return {
-          projects,
-          pagination: this.extractPagination(payload, page, pageSize, projects.length)
-        }
-      }),
-      catchError((err: unknown) => {
-        this.toast.error(
-          'Falha ao carregar editais',
-          this.extractDetail(err, 'Nao foi possivel carregar a lista de editais.')
-        )
-        return of({
-          projects: [],
-          pagination: {
-            page,
-            pageSize,
-            total: 0,
-            totalPages: 1
+          return {
+            projects,
+            pagination: this.extractPagination(payload, page, pageSize, projects.length)
           }
+        }),
+        catchError((err: unknown) => {
+          this.toast.error(
+            'Falha ao carregar editais',
+            this.extractDetail(err, 'Nao foi possivel carregar a lista de editais.')
+          )
+          return of({
+            projects: [],
+            pagination: {
+              page,
+              pageSize,
+              total: 0,
+              totalPages: 1
+            }
+          })
         })
-      })
-    )
+      )
+  }
+
+  enrichProjectsWithCatalogData(projects: IProject[]): IProject[] {
+    if (!projects.length) {
+      return projects
+    }
+
+    const areasById = new Map(this.areasSnapshot.map(area => [area.id, area]))
+    const coursesById = new Map(this.coursesSnapshot.map(course => [course.id, course]))
+
+    return projects.map(project => {
+      const mappedAreas = project.areas.map(area => areasById.get(area.id) || area)
+      const mappedCourses = project.courses.map(course => coursesById.get(course.id) || course)
+      const mappedUnit = project.executing_unit
+        ? this.resolveExecutingUnit(project.executing_unit.name, this.unitsSnapshot) || project.executing_unit
+        : project.executing_unit
+
+      return {
+        ...project,
+        areas: mappedAreas,
+        courses: mappedCourses,
+        executing_unit: mappedUnit
+      }
+    })
   }
 
   listUnits(centerIds?: number[]): Observable<IOrganizationalUnit[]> {
@@ -379,6 +409,9 @@ export class ProjectsService {
         map(res =>
           this.mapUnitsCatalogue(res?.data || []).filter(unit => this.isAcademicUnit(unit.type))
         ),
+        tap(units => {
+          this.rememberUnits(units)
+        }),
         catchError((err: unknown) => {
           if (!this.isCatalogueEmptyError(err)) {
             this.toast.error(
@@ -401,6 +434,9 @@ export class ProjectsService {
       })
       .pipe(
         map(res => this.mapCoursesCatalogue(res?.data || [])),
+        tap(courses => {
+          this.rememberCourses(courses)
+        }),
         catchError((err: unknown) => {
           if (!this.isCatalogueEmptyError(err)) {
             this.toast.error(
@@ -478,7 +514,35 @@ export class ProjectsService {
       unitsById.set(unit.id, unit)
     }
 
-    return [...unitsById.values()]
+    const mergedUnits = [...unitsById.values()]
+    this.rememberUnits(mergedUnits)
+    return mergedUnits
+  }
+
+  private rememberUnits(units: IOrganizationalUnit[]) {
+    if (!units.length) {
+      return
+    }
+
+    const unitsById = new Map(this.unitsSnapshot.map(unit => [unit.id, unit]))
+    for (const unit of units) {
+      unitsById.set(unit.id, unit)
+    }
+
+    this.unitsSnapshot = [...unitsById.values()]
+  }
+
+  private rememberCourses(courses: ICourse[]) {
+    if (!courses.length) {
+      return
+    }
+
+    const coursesById = new Map(this.coursesSnapshot.map(course => [course.id, course]))
+    for (const course of courses) {
+      coursesById.set(course.id, course)
+    }
+
+    this.coursesSnapshot = [...coursesById.values()]
   }
 
   private normalizeIdArray(ids: number[] | undefined): number[] {
@@ -597,9 +661,9 @@ export class ProjectsService {
 
   private mapSummariesToProjects(
     summaries: IProjectsListItem[],
-    areas: IProjectArea[],
-    units: IOrganizationalUnit[],
-    courses: ICourse[]
+    areas: IProjectArea[] = this.areasSnapshot,
+    units: IOrganizationalUnit[] = this.unitsSnapshot,
+    courses: ICourse[] = this.coursesSnapshot
   ): IProject[] {
     const areasById = new Map(areas.map(area => [area.id, area]))
     const coursesById = new Map(courses.map(course => [course.id, course]))

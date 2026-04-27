@@ -69,6 +69,7 @@ export class EditaisComponent implements OnInit, OnDestroy {
   courses: ICourse[] = []
   units: IOrganizationalUnit[] = []
   private allCourses: ICourse[] = []
+  private searchIndexByProjectId = new Map<number, string>()
 
   loading = true
 
@@ -103,7 +104,7 @@ export class EditaisComponent implements OnInit, OnDestroy {
       this.areas = areas
       this.units = units
       this.allCourses = courses
-      this.refreshCourseOptions()
+      this.applyProjects(this.allProjects)
     })
   }
 
@@ -182,6 +183,14 @@ export class EditaisComponent implements OnInit, OnDestroy {
     this.emailDialogVisible = true
   }
 
+  onEmailDialogVisibleChange(visible: boolean) {
+    this.emailDialogVisible = visible
+
+    if (!visible) {
+      this.emailProject = null
+    }
+  }
+
   onDetails(project: IProject) {
     this.detailsProject = project
     this.detailsDialogVisible = true
@@ -201,7 +210,16 @@ export class EditaisComponent implements OnInit, OnDestroy {
 
   onDetailsContact(project: IProject) {
     this.detailsDialogVisible = false
+    this.detailsProject = null
     this.openContact(project)
+  }
+
+  onDetailsDialogVisibleChange(visible: boolean) {
+    this.detailsDialogVisible = visible
+
+    if (!visible) {
+      this.detailsProject = null
+    }
   }
 
   private applyFilters() {
@@ -224,19 +242,9 @@ export class EditaisComponent implements OnInit, OnDestroy {
     let list = this.allProjects.filter(p => p.status === 'published' && p.is_active)
 
     if (term) {
-      list = list.filter(p => {
-        const haystack = [
-          p.title,
-          p.short_description || '',
-          p.full_description || '',
-          p.process_code || '',
-          p.owner_professor.full_name,
-          p.owner_professor.institutional_email
-        ]
-          .join(' ')
-          .toLowerCase()
-        return haystack.includes(term)
-      })
+      list = list.filter(project =>
+        (this.searchIndexByProjectId.get(project.id) || '').includes(term)
+      )
     }
 
     if (areaIds.length) {
@@ -299,6 +307,7 @@ export class EditaisComponent implements OnInit, OnDestroy {
     this.allProjects = this.allProjects.map(project =>
       project.id === nextProject.id ? nextProject : project
     )
+    this.rebuildSearchIndex(this.allProjects)
     if (!this.allCourses.length) {
       this.allCourses = this.extractCourses(this.allProjects)
     }
@@ -343,12 +352,35 @@ export class EditaisComponent implements OnInit, OnDestroy {
   }
 
   private applyProjects(projects: IProject[]) {
-    this.allProjects = projects
+    this.allProjects = this.projectsService.enrichProjectsWithCatalogData(projects)
+    this.rebuildSearchIndex(this.allProjects)
     if (!this.allCourses.length) {
-      this.allCourses = this.extractCourses(projects)
+      this.allCourses = this.extractCourses(this.allProjects)
     }
     this.refreshCourseOptions()
     this.applyFilters()
+  }
+
+  private rebuildSearchIndex(projects: IProject[]) {
+    const nextIndex = new Map<number, string>()
+
+    for (const project of projects) {
+      const haystack = [
+        project.title,
+        project.short_description || '',
+        project.process_code || '',
+        project.owner_professor.full_name,
+        project.owner_professor.institutional_email || '',
+        project.executing_unit?.name || '',
+        project.executing_unit?.short_name || ''
+      ]
+        .join(' ')
+        .toLowerCase()
+
+      nextIndex.set(project.id, haystack)
+    }
+
+    this.searchIndexByProjectId = nextIndex
   }
 
   private refreshCourseOptions() {

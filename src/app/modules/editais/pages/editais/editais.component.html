@@ -142,14 +142,20 @@
     }
   </main>
 
-  <app-email-dialog
-    [(visible)]="emailDialogVisible"
-    [project]="emailProject"
-  ></app-email-dialog>
+  @if (emailDialogVisible && emailProject) {
+    <app-email-dialog
+      [visible]="emailDialogVisible"
+      (visibleChange)="onEmailDialogVisibleChange($event)"
+      [project]="emailProject"
+    ></app-email-dialog>
+  }
 
-  <app-details-dialog
-    [(visible)]="detailsDialogVisible"
-    [project]="detailsProject"
-    (contact)="onDetailsContact($event)"
-  ></app-details-dialog>
+  @if (detailsDialogVisible && detailsProject) {
+    <app-details-dialog
+      [visible]="detailsDialogVisible"
+      (visibleChange)="onDetailsDialogVisibleChange($event)"
+      [project]="detailsProject"
+      (contact)="onDetailsContact($event)"
+    ></app-details-dialog>
+  }
 </div>
