@@ -75,9 +75,23 @@ export class EmailDialogComponent implements OnChanges {
   send() {
     if (!this.project || !this.subject.trim() || !this.body.trim()) return
 
+    const destination =
+      this.project.contact_email?.trim() ||
+      this.project.owner_professor.institutional_email?.trim()
+
+    if (!destination) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Contato indisponivel',
+        detail: 'Este edital ainda nao possui um email de contato configurado.',
+        life: 4000
+      })
+      return
+    }
+
     const dispatch: IEmailDispatch = {
       project_id: this.project.id,
-      to_email: this.project.contact_email,
+      to_email: destination,
       subject: this.subject.trim(),
       body: this.body.trim()
     }

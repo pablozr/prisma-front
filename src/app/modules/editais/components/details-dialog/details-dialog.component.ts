@@ -23,9 +23,21 @@ export class DetailsDialogComponent {
   @Output() visibleChange = new EventEmitter<boolean>()
   @Output() contact = new EventEmitter<IProject>()
 
+  private get hasContactEmail(): boolean {
+    return !!this.project?.contact_email?.trim()
+  }
+
   get canContact(): boolean {
     const role = this.usersService.currentUser?.user?.role
-    return role === 'student' || role === 'admin'
+    return this.hasContactEmail && (role === 'student' || role === 'admin')
+  }
+
+  get contactHint(): string {
+    if (!this.hasContactEmail) {
+      return 'Este edital ainda nao possui email de contato cadastrado.'
+    }
+
+    return 'Entre com sua conta de aluno ou administrador para contatar o professor.'
   }
 
   get professorAvatar(): string {

@@ -21,7 +21,8 @@ export class EditalCardComponent {
 
   get canContact(): boolean {
     const role = this.usersService.currentUser?.user?.role
-    return role === 'student' || role === 'admin'
+    const hasContact = !!this.project.contact_email?.trim()
+    return hasContact && (role === 'student' || role === 'admin')
   }
 
   get professorInitials(): string {

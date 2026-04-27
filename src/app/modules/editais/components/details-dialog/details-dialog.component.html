@@ -139,7 +139,7 @@
         </dl>
       </section>
 
-      @if (project.courses?.length) {
+      @if (project.courses.length) {
         <section class="details-dialog__section">
           <h3 class="details-dialog__section-title">Cursos elegíveis</h3>
           <ul class="details-dialog__courses" role="list">
@@ -171,7 +171,7 @@
             <span class="details-dialog__prof-name">{{ project.owner_professor.full_name }}</span>
             <span class="details-dialog__prof-email">
               <i class="pi pi-at" aria-hidden="true"></i>
-              {{ project.contact_email || project.owner_professor.institutional_email }}
+              {{ project.contact_email || project.owner_professor.institutional_email || 'Nao informado' }}
             </span>
             @if (project.owner_professor.siape) {
               <span class="details-dialog__prof-meta">SIAPE · {{ project.owner_professor.siape }}</span>
@@ -195,7 +195,7 @@
       } @else {
         <span class="details-dialog__hint">
           <i class="pi pi-info-circle" aria-hidden="true"></i>
-          Entre com sua conta de aluno ou administrador para contatar o professor.
+          {{ contactHint }}
         </span>
       }
     </div>
