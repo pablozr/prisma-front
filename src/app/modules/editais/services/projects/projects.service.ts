@@ -61,15 +61,56 @@ interface IProjectsListPayload {
   }
 }
 
+interface IProjectDetailsArea {
+  id: number
+  name: string
+  slug: string
+}
+
+interface IProjectDetailsCourse {
+  id: number
+  name: string
+  unit_id?: number
+  code?: string
+  level?: ICourse['level'] | string
+}
+
+interface IProjectDetailsImage {
+  id: number
+  image_type: 'cover' | 'gallery'
+  image_url: string
+  alt_text?: string
+}
+
+interface IProjectDetails {
+  id: number
+  title: string
+  process_code?: string
+  short_description?: string
+  full_description?: string
+  contact_email?: string
+  status?: string
+  is_active?: boolean
+  starts_at?: string
+  ends_at?: string
+  published_at?: string
+  created_at?: string
+  owner_professor_id?: number
+  owner_professor_name?: string
+  executing_unit_id?: number
+  executing_unit_name?: string
+  executing_unit_short_name?: string
+  executing_unit_type?: string
+  vacancies?: number
+  weekly_hours?: number
+  modality?: IProject['modality']
+  areas: IProjectDetailsArea[] | string
+  cursos: IProjectDetailsCourse[] | string
+  imagens: IProjectDetailsImage[] | string
+}
+
 interface IProjectDetailsPayload {
-  projeto: {
-    id: number
-    title: string
-    full_description?: string
-    areas: Array<{ id: number; name: string; slug: string }>
-    cursos: Array<{ id: number; name: string; unit_id?: number }>
-    imagens: Array<{ id: number; image_type: 'cover' | 'gallery'; image_url: string }>
-  }
+  projeto: IProjectDetails
 }
 
 type IProjectsApiSort = 'titulo_asc' | 'titulo_desc' | 'data_desc'
@@ -322,33 +363,108 @@ export class ProjectsService {
   }
 
   private mergeDetails(project: IProject, details: IProjectDetailsPayload['projeto']): IProject {
-    const cover = details.imagens.find(image => image.image_type === 'cover')
+    const images = this.parseJsonArray<IProjectDetailsImage>(details.imagens)
+    const cover = images.find(image => image.image_type === 'cover')
 
-    const courses: ICourse[] = (details.cursos || []).map(course => ({
-      id: course.id,
-      name: course.name,
-      level: this.inferCourseLevel(course.name),
-      unit_id: course.unit_id
+    const areas = this.parseJsonArray<IProjectDetailsArea>(details.areas).map(area => ({
+      id: area.id,
+      name: area.name,
+      slug: area.slug
     }))
+
+    const courses: ICourse[] = this.parseJsonArray<IProjectDetailsCourse>(details.cursos).map(
+      course => ({
+        id: course.id,
+        name: course.name,
+        code: course.code,
+        level: this.normalizeCourseLevel(course.level, course.name),
+        unit_id: course.unit_id
+      })
+    )
+
+    const executingUnit: IOrganizationalUnit | undefined = details.executing_unit_name
+      ? {
+          id: details.executing_unit_id ?? project.executing_unit?.id ?? -1,
+          name: details.executing_unit_name,
+          short_name: details.executing_unit_short_name || project.executing_unit?.short_name,
+          type: this.normalizeUnitType(details.executing_unit_type)
+        }
+      : project.executing_unit
 
     return {
       ...project,
+      process_code: details.process_code || project.process_code,
       title: details.title || project.title,
+      short_description: details.short_description || project.short_description,
       full_description: details.full_description || project.full_description,
-      areas: (details.areas || []).map(area => ({
-        id: area.id,
-        name: area.name,
-        slug: area.slug
-      })),
+      contact_email: details.contact_email || project.contact_email,
+      status: this.normalizeStatus(details.status || project.status),
+      is_active: details.is_active ?? project.is_active,
+      starts_at: details.starts_at || project.starts_at,
+      ends_at: details.ends_at || project.ends_at,
+      published_at: details.published_at || project.published_at,
+      created_at: details.created_at || project.created_at,
+      owner_professor: {
+        ...project.owner_professor,
+        id: details.owner_professor_id ?? project.owner_professor.id,
+        full_name: details.owner_professor_name || project.owner_professor.full_name
+      },
+      executing_unit: executingUnit,
+      areas: areas.length ? areas : project.areas,
       courses: courses.length ? courses : project.courses,
       cover: cover
         ? {
             id: cover.id,
             image_type: cover.image_type,
-            image_url: cover.image_url
+            image_url: cover.image_url,
+            alt_text: cover.alt_text
           }
-        : project.cover
+        : project.cover,
+      vacancies: details.vacancies ?? project.vacancies,
+      weekly_hours: details.weekly_hours ?? project.weekly_hours,
+      modality: details.modality || project.modality
     }
+  }
+
+  private parseJsonArray<TItem>(value: TItem[] | string | undefined): TItem[] {
+    if (Array.isArray(value)) {
+      return value
+    }
+
+    if (typeof value !== 'string') {
+      return []
+    }
+
+    const raw = value.trim()
+    if (!raw) {
+      return []
+    }
+
+    try {
+      const parsed = JSON.parse(raw)
+      return Array.isArray(parsed) ? (parsed as TItem[]) : []
+    } catch {
+      return []
+    }
+  }
+
+  private normalizeCourseLevel(
+    rawLevel: IProjectDetailsCourse['level'],
+    courseName: string
+  ): ICourse['level'] {
+    if (rawLevel === 'graduacao' || rawLevel === 'pos') {
+      return rawLevel
+    }
+
+    return this.inferCourseLevel(courseName)
+  }
+
+  private normalizeUnitType(rawType?: string): IOrganizationalUnit['type'] {
+    if (rawType === 'centro' || rawType === 'departamento' || rawType === 'instituto') {
+      return rawType
+    }
+
+    return 'centro'
   }
 
   private resolveExecutingUnit(
