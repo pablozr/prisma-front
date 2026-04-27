@@ -63,6 +63,9 @@ interface IProjectsListItem {
   vacancies?: number
   weekly_hours?: number
   modality?: IProject['modality']
+  cover_image_id?: number | null
+  cover_image_url?: string | null
+  cover_image_alt_text?: string | null
 }
 
 interface IProjectsListPayload {
@@ -570,6 +573,7 @@ export class ProjectsService {
       }
 
       const executingUnit = this.resolveExecutingUnit(summary.executing_unit_name, units)
+      const cover = this.mapSummaryCover(summary)
 
       return {
         id: summary.id,
@@ -588,11 +592,26 @@ export class ProjectsService {
         executing_unit: executingUnit,
         areas: mappedAreas,
         courses: mappedCourses,
+        cover,
         vacancies: summary.vacancies,
         weekly_hours: summary.weekly_hours,
         modality: summary.modality
       }
     })
+  }
+
+  private mapSummaryCover(summary: IProjectsListItem): IProject['cover'] {
+    const imageUrl = summary.cover_image_url?.trim()
+    if (!imageUrl) {
+      return undefined
+    }
+
+    return {
+      id: summary.cover_image_id ?? summary.id,
+      image_type: 'cover',
+      image_url: imageUrl,
+      alt_text: summary.cover_image_alt_text || undefined
+    }
   }
 
   private mergeDetails(project: IProject, details: IProjectDetails): IProject {
