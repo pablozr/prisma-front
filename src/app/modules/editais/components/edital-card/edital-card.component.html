@@ -14,7 +14,8 @@
         class="edital-card__cover-img"
         [src]="project.cover!.image_url"
         [alt]="project.cover!.alt_text || project.title"
-        loading="lazy"
+        [attr.loading]="prioritizeCover ? 'eager' : 'lazy'"
+        [attr.fetchpriority]="prioritizeCover ? 'high' : 'auto'"
         decoding="async"
       />
       <span class="edital-card__cover-shade" aria-hidden="true"></span>
@@ -105,7 +106,14 @@
 
   <footer class="edital-card__footer">
     <div class="edital-card__prof">
-      <img class="edital-card__prof-avatar" [src]="professorAvatar" alt="" aria-hidden="true" />
+      <img
+        class="edital-card__prof-avatar"
+        [src]="professorAvatar"
+        alt=""
+        loading="lazy"
+        decoding="async"
+        aria-hidden="true"
+      />
       <div class="edital-card__prof-body">
         <span class="edital-card__prof-name">{{ project.owner_professor.full_name }}</span>
         <span class="edital-card__prof-role">Professor(a) responsável</span>

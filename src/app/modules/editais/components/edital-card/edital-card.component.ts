@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { IProject } from '../../interfaces/IProject'
 import { UsersService } from '../../../global/services/users/users.service'
@@ -10,12 +10,14 @@ type DeadlineState = 'open' | 'closing_soon' | 'closed' | 'upcoming'
   standalone: true,
   imports: [CommonModule],
   templateUrl: './edital-card.component.html',
-  styleUrl: './edital-card.component.scss'
+  styleUrl: './edital-card.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditalCardComponent {
   private usersService = inject(UsersService)
 
   @Input({ required: true }) project!: IProject
+  @Input() prioritizeCover = false
   @Output() contact = new EventEmitter<IProject>()
   @Output() details = new EventEmitter<IProject>()
 

@@ -44,6 +44,7 @@ import {
 export class EditaisComponent implements OnInit, OnDestroy {
   private projectsService = inject(ProjectsService)
   private initialLoadSubscription?: Subscription
+  private initialProjectsSubscription?: Subscription
   private detailsLoadSubscription?: Subscription
   private filtersSubscription?: Subscription
   private readonly filtersUpdates$ = new Subject<IProjectFilters>()
@@ -74,6 +75,13 @@ export class EditaisComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.startFiltersSync()
 
+    this.initialProjectsSubscription = this.projectsService
+      .listProjects(this.filters)
+      .subscribe(projects => {
+        this.applyProjects(projects)
+        this.loading = false
+      })
+
     this.initialLoadSubscription = forkJoin({
       areas: this.projectsService.listAreas(),
       units: this.projectsService.listUnits(),
@@ -83,12 +91,12 @@ export class EditaisComponent implements OnInit, OnDestroy {
       this.units = units
       this.allCourses = courses
       this.refreshCourseOptions()
-      this.refreshProjects()
     })
   }
 
   ngOnDestroy() {
     this.initialLoadSubscription?.unsubscribe()
+    this.initialProjectsSubscription?.unsubscribe()
     this.detailsLoadSubscription?.unsubscribe()
     this.filtersSubscription?.unsubscribe()
     this.filtersUpdates$.complete()
@@ -264,14 +272,18 @@ export class EditaisComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe(projects => {
-        this.allProjects = projects
-        if (!this.allCourses.length) {
-          this.allCourses = this.extractCourses(projects)
-        }
-        this.refreshCourseOptions()
-        this.applyFilters()
+        this.applyProjects(projects)
         this.loading = false
       })
+  }
+
+  private applyProjects(projects: IProject[]) {
+    this.allProjects = projects
+    if (!this.allCourses.length) {
+      this.allCourses = this.extractCourses(projects)
+    }
+    this.refreshCourseOptions()
+    this.applyFilters()
   }
 
   private refreshCourseOptions() {

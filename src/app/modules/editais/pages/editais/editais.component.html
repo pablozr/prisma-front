@@ -61,10 +61,11 @@
         </div>
       } @else {
         <ul class="editais-grid" role="list">
-          @for (project of filteredProjects; track project.id) {
+          @for (project of filteredProjects; track project.id; let index = $index) {
             <li class="editais-grid__item">
               <app-edital-card
                 [project]="project"
+                [prioritizeCover]="index === 0"
                 (contact)="openContact($event)"
                 (details)="onDetails($event)"
               ></app-edital-card>

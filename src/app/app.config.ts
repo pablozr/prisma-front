@@ -2,7 +2,6 @@ import { ApplicationConfig, provideZoneChangeDetection, LOCALE_ID, inject, provi
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import { MessageService } from 'primeng/api';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
@@ -27,12 +26,12 @@ const ptBR = {
 };
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideHttpClient(withInterceptors([authRefreshInterceptor])), provideAnimations(), BrowserAnimationsModule, MessageService,
+  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideHttpClient(withInterceptors([authRefreshInterceptor])), MessageService,
     { provide: LOCALE_ID, useValue: 'pt-BR' },
     provideAnimationsAsync(),
     provideAppInitializer(() => {
       const users = inject(UsersService)
-      return users.rehydrateSession().catch(() => false)
+      users.rehydrateSession().catch(() => false)
     }),
     providePrimeNG({
         translation: ptBR,

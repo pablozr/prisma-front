@@ -153,6 +153,8 @@
 
 .editais-grid__item {
   min-width: 0;
+  content-visibility: auto;
+  contain-intrinsic-size: 520px;
 }
 
 /* ----- Empty state ----- */
