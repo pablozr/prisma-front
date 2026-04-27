@@ -37,6 +37,7 @@ import { Subscription, forkJoin } from 'rxjs'
 export class EditaisComponent implements OnInit, OnDestroy {
   private projectsService = inject(ProjectsService)
   private initialLoadSubscription?: Subscription
+  private detailsLoadSubscription?: Subscription
 
   readonly breadcrumbs: IBreadcrumbItem[] = [
     { label: 'Início', route: '/home', icon: 'pi pi-home' },
@@ -77,6 +78,7 @@ export class EditaisComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.initialLoadSubscription?.unsubscribe()
+    this.detailsLoadSubscription?.unsubscribe()
   }
 
   private defaultFilters(): IProjectFilters {
@@ -110,6 +112,18 @@ export class EditaisComponent implements OnInit, OnDestroy {
   onDetails(project: IProject) {
     this.detailsProject = project
     this.detailsDialogVisible = true
+
+    this.detailsLoadSubscription?.unsubscribe()
+    const selectedProjectId = project.id
+
+    this.detailsLoadSubscription = this.projectsService
+      .getProjectDetails(project)
+      .subscribe(detailedProject => {
+        if (!this.detailsProject || this.detailsProject.id !== selectedProjectId) return
+
+        this.detailsProject = detailedProject
+        this.replaceProject(detailedProject)
+      })
   }
 
   onDetailsContact(project: IProject) {
@@ -204,5 +218,13 @@ export class EditaisComponent implements OnInit, OnDestroy {
     }
 
     return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
+  }
+
+  private replaceProject(nextProject: IProject) {
+    this.allProjects = this.allProjects.map(project =>
+      project.id === nextProject.id ? nextProject : project
+    )
+    this.courses = this.extractCourses(this.allProjects)
+    this.applyFilters()
   }
 }

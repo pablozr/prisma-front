@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
-import { Observable, catchError, delay, forkJoin, map, of, shareReplay, switchMap } from 'rxjs'
+import { Observable, catchError, delay, forkJoin, map, of, shareReplay, throwError } from 'rxjs'
 import {
   ICourse,
   IEmailDispatch,
@@ -82,6 +82,7 @@ const EDITAIS_ROUTES = {
 export class ProjectsService {
   private http = inject(HttpClient)
   private toast = inject(AppToastService)
+  private readonly projectDetailsCache = new Map<number, Observable<IProjectDetailsPayload['projeto']>>()
 
   private readonly catalogueParams = new HttpParams({
     fromObject: {
@@ -155,7 +156,6 @@ export class ProjectsService {
         const summaries = projectsResponse?.data?.projetos || []
         return this.mapSummariesToProjects(summaries, areas, units)
       }),
-      switchMap(projects => this.hydrateProjectsWithDetails(projects)),
       catchError((err: unknown) => {
         this.toast.error(
           'Falha ao carregar editais',
@@ -174,26 +174,29 @@ export class ProjectsService {
     return this.areasCache$
   }
 
+  getProjectDetails(project: IProject): Observable<IProject> {
+    return this.fetchProjectDetails(project.id).pipe(
+      map(details => this.mergeDetails(project, details)),
+      catchError((err: unknown) => {
+        this.toast.error(
+          'Falha ao carregar detalhes',
+          this.extractDetail(err, 'Nao foi possivel carregar os detalhes do edital.')
+        )
+        return of(project)
+      })
+    )
+  }
+
   sendEmail(dispatch: IEmailDispatch): Observable<{ success: true; id: string }> {
     const id = `mock-${Date.now()}`
     return of({ success: true as const, id }).pipe(delay(800))
   }
 
-  private hydrateProjectsWithDetails(projects: IProject[]): Observable<IProject[]> {
-    if (!projects.length) return of([])
-
-    return forkJoin(
-      projects.map(project =>
-        this.fetchProjectDetails(project.id).pipe(
-          map(details => this.mergeDetails(project, details)),
-          catchError(() => of(project))
-        )
-      )
-    )
-  }
-
   private fetchProjectDetails(projectId: number): Observable<IProjectDetailsPayload['projeto']> {
-    return this.http
+    const cachedRequest = this.projectDetailsCache.get(projectId)
+    if (cachedRequest) return cachedRequest
+
+    const request$ = this.http
       .get<IApiResponse<IProjectDetailsPayload>>(EDITAIS_ROUTES.projectDetails(projectId))
       .pipe(
         map(response => {
@@ -202,8 +205,16 @@ export class ProjectsService {
             throw new Error('Project details payload is empty')
           }
           return project
-        })
+        }),
+        catchError((err: unknown) => {
+          this.projectDetailsCache.delete(projectId)
+          return throwError(() => err)
+        }),
+        shareReplay({ bufferSize: 1, refCount: false })
       )
+
+    this.projectDetailsCache.set(projectId, request$)
+    return request$
   }
 
   private mapSummariesToProjects(
