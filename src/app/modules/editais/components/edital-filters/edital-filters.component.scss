@@ -17,6 +17,14 @@
   box-shadow: 0 1px 3px rgba(15, 23, 32, 0.04);
 }
 
+@media (max-width: 700px) {
+  .edital-filters {
+    gap: 0.85rem;
+    padding: 1rem;
+    border-radius: 12px;
+  }
+}
+
 :host-context(.my-app-dark) .edital-filters {
   background: #1f262f;
   border-color: rgba(255, 255, 255, 0.08);
@@ -181,6 +189,14 @@
   padding: 0.55rem 0.85rem;
 }
 
+:host ::ng-deep .p-multiselect-label-container {
+  padding-right: 0.35rem;
+}
+
+:host ::ng-deep .p-multiselect-clear-icon {
+  right: 2rem;
+}
+
 :host ::ng-deep .p-multiselect-chip-item {
   background: rgba(0, 75, 130, 0.1);
   color: var(--primary-strong);
@@ -192,6 +208,63 @@
 :host-context(.my-app-dark) :host ::ng-deep .p-multiselect-chip-item {
   background: rgba(137, 188, 250, 0.16);
   color: var(--primary-color);
+}
+
+/* ----- Filtros ativos removiveis ----- */
+
+.edital-filters__active {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.edital-filters__active-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 32px;
+  max-width: 100%;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 75, 130, 0.22);
+  background: rgba(0, 75, 130, 0.08);
+  color: var(--primary-strong);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  i {
+    font-size: 0.72rem;
+    opacity: 0.9;
+  }
+
+  &:hover {
+    background: rgba(0, 75, 130, 0.14);
+    border-color: rgba(0, 75, 130, 0.35);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+}
+
+:host-context(.my-app-dark) .edital-filters__active-chip {
+  background: rgba(137, 188, 250, 0.12);
+  border-color: rgba(137, 188, 250, 0.3);
+  color: var(--primary-color);
+
+  &:hover {
+    background: rgba(137, 188, 250, 0.2);
+    border-color: rgba(137, 188, 250, 0.4);
+  }
 }
 
 /* ----- Footer: chips de prazo + contagem ----- */
@@ -346,5 +419,61 @@
 
   &:hover {
     background: rgba(137, 188, 250, 0.1);
+  }
+}
+
+@media (max-width: 560px) {
+  .edital-filters__label {
+    font-size: 0.65rem;
+  }
+
+  :host ::ng-deep .p-multiselect,
+  :host ::ng-deep .p-select {
+    min-height: 46px;
+  }
+
+  :host ::ng-deep .p-multiselect-label,
+  :host ::ng-deep .p-select-label {
+    font-size: 0.82rem;
+    padding: 0.6rem 0.75rem;
+  }
+
+  :host ::ng-deep .p-multiselect-chip-item {
+    max-width: 100%;
+    padding: 0.18rem 0.55rem;
+  }
+
+  .edital-filters__active {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.15rem;
+    scrollbar-width: thin;
+  }
+
+  .edital-filters__active-chip {
+    flex: 0 0 auto;
+    max-width: 90vw;
+  }
+
+  .edital-filters__footer {
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .edital-filters__chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+    scrollbar-width: thin;
+  }
+
+  .edital-filters__chip {
+    flex: 0 0 auto;
+  }
+
+  .edital-filters__summary {
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.6rem;
   }
 }

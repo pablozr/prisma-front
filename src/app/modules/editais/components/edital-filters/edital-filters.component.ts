@@ -19,6 +19,23 @@ interface IOption<T = string | number> {
   icon?: string
 }
 
+type IFilterChipType =
+  | 'search'
+  | 'area'
+  | 'center'
+  | 'academicUnit'
+  | 'course'
+  | 'modality'
+  | 'deadline'
+  | 'level'
+
+interface IActiveFilterChip {
+  key: string
+  label: string
+  type: IFilterChipType
+  value?: number | string
+}
+
 type DeadlineValue = NonNullable<IProjectFilters['deadline']>
 
 @Component({
@@ -141,6 +158,56 @@ export class EditalFiltersComponent implements OnChanges {
     return n
   }
 
+  get activeFilters(): IActiveFilterChip[] {
+    const chips: IActiveFilterChip[] = []
+    const search = this.filters.search.trim()
+
+    if (search) {
+      chips.push({
+        key: 'search',
+        label: `Busca: ${search}`,
+        type: 'search'
+      })
+    }
+
+    this.addArrayFilterChips(chips, 'area', 'Área', this.filters.areaIds, this.areaOptions)
+    this.addArrayFilterChips(chips, 'center', 'Centro', this.filters.centerIds, this.centerOptions)
+    this.addArrayFilterChips(
+      chips,
+      'academicUnit',
+      'Unidade',
+      this.filters.academicUnitIds,
+      this.academicUnitOptions
+    )
+    this.addArrayFilterChips(chips, 'course', 'Curso', this.filters.courseIds, this.courseOptions)
+
+    if (this.filters.modality) {
+      chips.push({
+        key: `modality-${this.filters.modality}`,
+        label: `Modalidade: ${this.resolveOptionLabel(this.modalityOptions, this.filters.modality)}`,
+        type: 'modality'
+      })
+    }
+
+    if (this.filters.deadline) {
+      chips.push({
+        key: `deadline-${this.filters.deadline}`,
+        label: `Prazo: ${this.resolveOptionLabel(this.deadlineOptions, this.filters.deadline)}`,
+        type: 'deadline'
+      })
+    }
+
+    if (this.filters.level) {
+      chips.push({
+        key: `level-${this.filters.level}`,
+        label: `Nível: ${this.resolveOptionLabel(this.levelOptions, this.filters.level)}`,
+        type: 'level'
+      })
+    }
+
+    return chips
+  }
+
   private isAcademicUnit(type: IOrganizationalUnit['type']): boolean {
     return type === 'instituto' || type === 'escola'
   }
@@ -156,7 +223,68 @@ export class EditalFiltersComponent implements OnChanges {
     this.filtersChange.emit({ ...this.filters })
   }
 
+  removeFilter(chip: IActiveFilterChip) {
+    const value = Number(chip.value)
+
+    switch (chip.type) {
+      case 'search':
+        this.filters.search = ''
+        break
+      case 'area':
+        this.filters.areaIds = this.filters.areaIds.filter(id => id !== value)
+        break
+      case 'center':
+        this.filters.centerIds = this.filters.centerIds.filter(id => id !== value)
+        break
+      case 'academicUnit':
+        this.filters.academicUnitIds = this.filters.academicUnitIds.filter(id => id !== value)
+        break
+      case 'course':
+        this.filters.courseIds = this.filters.courseIds.filter(id => id !== value)
+        break
+      case 'modality':
+        this.filters.modality = null
+        break
+      case 'deadline':
+        this.filters.deadline = null
+        break
+      case 'level':
+        this.filters.level = null
+        break
+      default:
+        return
+    }
+
+    this.onChange()
+  }
+
   onReset() {
     this.reset.emit()
+  }
+
+  private addArrayFilterChips(
+    chips: IActiveFilterChip[],
+    type: Extract<IFilterChipType, 'area' | 'center' | 'academicUnit' | 'course'>,
+    prefix: string,
+    selectedValues: number[],
+    options: IOption<number>[]
+  ) {
+    for (const value of selectedValues) {
+      chips.push({
+        key: `${type}-${value}`,
+        label: `${prefix}: ${this.resolveOptionLabel(options, value)}`,
+        type,
+        value
+      })
+    }
+  }
+
+  private resolveOptionLabel<T extends string | number>(options: IOption<T>[], value: T): string {
+    const option = options.find(item => item.value === value)
+    if (option?.label) {
+      return option.label
+    }
+
+    return String(value)
   }
 }

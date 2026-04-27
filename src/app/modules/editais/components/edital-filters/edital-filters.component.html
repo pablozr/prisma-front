@@ -34,6 +34,10 @@
         optionValue="value"
         placeholder="Todas as áreas"
         display="chip"
+        [showClear]="true"
+        [maxSelectedLabels]="1"
+        selectedItemsLabel="{0} selecionadas"
+        appendTo="body"
         [showToggleAll]="true"
         [filter]="true"
         emptyMessage="Nenhuma área encontrada"
@@ -52,6 +56,10 @@
         optionValue="value"
         placeholder="Todos os centros"
         display="chip"
+        [showClear]="true"
+        [maxSelectedLabels]="1"
+        selectedItemsLabel="{0} selecionados"
+        appendTo="body"
         [filter]="true"
         emptyMessage="Nenhum centro encontrado"
         emptyFilterMessage="Nenhum centro corresponde"
@@ -69,6 +77,10 @@
         optionValue="value"
         placeholder="Todos os institutos e escolas"
         display="chip"
+        [showClear]="true"
+        [maxSelectedLabels]="1"
+        selectedItemsLabel="{0} selecionadas"
+        appendTo="body"
         [filter]="true"
         emptyMessage="Nenhuma unidade encontrada"
         emptyFilterMessage="Nenhuma unidade corresponde"
@@ -86,6 +98,10 @@
         optionValue="value"
         [placeholder]="coursePlaceholder"
         display="chip"
+        [showClear]="true"
+        [maxSelectedLabels]="1"
+        selectedItemsLabel="{0} selecionados"
+        appendTo="body"
         [filter]="true"
         emptyMessage="Nenhum curso encontrado"
         emptyFilterMessage="Nenhum curso corresponde"
@@ -102,6 +118,7 @@
         optionLabel="label"
         optionValue="value"
         placeholder="Todos"
+        appendTo="body"
         [showClear]="true"
       />
     </label>
@@ -116,6 +133,7 @@
         optionLabel="label"
         optionValue="value"
         placeholder="Qualquer"
+        appendTo="body"
         [showClear]="true"
       />
     </label>
@@ -130,9 +148,26 @@
         optionLabel="label"
         optionValue="value"
         placeholder="Selecionar"
+        appendTo="body"
       />
     </label>
   </div>
+
+  @if (activeFilters.length) {
+    <div class="edital-filters__active" aria-label="Filtros ativos selecionados">
+      @for (chip of activeFilters; track chip.key) {
+        <button
+          type="button"
+          class="edital-filters__active-chip"
+          (click)="removeFilter(chip)"
+          [attr.aria-label]="'Remover ' + chip.label"
+        >
+          <span>{{ chip.label }}</span>
+          <i class="pi pi-times" aria-hidden="true"></i>
+        </button>
+      }
+    </div>
+  }
 
   <div class="edital-filters__footer">
     <div class="edital-filters__chips" role="tablist" aria-label="Filtro de prazo">
