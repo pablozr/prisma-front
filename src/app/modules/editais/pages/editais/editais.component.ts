@@ -17,7 +17,14 @@ import {
   IProjectArea,
   IProjectFilters
 } from '../../interfaces/IProject'
-import { Subscription, forkJoin } from 'rxjs'
+import {
+  Subject,
+  Subscription,
+  debounceTime,
+  distinctUntilChanged,
+  forkJoin,
+  switchMap
+} from 'rxjs'
 
 @Component({
   selector: 'app-editais',
@@ -38,6 +45,8 @@ export class EditaisComponent implements OnInit, OnDestroy {
   private projectsService = inject(ProjectsService)
   private initialLoadSubscription?: Subscription
   private detailsLoadSubscription?: Subscription
+  private filtersSubscription?: Subscription
+  private readonly filtersUpdates$ = new Subject<IProjectFilters>()
 
   readonly breadcrumbs: IBreadcrumbItem[] = [
     { label: 'Início', route: '/home', icon: 'pi pi-home' },
@@ -62,23 +71,23 @@ export class EditaisComponent implements OnInit, OnDestroy {
   detailsProject: IProject | null = null
 
   ngOnInit() {
+    this.startFiltersSync()
+
     this.initialLoadSubscription = forkJoin({
       areas: this.projectsService.listAreas(),
-      units: this.projectsService.listUnits(),
-      projects: this.projectsService.listProjects()
-    }).subscribe(({ areas, units, projects }) => {
+      units: this.projectsService.listUnits()
+    }).subscribe(({ areas, units }) => {
       this.areas = areas
       this.units = units
-      this.allProjects = projects
-      this.courses = this.extractCourses(projects)
-      this.applyFilters()
-      this.loading = false
+      this.refreshProjects()
     })
   }
 
   ngOnDestroy() {
     this.initialLoadSubscription?.unsubscribe()
     this.detailsLoadSubscription?.unsubscribe()
+    this.filtersSubscription?.unsubscribe()
+    this.filtersUpdates$.complete()
   }
 
   private defaultFilters(): IProjectFilters {
@@ -95,13 +104,13 @@ export class EditaisComponent implements OnInit, OnDestroy {
   }
 
   onFiltersChange(next: IProjectFilters) {
-    this.filters = next
-    this.applyFilters()
+    this.filters = this.cloneFilters(next)
+    this.refreshProjects()
   }
 
   onReset() {
     this.filters = this.defaultFilters()
-    this.applyFilters()
+    this.refreshProjects()
   }
 
   openContact(project: IProject) {
@@ -226,5 +235,54 @@ export class EditaisComponent implements OnInit, OnDestroy {
     )
     this.courses = this.extractCourses(this.allProjects)
     this.applyFilters()
+  }
+
+  private refreshProjects() {
+    this.filtersUpdates$.next(this.cloneFilters(this.filters))
+  }
+
+  private startFiltersSync() {
+    this.filtersSubscription = this.filtersUpdates$
+      .pipe(
+        debounceTime(350),
+        distinctUntilChanged((prev, next) => this.areFiltersEqual(prev, next)),
+        switchMap(filters => {
+          this.loading = true
+          return this.projectsService.listProjects(filters)
+        })
+      )
+      .subscribe(projects => {
+        this.allProjects = projects
+        this.courses = this.extractCourses(projects)
+        this.applyFilters()
+        this.loading = false
+      })
+  }
+
+  private cloneFilters(filters: IProjectFilters): IProjectFilters {
+    return {
+      ...filters,
+      areaIds: [...filters.areaIds],
+      courseIds: [...filters.courseIds],
+      unitIds: [...filters.unitIds]
+    }
+  }
+
+  private areFiltersEqual(previous: IProjectFilters, next: IProjectFilters): boolean {
+    return (
+      previous.search.trim() === next.search.trim() &&
+      this.sameArray(previous.areaIds, next.areaIds) &&
+      this.sameArray(previous.courseIds, next.courseIds) &&
+      this.sameArray(previous.unitIds, next.unitIds) &&
+      previous.modality === next.modality &&
+      previous.deadline === next.deadline &&
+      previous.level === next.level &&
+      previous.sort === next.sort
+    )
+  }
+
+  private sameArray(a: number[], b: number[]): boolean {
+    if (a.length !== b.length) return false
+    return a.every((value, index) => value === b[index])
   }
 }

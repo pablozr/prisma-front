@@ -7,7 +7,8 @@ import {
   IOrganizationalUnit,
   IProfessor,
   IProject,
-  IProjectArea
+  IProjectArea,
+  IProjectFilters
 } from '../../interfaces/IProject'
 import { inject } from '@angular/core'
 import { API_BASE_URL } from '../../../global/constants/apiConfig'
@@ -70,6 +71,8 @@ interface IProjectDetailsPayload {
     imagens: Array<{ id: number; image_type: 'cover' | 'gallery'; image_url: string }>
   }
 }
+
+type IProjectsApiSort = 'titulo_asc' | 'titulo_desc' | 'data_desc'
 
 const EDITAIS_ROUTES = {
   listProjects: `${API_BASE_URL}/projects`,
@@ -136,14 +139,8 @@ export class ProjectsService {
       shareReplay({ bufferSize: 1, refCount: false })
     )
 
-  listProjects(): Observable<IProject[]> {
-    const params = new HttpParams({
-      fromObject: {
-        page: '1',
-        page_size: '100',
-        somente_habilitados: 'true'
-      }
-    })
+  listProjects(filters?: IProjectFilters): Observable<IProject[]> {
+    const params = this.buildProjectsParams(filters)
 
     return forkJoin({
       areas: this.listAreas(),
@@ -215,6 +212,56 @@ export class ProjectsService {
 
     this.projectDetailsCache.set(projectId, request$)
     return request$
+  }
+
+  private buildProjectsParams(filters?: IProjectFilters): HttpParams {
+    let params = new HttpParams({
+      fromObject: {
+        page: '1',
+        page_size: '100',
+        somente_habilitados: 'true'
+      }
+    })
+
+    const search = filters?.search?.trim()
+    if (search) {
+      params = params.set('q', search)
+    }
+
+    params = this.appendArrayQueryParam(params, 'area_ids', filters?.areaIds)
+    params = this.appendArrayQueryParam(params, 'unidade_ids', filters?.unitIds)
+    params = this.appendArrayQueryParam(params, 'curso_ids', filters?.courseIds)
+
+    const apiSort = this.mapSortToApi(filters?.sort)
+    if (apiSort) {
+      params = params.set('ordenacao', apiSort)
+    }
+
+    return params
+  }
+
+  private appendArrayQueryParam(
+    params: HttpParams,
+    key: string,
+    values: number[] | undefined
+  ): HttpParams {
+    if (!values?.length) {
+      return params
+    }
+
+    return values.reduce((nextParams, value) => nextParams.append(key, String(value)), params)
+  }
+
+  private mapSortToApi(sort: IProjectFilters['sort'] | undefined): IProjectsApiSort | undefined {
+    if (sort === 'alphabetical') {
+      return 'titulo_asc'
+    }
+
+    if (sort === 'recent') {
+      return 'data_desc'
+    }
+
+    return undefined
   }
 
   private mapSummariesToProjects(
