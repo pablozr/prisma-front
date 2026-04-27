@@ -15,7 +15,7 @@
         </p>
       </div>
       <aside class="editais-hero__scope" aria-label="Total de editais">
-        <span class="editais-hero__scope-value">{{ allProjects.length }}</span>
+        <span class="editais-hero__scope-value">{{ totalProjects }}</span>
         <span class="editais-hero__scope-label">editais publicados</span>
       </aside>
     </header>
@@ -74,6 +74,72 @@
         </ul>
       }
     </section>
+
+    @if (!loading && filteredProjects.length > 0 && totalPages > 1) {
+      <nav class="editais-pagination" aria-label="Paginação de editais">
+        <button
+          type="button"
+          class="editais-pagination__btn"
+          (click)="onPageChange(currentPage - 1)"
+          [disabled]="currentPage === 1"
+          aria-label="Página anterior"
+        >
+          <i class="pi pi-angle-left" aria-hidden="true"></i>
+        </button>
+
+        @if (visiblePages.length > 0 && visiblePages[0] > 1) {
+          <button
+            type="button"
+            class="editais-pagination__page"
+            (click)="onPageChange(1)"
+            [class.editais-pagination__page--active]="currentPage === 1"
+          >
+            1
+          </button>
+        }
+
+        @if (showLeadingEllipsis) {
+          <span class="editais-pagination__ellipsis" aria-hidden="true">…</span>
+        }
+
+        @for (page of visiblePages; track page) {
+          <button
+            type="button"
+            class="editais-pagination__page"
+            [class.editais-pagination__page--active]="currentPage === page"
+            (click)="onPageChange(page)"
+            [attr.aria-current]="currentPage === page ? 'page' : null"
+          >
+            {{ page }}
+          </button>
+        }
+
+        @if (showTrailingEllipsis) {
+          <span class="editais-pagination__ellipsis" aria-hidden="true">…</span>
+        }
+
+        @if (visiblePages.length > 0 && visiblePages[visiblePages.length - 1] < totalPages) {
+          <button
+            type="button"
+            class="editais-pagination__page"
+            (click)="onPageChange(totalPages)"
+            [class.editais-pagination__page--active]="currentPage === totalPages"
+          >
+            {{ totalPages }}
+          </button>
+        }
+
+        <button
+          type="button"
+          class="editais-pagination__btn"
+          (click)="onPageChange(currentPage + 1)"
+          [disabled]="currentPage === totalPages"
+          aria-label="Próxima página"
+        >
+          <i class="pi pi-angle-right" aria-hidden="true"></i>
+        </button>
+      </nav>
+    }
   </main>
 
   <app-email-dialog

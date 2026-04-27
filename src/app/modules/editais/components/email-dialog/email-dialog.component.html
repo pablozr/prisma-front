@@ -11,23 +11,18 @@
   [style]="{ width: '640px', maxWidth: '92vw' }"
 >
   <ng-template pTemplate="header">
-    <div class="email-dialog__header">
-      @if (project) {
-        <img
-          class="email-dialog__avatar"
-          [src]="'https://ui-avatars.com/api/?name=' + project.owner_professor.full_name + '&background=004b82&color=FFF&size=96&bold=true'"
-          alt=""
-          aria-hidden="true"
-        />
-        <div class="email-dialog__header-body">
-          <span class="email-dialog__kicker">Contato direto · {{ project.process_code || 'Edital' }}</span>
-          <h2 class="email-dialog__title">{{ project.owner_professor.full_name }}</h2>
-          <span class="email-dialog__to">
-            <i class="pi pi-at" aria-hidden="true"></i>
-            {{ project.contact_email }}
-          </span>
-        </div>
-      }
+      <div class="email-dialog__header">
+        @if (project) {
+          <span class="email-dialog__avatar" aria-hidden="true">{{ professorInitials }}</span>
+          <div class="email-dialog__header-body">
+            <span class="email-dialog__kicker">Contato direto · {{ project.process_code || 'Edital' }}</span>
+            <h2 class="email-dialog__title">{{ project.owner_professor.full_name }}</h2>
+            <span class="email-dialog__to">
+              <i class="pi pi-at" aria-hidden="true"></i>
+              {{ contactDestination }}
+            </span>
+          </div>
+        }
       <button
         type="button"
         class="email-dialog__close"

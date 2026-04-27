@@ -49,6 +49,32 @@ export class EmailDialogComponent implements OnChanges {
   body = ''
   sending = false
 
+  get professorInitials(): string {
+    const fullName = this.project?.owner_professor.full_name.trim()
+    if (!fullName) {
+      return 'PR'
+    }
+
+    const parts = fullName.split(/\s+/).filter(Boolean)
+    if (parts.length === 1) {
+      return parts[0].slice(0, 2).toUpperCase()
+    }
+
+    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
+  }
+
+  get contactDestination(): string {
+    if (!this.project) {
+      return 'Nao informado'
+    }
+
+    return (
+      this.project.contact_email ||
+      this.project.owner_professor.institutional_email ||
+      'Nao informado'
+    )
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['project'] && this.project) {
       this.resetForm()

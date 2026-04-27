@@ -157,6 +157,108 @@
   contain-intrinsic-size: 520px;
 }
 
+/* ----- Pagination ----- */
+
+.editais-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 1.1rem;
+  flex-wrap: wrap;
+}
+
+.editais-pagination__btn,
+.editais-pagination__page {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 0.65rem;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 32, 0.14);
+  background: #ffffff;
+  color: #424750;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease,
+    transform 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: rgba(0, 75, 130, 0.08);
+    border-color: rgba(0, 75, 130, 0.28);
+    color: #00345d;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.96);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #004b82;
+    outline-offset: 2px;
+  }
+}
+
+.editais-pagination__page--active {
+  background: #004b82;
+  border-color: #004b82;
+  color: #ffffff;
+}
+
+.editais-pagination__ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  color: #565c64;
+  font-size: 1rem;
+  user-select: none;
+}
+
+:host-context(.my-app-dark) .editais-pagination__btn,
+:host-context(.my-app-dark) .editais-pagination__page {
+  background: #1f262f;
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #c2c7d1;
+
+  &:hover:not(:disabled) {
+    background: rgba(137, 188, 250, 0.14);
+    border-color: rgba(137, 188, 250, 0.3);
+    color: #a0caff;
+  }
+}
+
+:host-context(.my-app-dark) .editais-pagination__page--active {
+  background: #89bcfa;
+  border-color: #89bcfa;
+  color: #0c1722;
+}
+
+:host-context(.my-app-dark) .editais-pagination__ellipsis {
+  color: #c2c7d1;
+}
+
+@media (max-width: 560px) {
+  .editais-pagination {
+    justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 0.2rem;
+    scrollbar-width: thin;
+  }
+
+  .editais-pagination__btn,
+  .editais-pagination__page {
+    flex: 0 0 auto;
+  }
+}
+
 /* ----- Empty state ----- */
 
 .editais-empty {

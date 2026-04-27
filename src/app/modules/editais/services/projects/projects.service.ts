@@ -68,21 +68,30 @@ interface IProjectsListItem {
   cover_image_alt_text?: string | null
 }
 
+interface IProjectsListPagination {
+  page?: number
+  page_size?: number
+  total?: number
+  total_pages?: number
+}
+
+export interface IProjectsPagination {
+  page: number
+  pageSize: number
+  total: number
+  totalPages: number
+}
+
+export interface IProjectsListResponse {
+  projects: IProject[]
+  pagination: IProjectsPagination
+}
+
 interface IProjectsListPayload {
   projects?: IProjectsListItem[]
   projetos?: IProjectsListItem[]
-  pagination?: {
-    page: number
-    page_size: number
-    total: number
-    total_pages: number
-  }
-  paginacao?: {
-    page: number
-    page_size: number
-    total: number
-    total_pages: number
-  }
+  pagination?: IProjectsListPagination
+  paginacao?: IProjectsListPagination
 }
 
 interface IProjectDetailsArea {
@@ -224,8 +233,12 @@ export class ProjectsService {
     shareReplay({ bufferSize: 1, refCount: false })
   )
 
-  listProjects(filters?: IProjectFilters): Observable<IProject[]> {
-    const params = this.buildProjectsParams(filters)
+  listProjects(
+    filters?: IProjectFilters,
+    page = 1,
+    pageSize = 20
+  ): Observable<IProjectsListResponse> {
+    const params = this.buildProjectsParams(filters, page, pageSize)
 
     return forkJoin({
       areas: this.listAreas(),
@@ -236,15 +249,29 @@ export class ProjectsService {
       })
     }).pipe(
       map(({ areas, units, courses, projectsResponse }) => {
-        const summaries = this.extractProjectsList(projectsResponse?.data)
-        return this.mapSummariesToProjects(summaries, areas, units, courses)
+        const payload = projectsResponse?.data
+        const summaries = this.extractProjectsList(payload)
+        const projects = this.mapSummariesToProjects(summaries, areas, units, courses)
+
+        return {
+          projects,
+          pagination: this.extractPagination(payload, page, pageSize, projects.length)
+        }
       }),
       catchError((err: unknown) => {
         this.toast.error(
           'Falha ao carregar editais',
           this.extractDetail(err, 'Nao foi possivel carregar a lista de editais.')
         )
-        return of([])
+        return of({
+          projects: [],
+          pagination: {
+            page,
+            pageSize,
+            total: 0,
+            totalPages: 1
+          }
+        })
       })
     )
   }
@@ -406,6 +433,41 @@ export class ProjectsService {
     return payload?.project || payload?.projeto
   }
 
+  private extractPagination(
+    payload: IProjectsListPayload | undefined,
+    requestedPage: number,
+    requestedPageSize: number,
+    currentBatchSize: number
+  ): IProjectsPagination {
+    const fallbackPage = this.normalizePositiveInt(requestedPage, 1)
+    const fallbackPageSize = this.normalizePositiveInt(requestedPageSize, 20)
+    const source = payload?.pagination || payload?.paginacao
+
+    const page = this.normalizePositiveInt(source?.page, fallbackPage)
+    const pageSize = this.normalizePositiveInt(source?.page_size, fallbackPageSize)
+    const total = this.normalizePositiveInt(source?.total, currentBatchSize)
+    const totalPages = this.normalizePositiveInt(
+      source?.total_pages,
+      Math.max(1, Math.ceil(total / pageSize))
+    )
+
+    return {
+      page,
+      pageSize,
+      total,
+      totalPages
+    }
+  }
+
+  private normalizePositiveInt(value: number | undefined, fallback: number): number {
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      return fallback
+    }
+
+    const normalized = Math.trunc(value)
+    return normalized > 0 ? normalized : fallback
+  }
+
   private mergeUnitsCatalogues(
     centers: IOrganizationalUnit[],
     academicUnits: IOrganizationalUnit[]
@@ -436,11 +498,15 @@ export class ProjectsService {
     return type === 'instituto' || type === 'escola'
   }
 
-  private buildProjectsParams(filters?: IProjectFilters): HttpParams {
+  private buildProjectsParams(
+    filters: IProjectFilters | undefined,
+    page: number,
+    pageSize: number
+  ): HttpParams {
     let params = new HttpParams({
       fromObject: {
-        page: '1',
-        page_size: '100',
+        page: String(this.normalizePositiveInt(page, 1)),
+        page_size: String(this.normalizePositiveInt(pageSize, 20)),
         somente_habilitados: 'true'
       }
     })

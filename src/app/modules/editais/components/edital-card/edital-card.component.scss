@@ -387,8 +387,15 @@
 .edital-card__prof-avatar {
   width: 36px;
   height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 50%;
-  object-fit: cover;
+  background: linear-gradient(135deg, #0b69b1 0%, #004b82 100%);
+  color: #ffffff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   box-shadow: 0 0 0 2px rgba(0, 75, 130, 0.18);
   flex-shrink: 0;
 }

@@ -9,7 +9,10 @@ import { EditalCardComponent } from '../../components/edital-card/edital-card.co
 import { EditalFiltersComponent } from '../../components/edital-filters/edital-filters.component'
 import { EmailDialogComponent } from '../../components/email-dialog/email-dialog.component'
 import { DetailsDialogComponent } from '../../components/details-dialog/details-dialog.component'
-import { ProjectsService } from '../../services/projects/projects.service'
+import {
+  IProjectsListResponse,
+  ProjectsService
+} from '../../services/projects/projects.service'
 import {
   ICourse,
   IOrganizationalUnit,
@@ -25,6 +28,11 @@ import {
   forkJoin,
   switchMap
 } from 'rxjs'
+
+interface IProjectsQueryState {
+  filters: IProjectFilters
+  page: number
+}
 
 @Component({
   selector: 'app-editais',
@@ -47,7 +55,7 @@ export class EditaisComponent implements OnInit, OnDestroy {
   private initialProjectsSubscription?: Subscription
   private detailsLoadSubscription?: Subscription
   private filtersSubscription?: Subscription
-  private readonly filtersUpdates$ = new Subject<IProjectFilters>()
+  private readonly filtersUpdates$ = new Subject<IProjectsQueryState>()
 
   readonly breadcrumbs: IBreadcrumbItem[] = [
     { label: 'Início', route: '/home', icon: 'pi pi-home' },
@@ -64,6 +72,11 @@ export class EditaisComponent implements OnInit, OnDestroy {
 
   loading = true
 
+  readonly pageSize = 20
+  currentPage = 1
+  totalPages = 1
+  totalProjects = 0
+
   filters: IProjectFilters = this.defaultFilters()
 
   emailDialogVisible = false
@@ -76,9 +89,9 @@ export class EditaisComponent implements OnInit, OnDestroy {
     this.startFiltersSync()
 
     this.initialProjectsSubscription = this.projectsService
-      .listProjects(this.filters)
-      .subscribe(projects => {
-        this.applyProjects(projects)
+      .listProjects(this.filters, this.currentPage, this.pageSize)
+      .subscribe(response => {
+        this.applyProjectsPage(response)
         this.loading = false
       })
 
@@ -119,12 +132,48 @@ export class EditaisComponent implements OnInit, OnDestroy {
   onFiltersChange(next: IProjectFilters) {
     this.filters = this.normalizeHierarchyFilters(this.cloneFilters(next))
     this.refreshCourseOptions()
-    this.refreshProjects()
+    this.refreshProjects(true)
   }
 
   onReset() {
     this.filters = this.defaultFilters()
     this.refreshCourseOptions()
+    this.refreshProjects(true)
+  }
+
+  get visiblePages(): number[] {
+    if (this.totalPages <= 1) {
+      return []
+    }
+
+    const radius = 2
+    const start = Math.max(1, this.currentPage - radius)
+    const end = Math.min(this.totalPages, this.currentPage + radius)
+    const pages: number[] = []
+
+    for (let page = start; page <= end; page++) {
+      pages.push(page)
+    }
+
+    return pages
+  }
+
+  get showLeadingEllipsis(): boolean {
+    return this.visiblePages.length > 0 && this.visiblePages[0] > 2
+  }
+
+  get showTrailingEllipsis(): boolean {
+    return (
+      this.visiblePages.length > 0 && this.visiblePages[this.visiblePages.length - 1] < this.totalPages - 1
+    )
+  }
+
+  onPageChange(page: number) {
+    if (page < 1 || page > this.totalPages || page === this.currentPage) {
+      return
+    }
+
+    this.currentPage = page
     this.refreshProjects()
   }
 
@@ -257,24 +306,40 @@ export class EditaisComponent implements OnInit, OnDestroy {
     this.applyFilters()
   }
 
-  private refreshProjects() {
-    this.filtersUpdates$.next(this.cloneFilters(this.filters))
+  private refreshProjects(resetPage = false) {
+    if (resetPage) {
+      this.currentPage = 1
+    }
+
+    this.filtersUpdates$.next({
+      filters: this.cloneFilters(this.filters),
+      page: this.currentPage
+    })
   }
 
   private startFiltersSync() {
     this.filtersSubscription = this.filtersUpdates$
       .pipe(
         debounceTime(350),
-        distinctUntilChanged((prev, next) => this.areFiltersEqual(prev, next)),
-        switchMap(filters => {
+        distinctUntilChanged(
+          (prev, next) => prev.page === next.page && this.areFiltersEqual(prev.filters, next.filters)
+        ),
+        switchMap(query => {
           this.loading = true
-          return this.projectsService.listProjects(filters)
+          return this.projectsService.listProjects(query.filters, query.page, this.pageSize)
         })
       )
-      .subscribe(projects => {
-        this.applyProjects(projects)
+      .subscribe(response => {
+        this.applyProjectsPage(response)
         this.loading = false
       })
+  }
+
+  private applyProjectsPage(response: IProjectsListResponse) {
+    this.currentPage = response.pagination.page
+    this.totalPages = Math.max(1, response.pagination.totalPages)
+    this.totalProjects = response.pagination.total
+    this.applyProjects(response.projects)
   }
 
   private applyProjects(projects: IProject[]) {

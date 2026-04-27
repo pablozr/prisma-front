@@ -14,6 +14,10 @@
   height: auto;
 }
 
+.details-dialog-mask {
+  padding: 0.85rem;
+}
+
 .my-app-dark .details-dialog.p-dialog {
   background: #1f262f;
   color: #f3f0f0;
@@ -21,8 +25,13 @@
 }
 
 @media (max-width: 640px) {
+  .details-dialog-mask {
+    padding: 0.75rem;
+    align-items: center;
+  }
+
   .details-dialog.p-dialog {
-    max-height: 90vh;
+    max-height: calc(100dvh - 1.5rem);
     border-radius: 12px;
   }
 }
@@ -449,8 +458,15 @@
 .details-dialog__prof-avatar {
   width: 56px;
   height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 50%;
-  object-fit: cover;
+  background: linear-gradient(135deg, #0b69b1 0%, #004b82 100%);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   box-shadow: 0 0 0 3px rgba(0, 75, 130, 0.14);
   flex-shrink: 0;
 }

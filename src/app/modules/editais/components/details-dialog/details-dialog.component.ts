@@ -40,10 +40,18 @@ export class DetailsDialogComponent {
     return 'Entre com sua conta de aluno ou administrador para contatar o professor.'
   }
 
-  get professorAvatar(): string {
-    if (!this.project) return ''
-    const name = encodeURIComponent(this.project.owner_professor.full_name)
-    return `https://ui-avatars.com/api/?name=${name}&background=004b82&color=FFF&size=128&bold=true`
+  get professorInitials(): string {
+    const fullName = this.project?.owner_professor.full_name.trim()
+    if (!fullName) {
+      return 'PR'
+    }
+
+    const parts = fullName.split(/\s+/).filter(Boolean)
+    if (parts.length === 1) {
+      return parts[0].slice(0, 2).toUpperCase()
+    }
+
+    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
   }
 
   get deadlineState(): DeadlineState {

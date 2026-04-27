@@ -106,14 +106,7 @@
 
   <footer class="edital-card__footer">
     <div class="edital-card__prof">
-      <img
-        class="edital-card__prof-avatar"
-        [src]="professorAvatar"
-        alt=""
-        loading="lazy"
-        decoding="async"
-        aria-hidden="true"
-      />
+      <span class="edital-card__prof-avatar" aria-hidden="true">{{ professorInitials }}</span>
       <div class="edital-card__prof-body">
         <span class="edital-card__prof-name">{{ project.owner_professor.full_name }}</span>
         <span class="edital-card__prof-role">Professor(a) responsável</span>

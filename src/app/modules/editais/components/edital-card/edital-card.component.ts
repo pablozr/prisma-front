@@ -34,11 +34,6 @@ export class EditalCardComponent {
     return (first + last).toUpperCase() || 'P'
   }
 
-  get professorAvatar(): string {
-    const name = encodeURIComponent(this.project.owner_professor.full_name)
-    return `https://ui-avatars.com/api/?name=${name}&background=004b82&color=FFF&size=96&bold=true`
-  }
-
   get deadlineState(): DeadlineState {
     const { starts_at, ends_at } = this.project
     const today = new Date()
