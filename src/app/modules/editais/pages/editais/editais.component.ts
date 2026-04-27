@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core'
+import { Component, OnDestroy, OnInit, inject } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { HeaderComponent } from '../../../global/components/header/header.component'
 import {
@@ -17,6 +17,7 @@ import {
   IProjectArea,
   IProjectFilters
 } from '../../interfaces/IProject'
+import { Subscription, forkJoin } from 'rxjs'
 
 @Component({
   selector: 'app-editais',
@@ -33,8 +34,9 @@ import {
   templateUrl: './editais.component.html',
   styleUrl: './editais.component.scss'
 })
-export class EditaisComponent implements OnInit {
+export class EditaisComponent implements OnInit, OnDestroy {
   private projectsService = inject(ProjectsService)
+  private initialLoadSubscription?: Subscription
 
   readonly breadcrumbs: IBreadcrumbItem[] = [
     { label: 'Início', route: '/home', icon: 'pi pi-home' },
@@ -59,15 +61,22 @@ export class EditaisComponent implements OnInit {
   detailsProject: IProject | null = null
 
   ngOnInit() {
-    this.areas = this.projectsService.listAreas()
-    this.courses = this.projectsService.listCourses()
-    this.units = this.projectsService.listUnits()
-
-    this.projectsService.listProjects().subscribe(list => {
-      this.allProjects = list
+    this.initialLoadSubscription = forkJoin({
+      areas: this.projectsService.listAreas(),
+      units: this.projectsService.listUnits(),
+      projects: this.projectsService.listProjects()
+    }).subscribe(({ areas, units, projects }) => {
+      this.areas = areas
+      this.units = units
+      this.allProjects = projects
+      this.courses = this.extractCourses(projects)
       this.applyFilters()
       this.loading = false
     })
+  }
+
+  ngOnDestroy() {
+    this.initialLoadSubscription?.unsubscribe()
   }
 
   private defaultFilters(): IProjectFilters {
@@ -155,7 +164,8 @@ export class EditaisComponent implements OnInit {
       )
     }
 
-    if (modality) {
+    const hasModalityData = list.some(p => !!p.modality)
+    if (modality && hasModalityData) {
       list = list.filter(p => p.modality === modality)
     }
 
@@ -180,5 +190,19 @@ export class EditaisComponent implements OnInit {
     })
 
     this.filteredProjects = list
+  }
+
+  private extractCourses(projects: IProject[]): ICourse[] {
+    const byId = new Map<number, ICourse>()
+
+    for (const project of projects) {
+      for (const course of project.courses) {
+        if (!byId.has(course.id)) {
+          byId.set(course.id, course)
+        }
+      }
+    }
+
+    return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
   }
 }

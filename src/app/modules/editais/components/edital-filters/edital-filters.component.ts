@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { InputTextModule } from 'primeng/inputtext'
@@ -36,7 +36,7 @@ type DeadlineValue = NonNullable<IProjectFilters['deadline']>
   templateUrl: './edital-filters.component.html',
   styleUrl: './edital-filters.component.scss'
 })
-export class EditalFiltersComponent implements OnInit {
+export class EditalFiltersComponent implements OnChanges {
   @Input({ required: true }) filters!: IProjectFilters
   @Input({ required: true }) areas: IProjectArea[] = []
   @Input({ required: true }) courses: ICourse[] = []
@@ -73,7 +73,7 @@ export class EditalFiltersComponent implements OnInit {
   courseOptions: IOption<number>[] = []
   unitOptions: IOption<number>[] = []
 
-  ngOnInit() {
+  ngOnChanges() {
     this.areaOptions = this.areas.map(a => ({ label: a.name, value: a.id }))
     this.courseOptions = this.courses.map(c => ({
       label: `${c.name} · ${c.level === 'graduacao' ? 'Graduação' : 'Pós'}`,

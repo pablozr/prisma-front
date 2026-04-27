@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core'
-import { BehaviorSubject, Observable, delay, of } from 'rxjs'
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
+import { Observable, catchError, delay, forkJoin, map, of, shareReplay, switchMap } from 'rxjs'
 import {
   ICourse,
   IEmailDispatch,
@@ -8,72 +9,169 @@ import {
   IProject,
   IProjectArea
 } from '../../interfaces/IProject'
+import { inject } from '@angular/core'
+import { API_BASE_URL } from '../../../global/constants/apiConfig'
+import { AppToastService } from '../../../global/services/toast/app-toast.service'
+
+interface IApiResponse<TData> {
+  message: string
+  data: TData
+}
+
+interface IAreasCatalogueItem {
+  id: number
+  name: string
+  slug: string
+}
+
+interface IUnitsCatalogueItem {
+  id: number
+  name: string
+  short_name?: string
+}
+
+interface IProjectsListItem {
+  id: number
+  title: string
+  short_description?: string
+  full_description?: string
+  owner_professor_name?: string
+  executing_unit_name?: string
+  area_ids: number[]
+  course_ids: number[]
+  status?: string
+  starts_at?: string
+  ends_at?: string
+  published_at?: string
+  created_at?: string
+  process_code?: string
+  vacancies?: number
+  weekly_hours?: number
+  modality?: IProject['modality']
+}
+
+interface IProjectsListPayload {
+  projetos: IProjectsListItem[]
+  paginacao: {
+    page: number
+    page_size: number
+    total: number
+    total_pages: number
+  }
+}
+
+interface IProjectDetailsPayload {
+  projeto: {
+    id: number
+    title: string
+    full_description?: string
+    areas: Array<{ id: number; name: string; slug: string }>
+    cursos: Array<{ id: number; name: string; unit_id?: number }>
+    imagens: Array<{ id: number; image_type: 'cover' | 'gallery'; image_url: string }>
+  }
+}
+
+const EDITAIS_ROUTES = {
+  listProjects: `${API_BASE_URL}/projects`,
+  projectDetails: (projectId: number) => `${API_BASE_URL}/projects/${projectId}`,
+  listAreas: `${API_BASE_URL}/catalogues/areas-tematicas`,
+  listUnits: `${API_BASE_URL}/catalogues/centros`
+} as const
 
 @Injectable({ providedIn: 'root' })
 export class ProjectsService {
-  private readonly units: IOrganizationalUnit[] = [
-    { id: 1, name: 'Centro de Ciências Exatas e Tecnologia', short_name: 'CCET', type: 'centro' },
-    { id: 2, name: 'Centro de Ciências Humanas e Sociais', short_name: 'CCH', type: 'centro' },
-    { id: 3, name: 'Centro de Ciências Biológicas e da Saúde', short_name: 'CCBS', type: 'centro' },
-    { id: 10, name: 'Departamento de Informática Aplicada', short_name: 'DIA', type: 'departamento', parent_unit_id: 1 },
-    { id: 11, name: 'Departamento de Matemática e Estatística', short_name: 'DME', type: 'departamento', parent_unit_id: 1 },
-    { id: 20, name: 'Departamento de Letras', short_name: 'DL', type: 'departamento', parent_unit_id: 2 },
-    { id: 21, name: 'Escola de História', short_name: 'EH', type: 'instituto', parent_unit_id: 2 },
-    { id: 30, name: 'Escola de Enfermagem Alfredo Pinto', short_name: 'EEAP', type: 'instituto', parent_unit_id: 3 }
-  ]
+  private http = inject(HttpClient)
+  private toast = inject(AppToastService)
 
-  private readonly professors: IProfessor[] = [
-    { id: 1, full_name: 'Ana Paula Costa', institutional_email: 'ana.costa@unirio.br', siape: '1234567', unit_id: 10 },
-    { id: 2, full_name: 'Rui Miguel Santos', institutional_email: 'rui.santos@unirio.br', siape: '2345678', unit_id: 11 },
-    { id: 3, full_name: 'Marta Lopes Dias', institutional_email: 'marta.dias@unirio.br', siape: '3456789', unit_id: 20 },
-    { id: 4, full_name: 'Pedro Bastos Farias', institutional_email: 'pedro.farias@unirio.br', siape: '4567890', unit_id: 21 },
-    { id: 5, full_name: 'Juliana Rocha Almeida', institutional_email: 'juliana.almeida@unirio.br', siape: '5678901', unit_id: 30 },
-    { id: 6, full_name: 'Carlos Eduardo Teixeira', institutional_email: 'carlos.teixeira@unirio.br', siape: '6789012', unit_id: 10 }
-  ]
+  private readonly catalogueParams = new HttpParams({
+    fromObject: {
+      limit: '200',
+      offset: '0'
+    }
+  })
 
-  private readonly courses: ICourse[] = [
-    { id: 1, name: 'Sistemas de Informação', level: 'graduacao', unit_id: 10, code: 'BSI' },
-    { id: 2, name: 'Ciência da Computação', level: 'graduacao', unit_id: 10, code: 'BCC' },
-    { id: 3, name: 'Matemática', level: 'graduacao', unit_id: 11, code: 'MAT' },
-    { id: 4, name: 'Estatística', level: 'graduacao', unit_id: 11, code: 'EST' },
-    { id: 5, name: 'Letras', level: 'graduacao', unit_id: 20, code: 'LET' },
-    { id: 6, name: 'História', level: 'graduacao', unit_id: 21, code: 'HIS' },
-    { id: 7, name: 'Enfermagem', level: 'graduacao', unit_id: 30, code: 'ENF' },
-    { id: 8, name: 'Mestrado em Informática', level: 'pos', unit_id: 10, code: 'PPGI' },
-    { id: 9, name: 'Mestrado em História', level: 'pos', unit_id: 21, code: 'PPGHIS' }
-  ]
+  private readonly areasCache$ = this.http
+    .get<IApiResponse<IAreasCatalogueItem[]>>(EDITAIS_ROUTES.listAreas, {
+      params: this.catalogueParams
+    })
+    .pipe(
+      map(res =>
+        (res?.data || []).map(area => ({
+          id: area.id,
+          name: area.name,
+          slug: area.slug
+        }))
+      ),
+      catchError((err: unknown) => {
+        this.toast.error(
+          'Falha ao carregar áreas',
+          this.extractDetail(err, 'Nao foi possivel carregar as áreas temáticas.')
+        )
+        return of([])
+      }),
+      shareReplay({ bufferSize: 1, refCount: false })
+    )
 
-  private readonly areas: IProjectArea[] = [
-    { id: 1, name: 'Inteligência Artificial', slug: 'ia' },
-    { id: 2, name: 'Engenharia de Software', slug: 'engenharia-software' },
-    { id: 3, name: 'Educação', slug: 'educacao' },
-    { id: 4, name: 'Saúde Pública', slug: 'saude-publica' },
-    { id: 5, name: 'Linguística', slug: 'linguistica' },
-    { id: 6, name: 'História Social', slug: 'historia-social' },
-    { id: 7, name: 'Estatística Aplicada', slug: 'estatistica' },
-    { id: 8, name: 'Acessibilidade', slug: 'acessibilidade' }
-  ]
-
-  private readonly projects$ = new BehaviorSubject<IProject[]>(this.buildProjects())
+  private readonly unitsCache$ = this.http
+    .get<IApiResponse<IUnitsCatalogueItem[]>>(EDITAIS_ROUTES.listUnits, {
+      params: this.catalogueParams
+    })
+    .pipe(
+      map(res =>
+        (res?.data || []).map(unit => ({
+          id: unit.id,
+          name: unit.name,
+          short_name: unit.short_name,
+          type: 'centro' as const
+        }))
+      ),
+      catchError((err: unknown) => {
+        this.toast.error(
+          'Falha ao carregar unidades',
+          this.extractDetail(err, 'Nao foi possivel carregar os centros da UNIRIO.')
+        )
+        return of([])
+      }),
+      shareReplay({ bufferSize: 1, refCount: false })
+    )
 
   listProjects(): Observable<IProject[]> {
-    return this.projects$.asObservable()
+    const params = new HttpParams({
+      fromObject: {
+        page: '1',
+        page_size: '100',
+        somente_habilitados: 'true'
+      }
+    })
+
+    return forkJoin({
+      areas: this.listAreas(),
+      units: this.listUnits(),
+      projectsResponse: this.http.get<IApiResponse<IProjectsListPayload>>(EDITAIS_ROUTES.listProjects, {
+        params
+      })
+    }).pipe(
+      map(({ areas, units, projectsResponse }) => {
+        const summaries = projectsResponse?.data?.projetos || []
+        return this.mapSummariesToProjects(summaries, areas, units)
+      }),
+      switchMap(projects => this.hydrateProjectsWithDetails(projects)),
+      catchError((err: unknown) => {
+        this.toast.error(
+          'Falha ao carregar editais',
+          this.extractDetail(err, 'Nao foi possivel carregar a lista de editais.')
+        )
+        return of([])
+      })
+    )
   }
 
-  listUnits(): IOrganizationalUnit[] {
-    return this.units
+  listUnits(): Observable<IOrganizationalUnit[]> {
+    return this.unitsCache$
   }
 
-  listProfessors(): IProfessor[] {
-    return this.professors
-  }
-
-  listCourses(): ICourse[] {
-    return this.courses
-  }
-
-  listAreas(): IProjectArea[] {
-    return this.areas
+  listAreas(): Observable<IProjectArea[]> {
+    return this.areasCache$
   }
 
   sendEmail(dispatch: IEmailDispatch): Observable<{ success: true; id: string }> {
@@ -81,179 +179,172 @@ export class ProjectsService {
     return of({ success: true as const, id }).pipe(delay(800))
   }
 
-  private buildProjects(): IProject[] {
-    const now = new Date()
-    const addDays = (d: number) => {
-      const date = new Date(now)
-      date.setDate(date.getDate() + d)
-      return date.toISOString().slice(0, 10)
+  private hydrateProjectsWithDetails(projects: IProject[]): Observable<IProject[]> {
+    if (!projects.length) return of([])
+
+    return forkJoin(
+      projects.map(project =>
+        this.fetchProjectDetails(project.id).pipe(
+          map(details => this.mergeDetails(project, details)),
+          catchError(() => of(project))
+        )
+      )
+    )
+  }
+
+  private fetchProjectDetails(projectId: number): Observable<IProjectDetailsPayload['projeto']> {
+    return this.http
+      .get<IApiResponse<IProjectDetailsPayload>>(EDITAIS_ROUTES.projectDetails(projectId))
+      .pipe(
+        map(response => {
+          const project = response?.data?.projeto
+          if (!project) {
+            throw new Error('Project details payload is empty')
+          }
+          return project
+        })
+      )
+  }
+
+  private mapSummariesToProjects(
+    summaries: IProjectsListItem[],
+    areas: IProjectArea[],
+    units: IOrganizationalUnit[]
+  ): IProject[] {
+    const areasById = new Map(areas.map(area => [area.id, area]))
+
+    return summaries.map(summary => {
+      const mappedAreas = summary.area_ids.map(areaId => {
+        const area = areasById.get(areaId)
+        if (area) return area
+
+        return {
+          id: areaId,
+          name: `Área #${areaId}`,
+          slug: `area-${areaId}`
+        }
+      })
+
+      const mappedCourses: ICourse[] = summary.course_ids.map(courseId => ({
+        id: courseId,
+        name: `Curso #${courseId}`,
+        level: 'graduacao'
+      }))
+
+      const ownerProfessor: IProfessor = {
+        id: 0,
+        full_name: summary.owner_professor_name || 'Professor(a) nao informado(a)',
+        institutional_email: ''
+      }
+
+      const executingUnit = this.resolveExecutingUnit(summary.executing_unit_name, units)
+
+      return {
+        id: summary.id,
+        process_code: summary.process_code,
+        title: summary.title,
+        short_description: summary.short_description,
+        full_description: summary.full_description,
+        contact_email: '',
+        status: this.normalizeStatus(summary.status),
+        is_active: true,
+        starts_at: summary.starts_at,
+        ends_at: summary.ends_at,
+        published_at: summary.published_at,
+        created_at: summary.created_at || summary.published_at || new Date().toISOString(),
+        owner_professor: ownerProfessor,
+        executing_unit: executingUnit,
+        areas: mappedAreas,
+        courses: mappedCourses,
+        vacancies: summary.vacancies,
+        weekly_hours: summary.weekly_hours,
+        modality: summary.modality
+      }
+    })
+  }
+
+  private mergeDetails(project: IProject, details: IProjectDetailsPayload['projeto']): IProject {
+    const cover = details.imagens.find(image => image.image_type === 'cover')
+
+    const courses: ICourse[] = (details.cursos || []).map(course => ({
+      id: course.id,
+      name: course.name,
+      level: this.inferCourseLevel(course.name),
+      unit_id: course.unit_id
+    }))
+
+    return {
+      ...project,
+      title: details.title || project.title,
+      full_description: details.full_description || project.full_description,
+      areas: (details.areas || []).map(area => ({
+        id: area.id,
+        name: area.name,
+        slug: area.slug
+      })),
+      courses: courses.length ? courses : project.courses,
+      cover: cover
+        ? {
+            id: cover.id,
+            image_type: cover.image_type,
+            image_url: cover.image_url
+          }
+        : project.cover
+    }
+  }
+
+  private resolveExecutingUnit(
+    unitName: string | undefined,
+    units: IOrganizationalUnit[]
+  ): IOrganizationalUnit | undefined {
+    if (!unitName) return undefined
+
+    const normalizedUnitName = this.normalizeText(unitName)
+    const fromCatalog = units.find(unit => this.normalizeText(unit.name) === normalizedUnitName)
+
+    if (fromCatalog) return fromCatalog
+
+    return {
+      id: -1,
+      name: unitName,
+      type: 'centro'
+    }
+  }
+
+  private normalizeStatus(status?: string): IProject['status'] {
+    if (status === 'draft' || status === 'published' || status === 'archived') {
+      return status
+    }
+    return 'published'
+  }
+
+  private inferCourseLevel(courseName: string): ICourse['level'] {
+    const normalizedName = this.normalizeText(courseName)
+    const isPostGrad =
+      normalizedName.includes('mestrado') ||
+      normalizedName.includes('doutorado') ||
+      normalizedName.includes('pos') ||
+      normalizedName.includes('especializacao')
+
+    return isPostGrad ? 'pos' : 'graduacao'
+  }
+
+  private normalizeText(value: string): string {
+    return value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim()
+  }
+
+  private extractDetail(error: unknown, fallback: string): string {
+    if (error instanceof HttpErrorResponse) {
+      const detail = error.error?.detail
+      if (typeof detail === 'string') {
+        return detail
+      }
     }
 
-    return [
-      {
-        id: 1,
-        process_code: 'PIBIC-2026.1-0142',
-        title: 'Assistentes conversacionais para apoio a estudantes em risco de evasão',
-        short_description:
-          'Desenvolvimento de agente conversacional que monitora desempenho e sugere intervenções pedagógicas.',
-        full_description:
-          'Projeto de iniciação científica com foco em aplicações de LLMs para identificar sinais precoces de evasão em cursos de graduação.',
-        contact_email: 'ana.costa@unirio.br',
-        status: 'published',
-        is_active: true,
-        starts_at: addDays(-10),
-        ends_at: addDays(20),
-        published_at: addDays(-15),
-        created_at: addDays(-20),
-        owner_professor: this.professors[0],
-        executing_unit: this.units.find(u => u.id === 10),
-        areas: [this.areas[0], this.areas[1], this.areas[2]],
-        courses: [this.courses[0], this.courses[1]],
-        cover: {
-          id: 101,
-          image_type: 'cover',
-          image_url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=70',
-          alt_text: 'Ilustração de inteligência artificial conversacional'
-        },
-        vacancies: 3,
-        weekly_hours: 12,
-        modality: 'hibrido'
-      },
-      {
-        id: 2,
-        process_code: 'PIBEX-2026.1-0087',
-        title: 'Alfabetização estatística para servidores públicos',
-        short_description:
-          'Curso de extensão em estatística aplicada para gestores públicos municipais da Zona Norte do RJ.',
-        contact_email: 'rui.santos@unirio.br',
-        status: 'published',
-        is_active: true,
-        starts_at: addDays(-5),
-        ends_at: addDays(45),
-        published_at: addDays(-10),
-        created_at: addDays(-12),
-        owner_professor: this.professors[1],
-        executing_unit: this.units.find(u => u.id === 11),
-        areas: [this.areas[6], this.areas[2]],
-        courses: [this.courses[3]],
-        cover: {
-          id: 102,
-          image_type: 'cover',
-          image_url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=70',
-          alt_text: 'Gráficos de análise estatística em dashboard'
-        },
-        vacancies: 5,
-        weekly_hours: 8,
-        modality: 'remoto'
-      },
-      {
-        id: 3,
-        process_code: 'PIBIC-2026.1-0188',
-        title: 'Variação linguística em comunidades quilombolas do Rio de Janeiro',
-        short_description:
-          'Mapeamento e análise do português vernacular em comunidades tradicionais do estado.',
-        contact_email: 'marta.dias@unirio.br',
-        status: 'published',
-        is_active: true,
-        starts_at: addDays(2),
-        ends_at: addDays(60),
-        published_at: addDays(-3),
-        created_at: addDays(-8),
-        owner_professor: this.professors[2],
-        executing_unit: this.units.find(u => u.id === 20),
-        areas: [this.areas[4]],
-        courses: [this.courses[4]],
-        cover: {
-          id: 103,
-          image_type: 'cover',
-          image_url: 'https://images.unsplash.com/photo-1513001900722-370f803f498d?auto=format&fit=crop&w=1200&q=70',
-          alt_text: 'Livros abertos representando pesquisa linguística'
-        },
-        vacancies: 2,
-        weekly_hours: 10,
-        modality: 'presencial'
-      },
-      {
-        id: 4,
-        process_code: 'PIBIC-2026.1-0231',
-        title: 'Memórias da imigração portuguesa no Rio de Janeiro (1900-1950)',
-        short_description:
-          'Pesquisa em arquivos públicos e digitalização de fontes primárias sobre imigração.',
-        contact_email: 'pedro.farias@unirio.br',
-        status: 'published',
-        is_active: true,
-        starts_at: addDays(-20),
-        ends_at: addDays(5),
-        published_at: addDays(-25),
-        created_at: addDays(-30),
-        owner_professor: this.professors[3],
-        executing_unit: this.units.find(u => u.id === 21),
-        areas: [this.areas[5]],
-        courses: [this.courses[5], this.courses[8]],
-        cover: {
-          id: 104,
-          image_type: 'cover',
-          image_url: 'https://images.unsplash.com/photo-1461360370896-922624d12aa1?auto=format&fit=crop&w=1200&q=70',
-          alt_text: 'Documentos históricos em arquivo'
-        },
-        vacancies: 1,
-        weekly_hours: 15,
-        modality: 'presencial'
-      },
-      {
-        id: 5,
-        process_code: 'PIBEX-2026.1-0304',
-        title: 'Cuidados primários em saúde mental pós-pandemia',
-        short_description:
-          'Programa de extensão para qualificação de enfermeiros da atenção básica em saúde mental.',
-        contact_email: 'juliana.almeida@unirio.br',
-        status: 'published',
-        is_active: true,
-        starts_at: addDays(0),
-        ends_at: addDays(90),
-        published_at: addDays(-2),
-        created_at: addDays(-4),
-        owner_professor: this.professors[4],
-        executing_unit: this.units.find(u => u.id === 30),
-        areas: [this.areas[3]],
-        courses: [this.courses[6]],
-        cover: {
-          id: 105,
-          image_type: 'cover',
-          image_url: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1200&q=70',
-          alt_text: 'Profissionais de enfermagem em atendimento'
-        },
-        vacancies: 6,
-        weekly_hours: 6,
-        modality: 'hibrido'
-      },
-      {
-        id: 6,
-        process_code: 'PIBIC-2026.1-0412',
-        title: 'Acessibilidade digital em portais acadêmicos brasileiros',
-        short_description:
-          'Auditoria WCAG 2.2 em 50 portais de universidades federais e proposta de guia de boas práticas.',
-        contact_email: 'carlos.teixeira@unirio.br',
-        status: 'published',
-        is_active: true,
-        starts_at: addDays(-3),
-        ends_at: addDays(35),
-        published_at: addDays(-6),
-        created_at: addDays(-10),
-        owner_professor: this.professors[5],
-        executing_unit: this.units.find(u => u.id === 10),
-        areas: [this.areas[7], this.areas[1]],
-        courses: [this.courses[0], this.courses[1], this.courses[7]],
-        cover: {
-          id: 106,
-          image_type: 'cover',
-          image_url: 'https://images.unsplash.com/photo-1581276879432-15e50529f34b?auto=format&fit=crop&w=1200&q=70',
-          alt_text: 'Tela de código com foco em acessibilidade digital'
-        },
-        vacancies: 4,
-        weekly_hours: 12,
-        modality: 'remoto'
-      }
-    ]
+    return fallback
   }
 }
