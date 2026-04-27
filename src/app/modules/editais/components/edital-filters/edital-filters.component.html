@@ -42,6 +42,40 @@
     </label>
 
     <label class="edital-filters__field">
+      <span class="edital-filters__label">Centro</span>
+      <p-multiSelect
+        styleClass="edital-filters__select"
+        [options]="centerOptions"
+        [(ngModel)]="filters.centerIds"
+        (onChange)="onChange()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Todos os centros"
+        display="chip"
+        [filter]="true"
+        emptyMessage="Nenhum centro encontrado"
+        emptyFilterMessage="Nenhum centro corresponde"
+      />
+    </label>
+
+    <label class="edital-filters__field">
+      <span class="edital-filters__label">Instituto / Escola</span>
+      <p-multiSelect
+        styleClass="edital-filters__select"
+        [options]="academicUnitOptions"
+        [(ngModel)]="filters.academicUnitIds"
+        (onChange)="onChange()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Todos os institutos e escolas"
+        display="chip"
+        [filter]="true"
+        emptyMessage="Nenhuma unidade encontrada"
+        emptyFilterMessage="Nenhuma unidade corresponde"
+      />
+    </label>
+
+    <label class="edital-filters__field">
       <span class="edital-filters__label">Cursos</span>
       <p-multiSelect
         styleClass="edital-filters__select"
@@ -50,28 +84,11 @@
         (onChange)="onChange()"
         optionLabel="label"
         optionValue="value"
-        placeholder="Todos os cursos"
+        [placeholder]="coursePlaceholder"
         display="chip"
         [filter]="true"
         emptyMessage="Nenhum curso encontrado"
         emptyFilterMessage="Nenhum curso corresponde"
-      />
-    </label>
-
-    <label class="edital-filters__field">
-      <span class="edital-filters__label">Unidade acadêmica</span>
-      <p-multiSelect
-        styleClass="edital-filters__select"
-        [options]="unitOptions"
-        [(ngModel)]="filters.unitIds"
-        (onChange)="onChange()"
-        optionLabel="label"
-        optionValue="value"
-        placeholder="Todas as unidades"
-        display="chip"
-        [filter]="true"
-        emptyMessage="Nenhuma unidade encontrada"
-        emptyFilterMessage="Nenhuma unidade corresponde"
       />
     </label>
 

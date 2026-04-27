@@ -59,6 +59,7 @@ export class EditaisComponent implements OnInit, OnDestroy {
   areas: IProjectArea[] = []
   courses: ICourse[] = []
   units: IOrganizationalUnit[] = []
+  private allCourses: ICourse[] = []
 
   loading = true
 
@@ -75,10 +76,13 @@ export class EditaisComponent implements OnInit, OnDestroy {
 
     this.initialLoadSubscription = forkJoin({
       areas: this.projectsService.listAreas(),
-      units: this.projectsService.listUnits()
-    }).subscribe(({ areas, units }) => {
+      units: this.projectsService.listUnits(),
+      courses: this.projectsService.listCourses()
+    }).subscribe(({ areas, units, courses }) => {
       this.areas = areas
       this.units = units
+      this.allCourses = courses
+      this.refreshCourseOptions()
       this.refreshProjects()
     })
   }
@@ -95,7 +99,8 @@ export class EditaisComponent implements OnInit, OnDestroy {
       search: '',
       areaIds: [],
       courseIds: [],
-      unitIds: [],
+      centerIds: [],
+      academicUnitIds: [],
       modality: null,
       deadline: null,
       level: null,
@@ -104,12 +109,14 @@ export class EditaisComponent implements OnInit, OnDestroy {
   }
 
   onFiltersChange(next: IProjectFilters) {
-    this.filters = this.cloneFilters(next)
+    this.filters = this.normalizeHierarchyFilters(this.cloneFilters(next))
+    this.refreshCourseOptions()
     this.refreshProjects()
   }
 
   onReset() {
     this.filters = this.defaultFilters()
+    this.refreshCourseOptions()
     this.refreshProjects()
   }
 
@@ -141,9 +148,11 @@ export class EditaisComponent implements OnInit, OnDestroy {
   }
 
   private applyFilters() {
-    const { search, areaIds, courseIds, unitIds, modality, deadline, level, sort } = this.filters
+    const { search, areaIds, courseIds, centerIds, academicUnitIds, modality, deadline, level, sort } =
+      this.filters
     const term = search.trim().toLowerCase()
     const today = new Date()
+    const unitsById = this.getUnitsByIdMap()
     today.setHours(0, 0, 0, 0)
 
     const byState = (p: IProject): IProjectFilters['deadline'] => {
@@ -181,9 +190,9 @@ export class EditaisComponent implements OnInit, OnDestroy {
       list = list.filter(p => p.courses.some(c => courseIds.includes(c.id)))
     }
 
-    if (unitIds.length) {
-      list = list.filter(p =>
-        p.executing_unit ? unitIds.includes(p.executing_unit.id) : false
+    if (centerIds.length || academicUnitIds.length) {
+      list = list.filter(project =>
+        this.matchesUnitFilters(project, centerIds, academicUnitIds, unitsById)
       )
     }
 
@@ -233,7 +242,10 @@ export class EditaisComponent implements OnInit, OnDestroy {
     this.allProjects = this.allProjects.map(project =>
       project.id === nextProject.id ? nextProject : project
     )
-    this.courses = this.extractCourses(this.allProjects)
+    if (!this.allCourses.length) {
+      this.allCourses = this.extractCourses(this.allProjects)
+    }
+    this.refreshCourseOptions()
     this.applyFilters()
   }
 
@@ -253,10 +265,157 @@ export class EditaisComponent implements OnInit, OnDestroy {
       )
       .subscribe(projects => {
         this.allProjects = projects
-        this.courses = this.extractCourses(projects)
+        if (!this.allCourses.length) {
+          this.allCourses = this.extractCourses(projects)
+        }
+        this.refreshCourseOptions()
         this.applyFilters()
         this.loading = false
       })
+  }
+
+  private refreshCourseOptions() {
+    this.courses = this.getAvailableCourses(this.filters)
+  }
+
+  private normalizeHierarchyFilters(filters: IProjectFilters): IProjectFilters {
+    const unitsById = this.getUnitsByIdMap()
+    const selectedCenters = new Set(filters.centerIds)
+
+    const academicUnitIds = filters.academicUnitIds.filter(academicUnitId => {
+      if (!selectedCenters.size) {
+        return true
+      }
+
+      return this.isDescendantOfCenter(academicUnitId, selectedCenters, unitsById)
+    })
+
+    const availableCourseIds = new Set(
+      this.getAvailableCourses({ ...filters, academicUnitIds }).map(course => course.id)
+    )
+
+    const courseIds = filters.courseIds.filter(courseId => availableCourseIds.has(courseId))
+
+    return {
+      ...filters,
+      academicUnitIds,
+      courseIds
+    }
+  }
+
+  private getAvailableCourses(filters: IProjectFilters): ICourse[] {
+    const sourceCourses = this.allCourses.length ? this.allCourses : this.extractCourses(this.allProjects)
+    if (!sourceCourses.length) {
+      return []
+    }
+
+    if (!filters.centerIds.length && !filters.academicUnitIds.length) {
+      return sourceCourses
+    }
+
+    const unitsById = this.getUnitsByIdMap()
+    const selectedCenters = new Set(filters.centerIds)
+    const selectedAcademicUnits = new Set(filters.academicUnitIds)
+
+    return sourceCourses.filter(course => {
+      if (!course.unit_id) {
+        return false
+      }
+
+      if (selectedAcademicUnits.size) {
+        const academicUnitId = this.resolveAcademicUnitId(course.unit_id, unitsById)
+        return academicUnitId !== null && selectedAcademicUnits.has(academicUnitId)
+      }
+
+      const centerId = this.resolveCenterIdFromUnit(course.unit_id, unitsById)
+      return centerId !== null && selectedCenters.has(centerId)
+    })
+  }
+
+  private matchesUnitFilters(
+    project: IProject,
+    centerIds: number[],
+    academicUnitIds: number[],
+    unitsById: Map<number, IOrganizationalUnit>
+  ): boolean {
+    if (!project.executing_unit) {
+      return false
+    }
+
+    if (academicUnitIds.length) {
+      const selectedAcademicUnits = new Set(academicUnitIds)
+      const academicUnitId = this.resolveAcademicUnitId(project.executing_unit.id, unitsById)
+      return academicUnitId !== null && selectedAcademicUnits.has(academicUnitId)
+    }
+
+    const selectedCenters = new Set(centerIds)
+    const centerId = this.resolveCenterIdFromUnit(project.executing_unit.id, unitsById)
+    return centerId !== null && selectedCenters.has(centerId)
+  }
+
+  private getUnitsByIdMap(): Map<number, IOrganizationalUnit> {
+    return new Map(this.units.map(unit => [unit.id, unit]))
+  }
+
+  private isDescendantOfCenter(
+    unitId: number,
+    centerIds: Set<number>,
+    unitsById: Map<number, IOrganizationalUnit>
+  ): boolean {
+    const centerId = this.resolveCenterIdFromUnit(unitId, unitsById)
+    return centerId !== null && centerIds.has(centerId)
+  }
+
+  private resolveAcademicUnitId(
+    unitId: number,
+    unitsById: Map<number, IOrganizationalUnit>
+  ): number | null {
+    let currentUnitId: number | undefined = unitId
+
+    while (typeof currentUnitId === 'number') {
+      const unit = unitsById.get(currentUnitId)
+      if (!unit) {
+        return null
+      }
+
+      if (unit.type === 'instituto' || unit.type === 'escola') {
+        return unit.id
+      }
+
+      if (!unit.parent_unit_id || unit.parent_unit_id === unit.id) {
+        return null
+      }
+
+      currentUnitId = unit.parent_unit_id
+    }
+
+    return null
+  }
+
+  private resolveCenterIdFromUnit(
+    unitId: number,
+    unitsById: Map<number, IOrganizationalUnit>
+  ): number | null {
+    let currentUnitId: number | undefined = unitId
+
+    while (typeof currentUnitId === 'number') {
+      const unit = unitsById.get(currentUnitId)
+      if (!unit) {
+        return null
+      }
+
+      if (unit.type === 'centro') {
+        return unit.id
+      }
+
+      if (!unit.parent_unit_id || unit.parent_unit_id === unit.id) {
+        return null
+      }
+
+      currentUnitId = unit.parent_unit_id
+    }
+
+    return null
   }
 
   private cloneFilters(filters: IProjectFilters): IProjectFilters {
@@ -264,7 +423,8 @@ export class EditaisComponent implements OnInit, OnDestroy {
       ...filters,
       areaIds: [...filters.areaIds],
       courseIds: [...filters.courseIds],
-      unitIds: [...filters.unitIds]
+      centerIds: [...filters.centerIds],
+      academicUnitIds: [...filters.academicUnitIds]
     }
   }
 
@@ -273,7 +433,8 @@ export class EditaisComponent implements OnInit, OnDestroy {
       previous.search.trim() === next.search.trim() &&
       this.sameArray(previous.areaIds, next.areaIds) &&
       this.sameArray(previous.courseIds, next.courseIds) &&
-      this.sameArray(previous.unitIds, next.unitIds) &&
+      this.sameArray(previous.centerIds, next.centerIds) &&
+      this.sameArray(previous.academicUnitIds, next.academicUnitIds) &&
       previous.modality === next.modality &&
       previous.deadline === next.deadline &&
       previous.level === next.level &&

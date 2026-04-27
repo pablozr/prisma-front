@@ -71,18 +71,61 @@ export class EditalFiltersComponent implements OnChanges {
 
   areaOptions: IOption<number>[] = []
   courseOptions: IOption<number>[] = []
-  unitOptions: IOption<number>[] = []
+  centerOptions: IOption<number>[] = []
+  academicUnitOptions: IOption<number>[] = []
 
   ngOnChanges() {
+    const unitsById = new Map(this.units.map(unit => [unit.id, unit]))
+
     this.areaOptions = this.areas.map(a => ({ label: a.name, value: a.id }))
     this.courseOptions = this.courses.map(c => ({
       label: `${c.name} · ${c.level === 'graduacao' ? 'Graduação' : 'Pós'}`,
       value: c.id
     }))
-    this.unitOptions = this.units.map(u => ({
-      label: u.short_name ? `${u.short_name} — ${u.name}` : u.name,
-      value: u.id
-    }))
+
+    this.centerOptions = this.units
+      .filter(unit => unit.type === 'centro')
+      .map(unit => this.toUnitOption(unit))
+
+    const selectedCenterIds = new Set(this.filters.centerIds)
+    const academicUnits = this.units.filter(unit => this.isAcademicUnit(unit.type))
+
+    const visibleAcademicUnits = selectedCenterIds.size
+      ? academicUnits.filter(
+          unit =>
+            typeof unit.parent_unit_id === 'number' && selectedCenterIds.has(unit.parent_unit_id)
+        )
+      : academicUnits
+
+    this.academicUnitOptions = visibleAcademicUnits.map(unit => {
+      const option = this.toUnitOption(unit)
+      if (!unit.parent_unit_id) {
+        return option
+      }
+
+      const center = unitsById.get(unit.parent_unit_id)
+      if (!center) {
+        return option
+      }
+
+      const centerLabel = center.short_name || center.name
+      return {
+        ...option,
+        label: `${option.label} · ${centerLabel}`
+      }
+    })
+  }
+
+  get coursePlaceholder(): string {
+    if (this.filters.academicUnitIds.length) {
+      return 'Cursos da unidade selecionada'
+    }
+
+    if (this.filters.centerIds.length) {
+      return 'Cursos do centro selecionado'
+    }
+
+    return 'Todos os cursos'
   }
 
   get activeCount(): number {
@@ -90,11 +133,23 @@ export class EditalFiltersComponent implements OnChanges {
     if (this.filters.search.trim()) n++
     if (this.filters.areaIds.length) n++
     if (this.filters.courseIds.length) n++
-    if (this.filters.unitIds.length) n++
+    if (this.filters.centerIds.length) n++
+    if (this.filters.academicUnitIds.length) n++
     if (this.filters.modality) n++
     if (this.filters.deadline) n++
     if (this.filters.level) n++
     return n
+  }
+
+  private isAcademicUnit(type: IOrganizationalUnit['type']): boolean {
+    return type === 'instituto' || type === 'escola'
+  }
+
+  private toUnitOption(unit: IOrganizationalUnit): IOption<number> {
+    return {
+      label: unit.short_name ? `${unit.short_name} — ${unit.name}` : unit.name,
+      value: unit.id
+    }
   }
 
   onChange() {

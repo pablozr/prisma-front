@@ -29,6 +29,17 @@ interface IUnitsCatalogueItem {
   id: number
   name: string
   short_name?: string
+  type?: string
+  parent_unit_id?: number | null
+}
+
+interface ICoursesCatalogueItem {
+  id: number
+  name: string
+  code?: string
+  level?: ICourse['level'] | string
+  unit_id?: number
+  offering_unit_id?: number
 }
 
 interface IProjectsListItem {
@@ -71,6 +82,7 @@ interface IProjectDetailsCourse {
   id: number
   name: string
   unit_id?: number
+  offering_unit_id?: number
   code?: string
   level?: ICourse['level'] | string
 }
@@ -119,7 +131,9 @@ const EDITAIS_ROUTES = {
   listProjects: `${API_BASE_URL}/projects`,
   projectDetails: (projectId: number) => `${API_BASE_URL}/projects/${projectId}`,
   listAreas: `${API_BASE_URL}/catalogues/areas-tematicas`,
-  listUnits: `${API_BASE_URL}/catalogues/centros`
+  listUnits: `${API_BASE_URL}/catalogues/unidades`,
+  listCenters: `${API_BASE_URL}/catalogues/centros`,
+  listCourses: `${API_BASE_URL}/catalogues/cursos`
 } as const
 
 @Injectable({ providedIn: 'root' })
@@ -162,21 +176,35 @@ export class ProjectsService {
       params: this.catalogueParams
     })
     .pipe(
-      map(res =>
-        (res?.data || []).map(unit => ({
-          id: unit.id,
-          name: unit.name,
-          short_name: unit.short_name,
-          type: 'centro' as const
-        }))
+      map(res => this.mapUnitsCatalogue(res?.data || [])),
+      catchError(() =>
+        this.http
+          .get<IApiResponse<IUnitsCatalogueItem[]>>(EDITAIS_ROUTES.listCenters, {
+            params: this.catalogueParams
+          })
+          .pipe(
+            map(res =>
+              this.mapUnitsCatalogue((res?.data || []).map(unit => ({ ...unit, type: 'centro' })))
+            )
+          )
       ),
       catchError((err: unknown) => {
         this.toast.error(
           'Falha ao carregar unidades',
-          this.extractDetail(err, 'Nao foi possivel carregar os centros da UNIRIO.')
+          this.extractDetail(err, 'Nao foi possivel carregar as unidades da UNIRIO.')
         )
         return of([])
       }),
+      shareReplay({ bufferSize: 1, refCount: false })
+    )
+
+  private readonly coursesCache$ = this.http
+    .get<IApiResponse<ICoursesCatalogueItem[]>>(EDITAIS_ROUTES.listCourses, {
+      params: this.catalogueParams
+    })
+    .pipe(
+      map(res => this.mapCoursesCatalogue(res?.data || [])),
+      catchError(() => of([])),
       shareReplay({ bufferSize: 1, refCount: false })
     )
 
@@ -186,13 +214,14 @@ export class ProjectsService {
     return forkJoin({
       areas: this.listAreas(),
       units: this.listUnits(),
+      courses: this.listCourses(),
       projectsResponse: this.http.get<IApiResponse<IProjectsListPayload>>(EDITAIS_ROUTES.listProjects, {
         params
       })
     }).pipe(
-      map(({ areas, units, projectsResponse }) => {
+      map(({ areas, units, courses, projectsResponse }) => {
         const summaries = projectsResponse?.data?.projetos || []
-        return this.mapSummariesToProjects(summaries, areas, units)
+        return this.mapSummariesToProjects(summaries, areas, units, courses)
       }),
       catchError((err: unknown) => {
         this.toast.error(
@@ -210,6 +239,10 @@ export class ProjectsService {
 
   listAreas(): Observable<IProjectArea[]> {
     return this.areasCache$
+  }
+
+  listCourses(): Observable<ICourse[]> {
+    return this.coursesCache$
   }
 
   getProjectDetails(project: IProject): Observable<IProject> {
@@ -270,7 +303,7 @@ export class ProjectsService {
     }
 
     params = this.appendArrayQueryParam(params, 'area_ids', filters?.areaIds)
-    params = this.appendArrayQueryParam(params, 'unidade_ids', filters?.unitIds)
+    params = this.appendArrayQueryParam(params, 'unidade_ids', this.resolveUnitsForFilter(filters))
     params = this.appendArrayQueryParam(params, 'curso_ids', filters?.courseIds)
 
     const apiSort = this.mapSortToApi(filters?.sort)
@@ -279,6 +312,14 @@ export class ProjectsService {
     }
 
     return params
+  }
+
+  private resolveUnitsForFilter(filters?: IProjectFilters): number[] {
+    if (filters?.academicUnitIds?.length) {
+      return filters.academicUnitIds
+    }
+
+    return filters?.centerIds || []
   }
 
   private appendArrayQueryParam(
@@ -305,12 +346,40 @@ export class ProjectsService {
     return undefined
   }
 
+  private mapUnitsCatalogue(units: IUnitsCatalogueItem[]): IOrganizationalUnit[] {
+    return units.map(unit => ({
+      id: unit.id,
+      name: unit.name,
+      short_name: unit.short_name,
+      type: this.normalizeUnitType(unit.type),
+      parent_unit_id: unit.parent_unit_id ?? undefined
+    }))
+  }
+
+  private mapCoursesCatalogue(courses: ICoursesCatalogueItem[]): ICourse[] {
+    const coursesById = new Map<number, ICourse>()
+
+    for (const course of courses) {
+      coursesById.set(course.id, {
+        id: course.id,
+        name: course.name,
+        code: course.code,
+        level: this.normalizeCourseLevel(course.level, course.name),
+        unit_id: course.offering_unit_id ?? course.unit_id
+      })
+    }
+
+    return [...coursesById.values()].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
+  }
+
   private mapSummariesToProjects(
     summaries: IProjectsListItem[],
     areas: IProjectArea[],
-    units: IOrganizationalUnit[]
+    units: IOrganizationalUnit[],
+    courses: ICourse[]
   ): IProject[] {
     const areasById = new Map(areas.map(area => [area.id, area]))
+    const coursesById = new Map(courses.map(course => [course.id, course]))
 
     return summaries.map(summary => {
       const mappedAreas = summary.area_ids.map(areaId => {
@@ -324,11 +393,18 @@ export class ProjectsService {
         }
       })
 
-      const mappedCourses: ICourse[] = summary.course_ids.map(courseId => ({
-        id: courseId,
-        name: `Curso #${courseId}`,
-        level: 'graduacao'
-      }))
+      const mappedCourses: ICourse[] = summary.course_ids.map(courseId => {
+        const course = coursesById.get(courseId)
+        if (course) {
+          return course
+        }
+
+        return {
+          id: courseId,
+          name: `Curso #${courseId}`,
+          level: 'graduacao'
+        }
+      })
 
       const ownerProfessor: IProfessor = {
         id: 0,
@@ -378,7 +454,7 @@ export class ProjectsService {
         name: course.name,
         code: course.code,
         level: this.normalizeCourseLevel(course.level, course.name),
-        unit_id: course.unit_id
+        unit_id: course.unit_id ?? course.offering_unit_id
       })
     )
 
@@ -460,7 +536,12 @@ export class ProjectsService {
   }
 
   private normalizeUnitType(rawType?: string): IOrganizationalUnit['type'] {
-    if (rawType === 'centro' || rawType === 'departamento' || rawType === 'instituto') {
+    if (
+      rawType === 'centro' ||
+      rawType === 'escola' ||
+      rawType === 'departamento' ||
+      rawType === 'instituto'
+    ) {
       return rawType
     }
 

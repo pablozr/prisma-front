@@ -1,6 +1,6 @@
 export type ProjectStatus = 'draft' | 'published' | 'archived'
 
-export type UnitType = 'centro' | 'departamento' | 'instituto'
+export type UnitType = 'centro' | 'escola' | 'departamento' | 'instituto'
 
 export type CourseLevel = 'graduacao' | 'pos'
 
@@ -69,7 +69,8 @@ export interface IProjectFilters {
   search: string
   areaIds: number[]
   courseIds: number[]
-  unitIds: number[]
+  centerIds: number[]
+  academicUnitIds: number[]
   modality: IProject['modality'] | null
   deadline: 'open' | 'closing_soon' | 'closed' | null
   level: CourseLevel | null
