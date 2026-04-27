@@ -28,7 +28,7 @@ interface IAreasCatalogueItem {
 interface IUnitsCatalogueItem {
   id: number
   name: string
-  short_name?: string
+  short_name?: string | null
   type?: string
   parent_unit_id?: number | null
 }
@@ -36,10 +36,13 @@ interface IUnitsCatalogueItem {
 interface ICoursesCatalogueItem {
   id: number
   name: string
-  code?: string
+  code?: string | null
   level?: ICourse['level'] | string
   unit_id?: number
   offering_unit_id?: number
+  offering_unit_name?: string
+  offering_unit_short_name?: string | null
+  offering_unit_type?: string
 }
 
 interface IProjectsListItem {
@@ -63,8 +66,15 @@ interface IProjectsListItem {
 }
 
 interface IProjectsListPayload {
-  projetos: IProjectsListItem[]
-  paginacao: {
+  projects?: IProjectsListItem[]
+  projetos?: IProjectsListItem[]
+  pagination?: {
+    page: number
+    page_size: number
+    total: number
+    total_pages: number
+  }
+  paginacao?: {
     page: number
     page_size: number
     total: number
@@ -117,12 +127,15 @@ interface IProjectDetails {
   weekly_hours?: number
   modality?: IProject['modality']
   areas: IProjectDetailsArea[] | string
-  cursos: IProjectDetailsCourse[] | string
-  imagens: IProjectDetailsImage[] | string
+  courses?: IProjectDetailsCourse[] | string
+  cursos?: IProjectDetailsCourse[] | string
+  images?: IProjectDetailsImage[] | string
+  imagens?: IProjectDetailsImage[] | string
 }
 
 interface IProjectDetailsPayload {
-  projeto: IProjectDetails
+  project?: IProjectDetails
+  projeto?: IProjectDetails
 }
 
 type IProjectsApiSort = 'titulo_asc' | 'titulo_desc' | 'data_desc'
@@ -140,11 +153,13 @@ const EDITAIS_ROUTES = {
 export class ProjectsService {
   private http = inject(HttpClient)
   private toast = inject(AppToastService)
-  private readonly projectDetailsCache = new Map<number, Observable<IProjectDetailsPayload['projeto']>>()
+  private readonly projectDetailsCache = new Map<number, Observable<IProjectDetails>>()
+  private readonly unitsByCenterCache = new Map<string, Observable<IOrganizationalUnit[]>>()
+  private readonly coursesByUnitCache = new Map<string, Observable<ICourse[]>>()
 
   private readonly catalogueParams = new HttpParams({
     fromObject: {
-      limit: '200',
+      limit: '100',
       offset: '0'
     }
   })
@@ -162,51 +177,49 @@ export class ProjectsService {
         }))
       ),
       catchError((err: unknown) => {
-        this.toast.error(
-          'Falha ao carregar áreas',
-          this.extractDetail(err, 'Nao foi possivel carregar as áreas temáticas.')
-        )
-        return of([])
-      }),
-      shareReplay({ bufferSize: 1, refCount: false })
-    )
-
-  private readonly unitsCache$ = this.http
-    .get<IApiResponse<IUnitsCatalogueItem[]>>(EDITAIS_ROUTES.listUnits, {
-      params: this.catalogueParams
-    })
-    .pipe(
-      map(res => this.mapUnitsCatalogue(res?.data || [])),
-      catchError(() =>
-        this.http
-          .get<IApiResponse<IUnitsCatalogueItem[]>>(EDITAIS_ROUTES.listCenters, {
-            params: this.catalogueParams
-          })
-          .pipe(
-            map(res =>
-              this.mapUnitsCatalogue((res?.data || []).map(unit => ({ ...unit, type: 'centro' })))
-            )
+        if (!this.isCatalogueEmptyError(err)) {
+          this.toast.error(
+            'Falha ao carregar áreas',
+            this.extractDetail(err, 'Nao foi possivel carregar as áreas temáticas.')
           )
-      ),
-      catchError((err: unknown) => {
-        this.toast.error(
-          'Falha ao carregar unidades',
-          this.extractDetail(err, 'Nao foi possivel carregar as unidades da UNIRIO.')
-        )
+        }
         return of([])
       }),
       shareReplay({ bufferSize: 1, refCount: false })
     )
 
-  private readonly coursesCache$ = this.http
-    .get<IApiResponse<ICoursesCatalogueItem[]>>(EDITAIS_ROUTES.listCourses, {
+  private readonly centersCache$ = this.http
+    .get<IApiResponse<IUnitsCatalogueItem[]>>(EDITAIS_ROUTES.listCenters, {
       params: this.catalogueParams
     })
     .pipe(
-      map(res => this.mapCoursesCatalogue(res?.data || [])),
-      catchError(() => of([])),
+      map(res => this.mapCentersCatalogue(res?.data || [])),
+      catchError((err: unknown) => {
+        if (!this.isCatalogueEmptyError(err)) {
+          this.toast.error(
+            'Falha ao carregar centros',
+            this.extractDetail(err, 'Nao foi possivel carregar os centros da UNIRIO.')
+          )
+        }
+        return of([])
+      }),
       shareReplay({ bufferSize: 1, refCount: false })
     )
+
+  private readonly academicUnitsCache$ = this.requestAcademicUnits()
+    .pipe(shareReplay({ bufferSize: 1, refCount: false }))
+
+  private readonly unitsCache$ = forkJoin({
+    centers: this.centersCache$,
+    academicUnits: this.academicUnitsCache$
+  }).pipe(
+    map(({ centers, academicUnits }) => this.mergeUnitsCatalogues(centers, academicUnits)),
+    shareReplay({ bufferSize: 1, refCount: false })
+  )
+
+  private readonly coursesCache$ = this.requestCourses().pipe(
+    shareReplay({ bufferSize: 1, refCount: false })
+  )
 
   listProjects(filters?: IProjectFilters): Observable<IProject[]> {
     const params = this.buildProjectsParams(filters)
@@ -220,7 +233,7 @@ export class ProjectsService {
       })
     }).pipe(
       map(({ areas, units, courses, projectsResponse }) => {
-        const summaries = projectsResponse?.data?.projetos || []
+        const summaries = this.extractProjectsList(projectsResponse?.data)
         return this.mapSummariesToProjects(summaries, areas, units, courses)
       }),
       catchError((err: unknown) => {
@@ -233,16 +246,52 @@ export class ProjectsService {
     )
   }
 
-  listUnits(): Observable<IOrganizationalUnit[]> {
-    return this.unitsCache$
+  listUnits(centerIds?: number[]): Observable<IOrganizationalUnit[]> {
+    const normalizedCenterIds = this.normalizeIdArray(centerIds)
+    if (!normalizedCenterIds.length) {
+      return this.unitsCache$
+    }
+
+    const cacheKey = normalizedCenterIds.join(',')
+    const cached = this.unitsByCenterCache.get(cacheKey)
+    if (cached) {
+      return cached
+    }
+
+    const request$ = forkJoin({
+      centers: this.centersCache$,
+      academicUnits: this.requestAcademicUnits(normalizedCenterIds)
+    }).pipe(
+      map(({ centers, academicUnits }) => this.mergeUnitsCatalogues(centers, academicUnits)),
+      shareReplay({ bufferSize: 1, refCount: false })
+    )
+
+    this.unitsByCenterCache.set(cacheKey, request$)
+    return request$
   }
 
   listAreas(): Observable<IProjectArea[]> {
     return this.areasCache$
   }
 
-  listCourses(): Observable<ICourse[]> {
-    return this.coursesCache$
+  listCourses(unitIds?: number[]): Observable<ICourse[]> {
+    const normalizedUnitIds = this.normalizeIdArray(unitIds)
+    if (!normalizedUnitIds.length) {
+      return this.coursesCache$
+    }
+
+    const cacheKey = normalizedUnitIds.join(',')
+    const cached = this.coursesByUnitCache.get(cacheKey)
+    if (cached) {
+      return cached
+    }
+
+    const request$ = this.requestCourses(normalizedUnitIds).pipe(
+      shareReplay({ bufferSize: 1, refCount: false })
+    )
+
+    this.coursesByUnitCache.set(cacheKey, request$)
+    return request$
   }
 
   getProjectDetails(project: IProject): Observable<IProject> {
@@ -263,7 +312,7 @@ export class ProjectsService {
     return of({ success: true as const, id }).pipe(delay(800))
   }
 
-  private fetchProjectDetails(projectId: number): Observable<IProjectDetailsPayload['projeto']> {
+  private fetchProjectDetails(projectId: number): Observable<IProjectDetails> {
     const cachedRequest = this.projectDetailsCache.get(projectId)
     if (cachedRequest) return cachedRequest
 
@@ -271,7 +320,7 @@ export class ProjectsService {
       .get<IApiResponse<IProjectDetailsPayload>>(EDITAIS_ROUTES.projectDetails(projectId))
       .pipe(
         map(response => {
-          const project = response?.data?.projeto
+          const project = this.extractProjectDetails(response?.data)
           if (!project) {
             throw new Error('Project details payload is empty')
           }
@@ -286,6 +335,102 @@ export class ProjectsService {
 
     this.projectDetailsCache.set(projectId, request$)
     return request$
+  }
+
+  private requestAcademicUnits(centerIds?: number[]): Observable<IOrganizationalUnit[]> {
+    let params = this.catalogueParams
+    params = this.appendArrayQueryParam(params, 'centro_ids', centerIds)
+
+    return this.http
+      .get<IApiResponse<IUnitsCatalogueItem[]>>(EDITAIS_ROUTES.listUnits, {
+        params
+      })
+      .pipe(
+        map(res =>
+          this.mapUnitsCatalogue(res?.data || []).filter(unit => this.isAcademicUnit(unit.type))
+        ),
+        catchError((err: unknown) => {
+          if (!this.isCatalogueEmptyError(err)) {
+            this.toast.error(
+              'Falha ao carregar unidades',
+              this.extractDetail(err, 'Nao foi possivel carregar as unidades da UNIRIO.')
+            )
+          }
+          return of([])
+        })
+      )
+  }
+
+  private requestCourses(unitIds?: number[]): Observable<ICourse[]> {
+    let params = this.catalogueParams
+    params = this.appendArrayQueryParam(params, 'unidade_ids', unitIds)
+
+    return this.http
+      .get<IApiResponse<ICoursesCatalogueItem[]>>(EDITAIS_ROUTES.listCourses, {
+        params
+      })
+      .pipe(
+        map(res => this.mapCoursesCatalogue(res?.data || [])),
+        catchError((err: unknown) => {
+          if (!this.isCatalogueEmptyError(err)) {
+            this.toast.error(
+              'Falha ao carregar cursos',
+              this.extractDetail(err, 'Nao foi possivel carregar os cursos da UNIRIO.')
+            )
+          }
+          return of([])
+        })
+      )
+  }
+
+  private extractProjectsList(payload: IProjectsListPayload | undefined): IProjectsListItem[] {
+    if (!payload) {
+      return []
+    }
+
+    if (Array.isArray(payload.projects)) {
+      return payload.projects
+    }
+
+    if (Array.isArray(payload.projetos)) {
+      return payload.projetos
+    }
+
+    return []
+  }
+
+  private extractProjectDetails(payload: IProjectDetailsPayload | undefined): IProjectDetails | undefined {
+    return payload?.project || payload?.projeto
+  }
+
+  private mergeUnitsCatalogues(
+    centers: IOrganizationalUnit[],
+    academicUnits: IOrganizationalUnit[]
+  ): IOrganizationalUnit[] {
+    const unitsById = new Map<number, IOrganizationalUnit>()
+
+    for (const unit of [...centers, ...academicUnits]) {
+      unitsById.set(unit.id, unit)
+    }
+
+    return [...unitsById.values()]
+  }
+
+  private normalizeIdArray(ids: number[] | undefined): number[] {
+    if (!ids?.length) {
+      return []
+    }
+
+    const uniqueIds = new Set(ids.filter(id => Number.isInteger(id) && id > 0))
+    return [...uniqueIds].sort((a, b) => a - b)
+  }
+
+  private isCatalogueEmptyError(error: unknown): boolean {
+    return error instanceof HttpErrorResponse && error.status === 400
+  }
+
+  private isAcademicUnit(type: IOrganizationalUnit['type']): boolean {
+    return type === 'instituto' || type === 'escola'
   }
 
   private buildProjectsParams(filters?: IProjectFilters): HttpParams {
@@ -316,10 +461,10 @@ export class ProjectsService {
 
   private resolveUnitsForFilter(filters?: IProjectFilters): number[] {
     if (filters?.academicUnitIds?.length) {
-      return filters.academicUnitIds
+      return this.normalizeIdArray(filters.academicUnitIds)
     }
 
-    return filters?.centerIds || []
+    return this.normalizeIdArray(filters?.centerIds)
   }
 
   private appendArrayQueryParam(
@@ -346,11 +491,20 @@ export class ProjectsService {
     return undefined
   }
 
+  private mapCentersCatalogue(centers: IUnitsCatalogueItem[]): IOrganizationalUnit[] {
+    return centers.map(center => ({
+      id: center.id,
+      name: center.name,
+      short_name: center.short_name ?? undefined,
+      type: 'centro'
+    }))
+  }
+
   private mapUnitsCatalogue(units: IUnitsCatalogueItem[]): IOrganizationalUnit[] {
     return units.map(unit => ({
       id: unit.id,
       name: unit.name,
-      short_name: unit.short_name,
+      short_name: unit.short_name ?? undefined,
       type: this.normalizeUnitType(unit.type),
       parent_unit_id: unit.parent_unit_id ?? undefined
     }))
@@ -363,7 +517,7 @@ export class ProjectsService {
       coursesById.set(course.id, {
         id: course.id,
         name: course.name,
-        code: course.code,
+        code: course.code ?? undefined,
         level: this.normalizeCourseLevel(course.level, course.name),
         unit_id: course.offering_unit_id ?? course.unit_id
       })
@@ -382,7 +536,10 @@ export class ProjectsService {
     const coursesById = new Map(courses.map(course => [course.id, course]))
 
     return summaries.map(summary => {
-      const mappedAreas = summary.area_ids.map(areaId => {
+      const areaIds = Array.isArray(summary.area_ids) ? summary.area_ids : []
+      const courseIds = Array.isArray(summary.course_ids) ? summary.course_ids : []
+
+      const mappedAreas = areaIds.map(areaId => {
         const area = areasById.get(areaId)
         if (area) return area
 
@@ -393,7 +550,7 @@ export class ProjectsService {
         }
       })
 
-      const mappedCourses: ICourse[] = summary.course_ids.map(courseId => {
+      const mappedCourses: ICourse[] = courseIds.map(courseId => {
         const course = coursesById.get(courseId)
         if (course) {
           return course
@@ -438,8 +595,8 @@ export class ProjectsService {
     })
   }
 
-  private mergeDetails(project: IProject, details: IProjectDetailsPayload['projeto']): IProject {
-    const images = this.parseJsonArray<IProjectDetailsImage>(details.imagens)
+  private mergeDetails(project: IProject, details: IProjectDetails): IProject {
+    const images = this.parseJsonArray<IProjectDetailsImage>(details.images ?? details.imagens)
     const cover = images.find(image => image.image_type === 'cover')
 
     const areas = this.parseJsonArray<IProjectDetailsArea>(details.areas).map(area => ({
@@ -448,11 +605,13 @@ export class ProjectsService {
       slug: area.slug
     }))
 
-    const courses: ICourse[] = this.parseJsonArray<IProjectDetailsCourse>(details.cursos).map(
+    const courses: ICourse[] = this.parseJsonArray<IProjectDetailsCourse>(
+      details.courses ?? details.cursos
+    ).map(
       course => ({
         id: course.id,
         name: course.name,
-        code: course.code,
+        code: course.code ?? undefined,
         level: this.normalizeCourseLevel(course.level, course.name),
         unit_id: course.unit_id ?? course.offering_unit_id
       })
