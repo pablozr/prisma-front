@@ -50,7 +50,10 @@ interface IProjectsListItem {
   title: string
   short_description?: string
   full_description?: string
+  contact_email?: string | null
   owner_professor_name?: string
+  owner_professor_email?: string | null
+  owner_professor_institutional_email?: string | null
   executing_unit_name?: string
   area_ids: number[]
   course_ids: number[]
@@ -696,10 +699,15 @@ export class ProjectsService {
         }
       })
 
+      const ownerProfessorEmail =
+        summary.owner_professor_institutional_email?.trim() ||
+        summary.owner_professor_email?.trim() ||
+        ''
+
       const ownerProfessor: IProfessor = {
         id: 0,
         full_name: summary.owner_professor_name || 'Professor(a) nao informado(a)',
-        institutional_email: ''
+        institutional_email: ownerProfessorEmail
       }
 
       const executingUnit = this.resolveExecutingUnit(summary.executing_unit_name, units)
@@ -711,7 +719,7 @@ export class ProjectsService {
         title: summary.title,
         short_description: summary.short_description,
         full_description: summary.full_description,
-        contact_email: '',
+        contact_email: summary.contact_email?.trim() || ownerProfessorEmail,
         status: this.normalizeStatus(summary.status),
         is_active: true,
         starts_at: summary.starts_at,

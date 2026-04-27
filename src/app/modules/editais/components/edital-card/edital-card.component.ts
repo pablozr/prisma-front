@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core'
 import { CommonModule } from '@angular/common'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { map } from 'rxjs'
 import { IProject } from '../../interfaces/IProject'
 import { UsersService } from '../../../global/services/users/users.service'
 
@@ -15,6 +17,10 @@ type DeadlineState = 'open' | 'closing_soon' | 'closed' | 'upcoming'
 })
 export class EditalCardComponent {
   private usersService = inject(UsersService)
+  private readonly viewerRole = toSignal(
+    this.usersService.user$.pipe(map(session => session?.user?.role ?? null)),
+    { initialValue: this.usersService.currentUser?.user?.role ?? null }
+  )
 
   @Input({ required: true }) project!: IProject
   @Input() prioritizeCover = false
@@ -22,7 +28,7 @@ export class EditalCardComponent {
   @Output() details = new EventEmitter<IProject>()
 
   get canContact(): boolean {
-    const role = this.usersService.currentUser?.user?.role
+    const role = this.viewerRole()
     const hasContact = !!this.project.contact_email?.trim()
     return hasContact && (role === 'student' || role === 'admin')
   }
