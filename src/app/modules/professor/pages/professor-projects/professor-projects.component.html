@@ -1,4 +1,5 @@
 <div class="professor-shell">
+  <p-confirmDialog appendTo="body"></p-confirmDialog>
   <app-header></app-header>
 
   <main class="professor-page">
@@ -8,7 +9,7 @@
       <div>
         <p class="professor-hero__eyebrow">Área docente</p>
         <h1 class="professor-hero__title">Gestão de projetos</h1>
-        <p class="professor-hero__lead">Atualize informações dos seus projetos, capa e atribuições.</p>
+        <p class="professor-hero__lead">Gerencie um projeto por vez, com fluxo mais simples e organizado.</p>
       </div>
       <span class="professor-hero__total">{{ total }} projetos</span>
     </header>
@@ -30,72 +31,26 @@
     } @else {
       <section class="professor-grid">
         @for (project of projects; track project.id) {
-          <article class="professor-card">
+          <article class="professor-card professor-card--compact">
             <header class="professor-card__header">
               <h2>{{ project.title }}</h2>
               <span class="professor-badge">{{ project.status || 'draft' }}</span>
             </header>
-
-            <label>Título</label>
-            <input type="text" class="professor-input" [(ngModel)]="editByProjectId[project.id].titulo" maxlength="255" />
-
-            <label>Descrição</label>
-            <textarea
-              rows="4"
-              class="professor-input"
-              maxlength="10000"
-              [(ngModel)]="editByProjectId[project.id].descricao"
-            ></textarea>
-
-            <button type="button" class="professor-btn" (click)="saveProject(project)">Salvar projeto</button>
-
-            <div class="professor-divider"></div>
-
-            <label>URL da logo</label>
-            <input type="url" class="professor-input" maxlength="2048" [(ngModel)]="editByProjectId[project.id].image_url" />
-
-            <label>Texto alternativo</label>
-            <input type="text" class="professor-input" maxlength="255" [(ngModel)]="editByProjectId[project.id].alt_text" />
-
-            <button type="button" class="professor-btn professor-btn--ghost" (click)="saveLogo(project.id)">
-              Salvar logo
-            </button>
-
-            <div class="professor-divider"></div>
-
-            <h3>Atribuições</h3>
-            <ul class="professor-list">
-              @for (assignment of assignmentsByProjectId[project.id] || []; track assignment.atribuicao_id) {
-                <li>
-                  <p>{{ assignment.descricao }}</p>
-                  <small>Cursos: {{ assignment.curso_ids.join(', ') }}</small>
-                  <button
-                    type="button"
-                    class="professor-link"
-                    (click)="deleteAssignment(project.id, assignment.atribuicao_id)"
-                  >
-                    Remover
-                  </button>
-                </li>
+            <p class="professor-card__summary">{{ getProjectSummary(project) }}</p>
+            <p class="professor-card__desc">{{ getProjectDescription(project) }}</p>
+            <div class="professor-card__meta">
+              <span>
+                <i class="pi pi-sitemap" aria-hidden="true"></i>
+                {{ assignmentCountByProjectId[project.id] || 0 }} atribuição(ões)
+              </span>
+              @if (project.vacancies != null) {
+                <span>
+                  <i class="pi pi-users" aria-hidden="true"></i>
+                  {{ project.vacancies }} vaga(s)
+                </span>
               }
-            </ul>
-
-            <label>Nova atribuição</label>
-            <textarea
-              rows="3"
-              class="professor-input"
-              maxlength="1000"
-              [(ngModel)]="newAssignmentByProjectId[project.id].descricao"
-            ></textarea>
-            <label>IDs de curso (separados por vírgula)</label>
-            <input
-              type="text"
-              class="professor-input"
-              [(ngModel)]="newAssignmentByProjectId[project.id].curso_ids"
-            />
-            <button type="button" class="professor-btn" (click)="createAssignment(project.id)">
-              Criar atribuição
-            </button>
+            </div>
+            <button type="button" class="professor-btn" (click)="openManager(project.id)">Gerenciar</button>
           </article>
         }
       </section>
@@ -108,5 +63,199 @@
         </nav>
       }
     }
+
+    <p-dialog
+      [visible]="managerVisible"
+      (visibleChange)="managerVisible = $event; !$event && closeManager()"
+      [modal]="true"
+      [draggable]="false"
+      [dismissableMask]="true"
+      [closable]="false"
+      [closeOnEscape]="true"
+      [blockScroll]="true"
+      [baseZIndex]="12000"
+      appendTo="body"
+      position="center"
+      styleClass="professor-manager"
+      [breakpoints]="{ '1024px': '96vw', '640px': '100vw' }"
+      [style]="{ width: '960px', maxWidth: '96vw' }"
+      [contentStyle]="{ 'max-height': 'calc(100vh - 8rem)', overflow: 'auto' }"
+    >
+      <ng-template pTemplate="header">
+        @if (managerProject; as project) {
+          <div class="professor-manager__header">
+            <div>
+              <span class="professor-manager__eyebrow">Projeto</span>
+              <h2>{{ project.title }}</h2>
+              <p>{{ getProjectSummary(project) }}</p>
+            </div>
+            <button type="button" class="professor-manager__close" (click)="closeManager()" aria-label="Fechar">
+              <i class="pi pi-times" aria-hidden="true"></i>
+            </button>
+          </div>
+        }
+      </ng-template>
+
+      @if (managerProject; as project) {
+        <div class="professor-manager__body">
+          <section class="professor-section">
+            <header class="professor-section__head">
+              <h3>Dados do projeto</h3>
+              <button
+                type="button"
+                class="professor-btn"
+                [disabled]="savingProjectById[project.id]"
+                (click)="saveProject(project)"
+              >
+                {{ savingProjectById[project.id] ? 'Salvando...' : 'Salvar dados' }}
+              </button>
+            </header>
+
+            <label>Título</label>
+            <input type="text" class="professor-input" [(ngModel)]="editByProjectId[project.id].titulo" maxlength="255" />
+
+            <label>Descrição</label>
+            <textarea
+              rows="4"
+              class="professor-input"
+              maxlength="10000"
+              [(ngModel)]="editByProjectId[project.id].descricao"
+            ></textarea>
+          </section>
+
+          <section class="professor-section">
+            <header class="professor-section__head">
+              <h3>Capa</h3>
+              <button
+                type="button"
+                class="professor-btn professor-btn--ghost"
+                [disabled]="savingLogoById[project.id]"
+                (click)="saveLogo(project.id)"
+              >
+                {{ savingLogoById[project.id] ? 'Salvando...' : 'Salvar capa' }}
+              </button>
+            </header>
+
+            @if (editByProjectId[project.id].image_url) {
+              <figure class="professor-cover-preview">
+                <img [src]="editByProjectId[project.id].image_url" [alt]="editByProjectId[project.id].alt_text || project.title" />
+              </figure>
+            }
+
+            <label>URL da imagem</label>
+            <input
+              type="url"
+              class="professor-input"
+              maxlength="2048"
+              placeholder="https://exemplo.com/capa-do-projeto.jpg"
+              [(ngModel)]="editByProjectId[project.id].image_url"
+            />
+
+            <label>Texto alternativo</label>
+            <input
+              type="text"
+              class="professor-input"
+              maxlength="255"
+              placeholder="Descreva a imagem para acessibilidade"
+              [(ngModel)]="editByProjectId[project.id].alt_text"
+            />
+          </section>
+
+          <section class="professor-section">
+            <header class="professor-section__head">
+              <h3>Atribuições</h3>
+              <button
+                type="button"
+                class="professor-btn professor-btn--ghost"
+                (click)="toggleNewAssignmentForm(project.id)"
+              >
+                {{ showNewAssignmentFormByProjectId[project.id] ? 'Cancelar nova atribuição' : 'Nova atribuição' }}
+              </button>
+            </header>
+
+            @if (loadingAssignmentsByProjectId[project.id]) {
+              <p class="professor-loading">Carregando atribuições...</p>
+            } @else {
+              <ul class="professor-list">
+                @if (!(assignmentsByProjectId[project.id] || []).length) {
+                  <li class="professor-list__empty">Nenhuma atribuição cadastrada para este projeto.</li>
+                } @else {
+                  @for (assignment of assignmentsByProjectId[project.id] || []; track assignment.atribuicao_id) {
+                    <li>
+                      <div class="professor-assignment__header">
+                        <div class="professor-assignment__title">
+                          <strong>Atribuição #{{ assignment.atribuicao_id }}</strong>
+                          <small>{{ assignment.curso_ids.length }} curso(s)</small>
+                        </div>
+                        <button
+                          type="button"
+                          class="professor-icon-btn"
+                          aria-label="Remover atribuição"
+                          [disabled]="isDeletingAssignment(project.id, assignment.atribuicao_id)"
+                          (click)="deleteAssignment(project.id, assignment.atribuicao_id)"
+                        >
+                          <i class="pi pi-trash" aria-hidden="true"></i>
+                        </button>
+                      </div>
+                      <p>{{ assignment.descricao }}</p>
+                      <small>Cursos vinculados: {{ getCourseNames(assignment.curso_ids) }}</small>
+                    </li>
+                  }
+                }
+              </ul>
+            }
+
+            @if (showNewAssignmentFormByProjectId[project.id]) {
+              <div class="professor-assignment-builder">
+                <h4>Nova atribuição</h4>
+                <p>Descreva a tarefa e selecione os cursos que devem receber esta atribuição.</p>
+
+                <label>Descrição da atribuição</label>
+                <textarea
+                  rows="3"
+                  class="professor-input"
+                  maxlength="1000"
+                  placeholder="Ex.: acompanhar as inscrições e validar os documentos enviados"
+                  [(ngModel)]="newAssignmentByProjectId[project.id].descricao"
+                ></textarea>
+
+                <label>Cursos</label>
+                <p-multiSelect
+                  styleClass="professor-courses-select"
+                  [options]="courses"
+                  [(ngModel)]="newAssignmentByProjectId[project.id].curso_ids"
+                  optionLabel="name"
+                  optionValue="id"
+                  placeholder="Selecione os cursos"
+                  display="chip"
+                  [showClear]="true"
+                  [maxSelectedLabels]="1"
+                  selectedItemsLabel="{0} selecionados"
+                  appendTo="body"
+                  [filter]="true"
+                  emptyMessage="Nenhum curso encontrado"
+                  emptyFilterMessage="Nenhum curso corresponde"
+                />
+
+                @if (newAssignmentByProjectId[project.id].curso_ids.length) {
+                  <small class="professor-helper">
+                    Selecionados: {{ getCourseNames(newAssignmentByProjectId[project.id].curso_ids) }}
+                  </small>
+                }
+
+                <button
+                  type="button"
+                  class="professor-btn"
+                  [disabled]="creatingAssignmentById[project.id]"
+                  (click)="createAssignment(project.id)"
+                >
+                  {{ creatingAssignmentById[project.id] ? 'Criando...' : 'Criar atribuição' }}
+                </button>
+              </div>
+            }
+          </section>
+        </div>
+      }
+    </p-dialog>
   </main>
 </div>

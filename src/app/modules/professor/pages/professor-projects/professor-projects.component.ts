@@ -1,6 +1,10 @@
 import { CommonModule } from '@angular/common'
 import { Component, OnInit, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { ConfirmationService } from 'primeng/api'
+import { ConfirmDialogModule } from 'primeng/confirmdialog'
+import { DialogModule } from 'primeng/dialog'
+import { MultiSelectModule } from 'primeng/multiselect'
 import { HeaderComponent } from '../../../global/components/header/header.component'
 import {
   BreadcrumbsComponent,
@@ -9,6 +13,7 @@ import {
 import { AppToastService } from '../../../global/services/toast/app-toast.service'
 import {
   IProfessorProject,
+  IProfessorCourse,
   IProfessorProjectAssignment
 } from '../../interfaces/IProfessorProject'
 import { ProfessorProjectsService } from '../../services/professor-projects/professor-projects.service'
@@ -16,13 +21,15 @@ import { ProfessorProjectsService } from '../../services/professor-projects/prof
 @Component({
   selector: 'app-professor-projects',
   standalone: true,
-  imports: [CommonModule, FormsModule, HeaderComponent, BreadcrumbsComponent],
+  imports: [CommonModule, FormsModule, ConfirmDialogModule, DialogModule, MultiSelectModule, HeaderComponent, BreadcrumbsComponent],
+  providers: [ConfirmationService],
   templateUrl: './professor-projects.component.html',
   styleUrl: './professor-projects.component.scss'
 })
 export class ProfessorProjectsComponent implements OnInit {
   private projectsService = inject(ProfessorProjectsService)
   private toast = inject(AppToastService)
+  private confirmationService = inject(ConfirmationService)
 
   readonly breadcrumbs: IBreadcrumbItem[] = [
     { label: 'Início', route: '/home', icon: 'pi pi-home' },
@@ -30,8 +37,17 @@ export class ProfessorProjectsComponent implements OnInit {
   ]
 
   projects: IProfessorProject[] = []
+  courses: IProfessorCourse[] = []
   assignmentsByProjectId: Record<number, IProfessorProjectAssignment[]> = {}
+  assignmentCountByProjectId: Record<number, number> = {}
   loading = true
+  loadingAssignmentsByProjectId: Record<number, boolean> = {}
+  assignmentsLoadedByProjectId: Record<number, boolean> = {}
+
+  savingProjectById: Record<number, boolean> = {}
+  savingLogoById: Record<number, boolean> = {}
+  creatingAssignmentById: Record<number, boolean> = {}
+  deletingAssignmentById: Record<number, Record<number, boolean>> = {}
 
   page = 1
   pageSize = 10
@@ -39,8 +55,12 @@ export class ProfessorProjectsComponent implements OnInit {
   total = 0
   search = ''
 
+  managerVisible = false
+  managerProjectId: number | null = null
+  showNewAssignmentFormByProjectId: Record<number, boolean> = {}
+
   editByProjectId: Record<number, { titulo: string; descricao: string; image_url: string; alt_text: string }> = {}
-  newAssignmentByProjectId: Record<number, { descricao: string; curso_ids: string }> = {}
+  newAssignmentByProjectId: Record<number, { descricao: string; curso_ids: number[] }> = {}
 
   private readonly TITLE_MIN = 3
   private readonly TITLE_MAX = 255
@@ -52,7 +72,14 @@ export class ProfessorProjectsComponent implements OnInit {
   private readonly ASSIGNMENT_DESCRIPTION_MAX = 1000
 
   ngOnInit() {
+    this.loadCourses()
     this.fetchProjects()
+  }
+
+  loadCourses() {
+    this.projectsService.listCourses().subscribe(courses => {
+      this.courses = courses
+    })
   }
 
   fetchProjects() {
@@ -68,16 +95,33 @@ export class ProfessorProjectsComponent implements OnInit {
         this.editByProjectId[project.id] = {
           titulo: project.title || '',
           descricao: project.full_description || '',
-          image_url: '',
-          alt_text: ''
+          image_url: project.cover_image_url || '',
+          alt_text: project.cover_image_alt_text || ''
         }
         this.newAssignmentByProjectId[project.id] = {
           descricao: '',
-          curso_ids: ''
+          curso_ids: []
         }
-        this.loadAssignments(project.id)
+        this.showNewAssignmentFormByProjectId[project.id] = false
+        this.assignmentCountByProjectId[project.id] = this.assignmentCountByProjectId[project.id] || 0
       }
     })
+  }
+
+  openManager(projectId: number) {
+    this.managerProjectId = projectId
+    this.managerVisible = true
+    this.ensureAssignmentsLoaded(projectId)
+  }
+
+  closeManager() {
+    this.managerVisible = false
+    this.managerProjectId = null
+  }
+
+  get managerProject(): IProfessorProject | null {
+    if (!this.managerProjectId) return null
+    return this.projects.find(project => project.id === this.managerProjectId) || null
   }
 
   onSearch() {
@@ -92,9 +136,18 @@ export class ProfessorProjectsComponent implements OnInit {
   }
 
   loadAssignments(projectId: number) {
+    this.loadingAssignmentsByProjectId[projectId] = true
     this.projectsService.listAssignments(projectId).subscribe(assignments => {
       this.assignmentsByProjectId[projectId] = assignments
+      this.assignmentCountByProjectId[projectId] = assignments.length
+      this.assignmentsLoadedByProjectId[projectId] = true
+      this.loadingAssignmentsByProjectId[projectId] = false
     })
+  }
+
+  ensureAssignmentsLoaded(projectId: number) {
+    if (this.assignmentsLoadedByProjectId[projectId]) return
+    this.loadAssignments(projectId)
   }
 
   saveProject(project: IProfessorProject) {
@@ -127,11 +180,20 @@ export class ProfessorProjectsComponent implements OnInit {
       return
     }
 
-    this.projectsService.updateProject(project.id, payload).subscribe(updated => {
-      if (updated) {
-        this.projects = this.projects.map(item => (item.id === project.id ? updated : item))
+    this.savingProjectById[project.id] = true
+    this.projectsService.updateProject(project.id, payload).subscribe({
+      next: updated => {
+        if (updated) {
+          this.projects = this.projects.map(item => (item.id === project.id ? updated : item))
+        }
+        this.toast.success('Projeto atualizado', 'Dados salvos com sucesso.')
+      },
+      error: () => {
+        this.savingProjectById[project.id] = false
+      },
+      complete: () => {
+        this.savingProjectById[project.id] = false
       }
-      this.toast.success('Projeto atualizado', 'Dados salvos com sucesso.')
     })
   }
 
@@ -155,15 +217,24 @@ export class ProfessorProjectsComponent implements OnInit {
       return
     }
 
+    this.savingLogoById[projectId] = true
     this.projectsService
       .updateLogo(projectId, {
         image_url: imageUrl,
         alt_text: altText || undefined
       })
-      .subscribe(() => {
-        this.toast.success('Logo atualizada', 'A imagem de capa foi atualizada.')
-        this.editByProjectId[projectId].image_url = ''
-        this.editByProjectId[projectId].alt_text = ''
+      .subscribe({
+        next: () => {
+          this.toast.success('Logo atualizada', 'A imagem de capa foi atualizada.')
+          this.editByProjectId[projectId].image_url = imageUrl
+          this.editByProjectId[projectId].alt_text = altText
+        },
+        error: () => {
+          this.savingLogoById[projectId] = false
+        },
+        complete: () => {
+          this.savingLogoById[projectId] = false
+        }
       })
   }
 
@@ -172,12 +243,7 @@ export class ProfessorProjectsComponent implements OnInit {
     if (!draft) return
 
     const descricao = draft.descricao.trim()
-    const rawCursoIds = draft.curso_ids
-      .split(',')
-      .map(value => Number(value.trim()))
-      .filter(value => Number.isInteger(value) && value > 0)
-
-    const cursoIds = Array.from(new Set(rawCursoIds))
+    const cursoIds = Array.from(new Set(draft.curso_ids || []))
 
     if (descricao.length < this.ASSIGNMENT_DESCRIPTION_MIN || descricao.length > this.ASSIGNMENT_DESCRIPTION_MAX) {
       this.toast.warn(
@@ -188,29 +254,87 @@ export class ProfessorProjectsComponent implements OnInit {
     }
 
     if (!descricao || !cursoIds.length) {
-      this.toast.warn('Atribuicao invalida', 'Preencha descricao e IDs de curso validos.')
+      this.toast.warn('Atribuicao invalida', 'Preencha descricao e selecione ao menos um curso.')
       return
     }
 
-    if (cursoIds.length !== rawCursoIds.length) {
-      this.toast.warn('Atribuicao invalida', 'Nao repita IDs de curso na mesma atribuicao.')
-      return
-    }
-
-    this.projectsService.createAssignment(projectId, { descricao, curso_ids: cursoIds }).subscribe(() => {
-      this.toast.success('Atribuicao criada', 'Nova atribuicao registrada com sucesso.')
-      this.newAssignmentByProjectId[projectId] = { descricao: '', curso_ids: '' }
-      this.loadAssignments(projectId)
+    this.creatingAssignmentById[projectId] = true
+    this.projectsService.createAssignment(projectId, { descricao, curso_ids: cursoIds }).subscribe({
+      next: () => {
+        this.toast.success('Atribuicao criada', 'Nova atribuicao registrada com sucesso.')
+        this.newAssignmentByProjectId[projectId] = { descricao: '', curso_ids: [] }
+        this.showNewAssignmentFormByProjectId[projectId] = false
+        this.loadAssignments(projectId)
+      },
+      error: () => {
+        this.creatingAssignmentById[projectId] = false
+      },
+      complete: () => {
+        this.creatingAssignmentById[projectId] = false
+      }
     })
   }
 
   deleteAssignment(projectId: number, assignmentId: number) {
-    this.projectsService.deleteAssignment(assignmentId).subscribe(() => {
-      this.toast.success('Atribuicao removida', 'A atribuicao foi desativada.')
-      this.assignmentsByProjectId[projectId] = (this.assignmentsByProjectId[projectId] || []).filter(
-        item => item.atribuicao_id !== assignmentId
-      )
+    this.confirmationService.confirm({
+      header: 'Remover atribuicao',
+      message: 'Deseja remover esta atribuicao? Essa acao nao pode ser desfeita.',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Remover',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-text',
+      accept: () => this.executeDeleteAssignment(projectId, assignmentId)
     })
+  }
+
+  private executeDeleteAssignment(projectId: number, assignmentId: number) {
+    this.deletingAssignmentById[projectId] = this.deletingAssignmentById[projectId] || {}
+    this.deletingAssignmentById[projectId][assignmentId] = true
+
+    this.projectsService.deleteAssignment(assignmentId).subscribe({
+      next: () => {
+        this.toast.success('Atribuicao removida', 'A atribuicao foi desativada.')
+        this.assignmentsByProjectId[projectId] = (this.assignmentsByProjectId[projectId] || []).filter(
+          item => item.atribuicao_id !== assignmentId
+        )
+        this.assignmentCountByProjectId[projectId] = (this.assignmentsByProjectId[projectId] || []).length
+      },
+      error: () => {
+        this.deletingAssignmentById[projectId][assignmentId] = false
+      },
+      complete: () => {
+        this.deletingAssignmentById[projectId][assignmentId] = false
+      }
+    })
+  }
+
+  toggleNewAssignmentForm(projectId: number) {
+    this.showNewAssignmentFormByProjectId[projectId] = !this.showNewAssignmentFormByProjectId[projectId]
+  }
+
+  isDeletingAssignment(projectId: number, assignmentId: number): boolean {
+    return !!this.deletingAssignmentById[projectId]?.[assignmentId]
+  }
+
+  getProjectSummary(project: IProfessorProject): string {
+    const parts: string[] = []
+    if (project.process_code) parts.push(project.process_code)
+    if (project.modality) parts.push(project.modality)
+    if (project.weekly_hours != null) parts.push(`${project.weekly_hours}h/sem.`)
+    return parts.join(' · ') || 'Sem metadados complementares'
+  }
+
+  getProjectDescription(project: IProfessorProject): string {
+    return (project.short_description || project.full_description || '').trim() || 'Sem descricao cadastrada.'
+  }
+
+  getCourseNames(courseIds: number[]): string {
+    if (!courseIds.length) return '-'
+    const names = courseIds
+      .map(courseId => this.courses.find(course => course.id === courseId)?.name || `Curso #${courseId}`)
+      .filter(Boolean)
+    return names.join(', ')
   }
 
   private isHttpUrl(value: string) {
