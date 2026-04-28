@@ -1,6 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core'
+import { Component, OnDestroy, OnInit, inject } from '@angular/core'
 import { InputTextModule } from 'primeng/inputtext'
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms'
 import { ButtonModule } from 'primeng/button'
 import { Router, RouterLink } from '@angular/router'
 import { CommonModule } from '@angular/common'
@@ -14,6 +14,26 @@ import { RippleModule } from 'primeng/ripple'
 
 type SigninTab = 'community' | 'admin'
 
+declare global {
+  interface Window {
+    google?: {
+      accounts?: {
+        id?: {
+          initialize(config: { client_id: string; callback: (response: { credential?: string }) => void }): void
+          prompt(): void
+        }
+      }
+    }
+    SIEPA_GOOGLE_CLIENT_ID?: string
+  }
+}
+
+const noEdgeWhitespace: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  const value = control.value as string | null
+  if (!value) return null
+  return value === value.trim() ? null : { whitespaceEdges: true }
+}
+
 @Component({
   selector: 'app-signin',
   standalone: true,
@@ -21,7 +41,7 @@ type SigninTab = 'community' | 'admin'
   templateUrl: './signin.component.html',
   styleUrl: './signin.component.scss',
 })
-export class SigninComponent implements OnInit {
+export class SigninComponent implements OnInit, OnDestroy {
   private router = inject(Router)
   usersServices = inject(UsersService)
   private toast = inject(AppToastService)
@@ -33,12 +53,23 @@ export class SigninComponent implements OnInit {
   isInvalid = false
   visiblePassword = false
   activeTab: SigninTab = 'community'
+  private googleScriptEl?: HTMLScriptElement
+  private googleReady = false
 
   ngOnInit() {
     this.loginForm = new FormGroup({
-      email: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [Validators.required, Validators.maxLength(128)])
+      email: new FormControl('', [Validators.required, Validators.email, Validators.maxLength(254), noEdgeWhitespace]),
+      password: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(128), noEdgeWhitespace])
     })
+
+    this.loadGoogleScript()
+  }
+
+  ngOnDestroy() {
+    if (this.googleScriptEl) {
+      this.googleScriptEl.remove()
+      this.googleScriptEl = undefined
+    }
   }
 
   setTab(tab: SigninTab) {
@@ -49,7 +80,7 @@ export class SigninComponent implements OnInit {
 
   async onSubmit() {
     if (this.loginForm.invalid) {
-      this.toast.error('Formulário incompleto', 'Indique um e-mail válido e a palavra-passe.')
+      this.toast.error('Formulario invalido', 'Use um e-mail valido e uma palavra-passe entre 8 e 128 caracteres, sem espacos nas extremidades.')
       return
     }
     this.isLoading = true
@@ -70,13 +101,64 @@ export class SigninComponent implements OnInit {
   }
 
   async signinWithGoogle(credential?: string) {
-    if (!credential) {
-      this.toast.info('Google', 'Aguardando credencial do Google.')
+    if (!credential && !this.googleReady) {
+      this.toast.info('Google', 'A inicializacao do Google ainda nao terminou.')
       return
     }
+
+    if (!credential) {
+      window.google?.accounts?.id?.prompt()
+      return
+    }
+
     this.isLoading = true
     const ok = await this.usersServices.signinWithGoogle({ credential })
     this.isLoading = false
     if (ok) this.router.navigate([this.usersServices.getDefaultRoute()])
+  }
+
+  private loadGoogleScript() {
+    if (window.google?.accounts?.id) {
+      this.setupGoogleClient()
+      return
+    }
+
+    const script = document.createElement('script')
+    script.src = 'https://accounts.google.com/gsi/client'
+    script.async = true
+    script.defer = true
+    script.onload = () => this.setupGoogleClient()
+    script.onerror = () => this.toast.error('Google indisponivel', 'Nao foi possivel carregar a autenticacao Google.')
+    document.head.appendChild(script)
+    this.googleScriptEl = script
+  }
+
+  private setupGoogleClient() {
+    const clientId = window.SIEPA_GOOGLE_CLIENT_ID
+
+    if (!clientId) {
+      this.toast.error('Google nao configurado', 'Defina window.SIEPA_GOOGLE_CLIENT_ID para habilitar o login com Google.')
+      return
+    }
+
+    const googleClient = window.google?.accounts?.id
+    if (!googleClient) {
+      this.toast.error('Google indisponivel', 'Nao foi possivel inicializar o cliente do Google.')
+      return
+    }
+
+    googleClient.initialize({
+      client_id: clientId,
+      callback: ({ credential }) => {
+        if (credential) {
+          this.signinWithGoogle(credential)
+          return
+        }
+
+        this.toast.error('Google', 'Nao foi possivel obter a credencial da conta Google.')
+      }
+    })
+
+    this.googleReady = true
   }
 }
