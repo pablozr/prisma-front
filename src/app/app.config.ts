@@ -31,7 +31,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideAppInitializer(() => {
       const users = inject(UsersService)
-      users.rehydrateSession().catch(() => false)
+      return users.rehydrateSession().catch(() => false)
     }),
     providePrimeNG({
         translation: ptBR,
