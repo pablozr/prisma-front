@@ -4,6 +4,7 @@ import { Observable, catchError, map, of, throwError } from 'rxjs'
 import { API_BASE_URL } from '../../../global/constants/apiConfig'
 import { AppToastService } from '../../../global/services/toast/app-toast.service'
 import {
+  IProfessorCourse,
   IProfessorProject,
   IProfessorProjectAssignment,
   IProfessorProjectsPagination
@@ -23,6 +24,11 @@ interface IProjectsPayload {
 
 interface IAssignmentsPayload {
   atribuicoes?: IProfessorProjectAssignment[]
+}
+
+interface ICoursesPayload {
+  cursos?: IProfessorCourse[]
+  courses?: IProfessorCourse[]
 }
 
 interface IProjectPayload {
@@ -117,6 +123,22 @@ export class ProfessorProjectsService {
         catchError((err: unknown) => {
           this.toast.error('Falha ao criar atribuicao', this.extractDetail(err, 'Verifique os campos e tente novamente.'))
           return throwError(() => err)
+        })
+      )
+  }
+
+  listCourses(): Observable<IProfessorCourse[]> {
+    return this.http
+      .get<IApiEnvelope<ICoursesPayload | IProfessorCourse[]>>(`${API_BASE_URL}/catalogues/cursos`, this.withCreds)
+      .pipe(
+        map(res => {
+          const payload = res?.data
+          const courses = Array.isArray(payload) ? payload : payload?.cursos || payload?.courses || []
+          return [...courses].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
+        }),
+        catchError((err: unknown) => {
+          this.toast.error('Falha ao carregar cursos', this.extractDetail(err, 'Tente novamente.'))
+          return of([])
         })
       )
   }
