@@ -42,6 +42,13 @@ export interface IProjectImage {
   alt_text?: string
 }
 
+export interface IProjectAssignment {
+  atribuicao_id: number
+  projeto_id: number
+  descricao: string
+  curso_ids: number[]
+}
+
 export interface IProject {
   id: number
   process_code?: string
@@ -59,6 +66,7 @@ export interface IProject {
   executing_unit?: IOrganizationalUnit
   areas: IProjectArea[]
   courses: ICourse[]
+  assignments: IProjectAssignment[]
   cover?: IProjectImage
   vacancies?: number
   weekly_hours?: number

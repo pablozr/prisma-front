@@ -141,18 +141,16 @@
         </dl>
       </section>
 
-      @if (project.courses.length) {
+      @if (project.assignments.length) {
         <section class="details-dialog__section">
-          <h3 class="details-dialog__section-title">Cursos elegíveis</h3>
+          <h3 class="details-dialog__section-title">Atribuições</h3>
           <ul class="details-dialog__courses" role="list">
-            @for (course of project.courses; track course.id) {
-              <li class="details-dialog__course">
-                <i class="pi pi-graduation-cap" aria-hidden="true"></i>
+            @for (assignment of project.assignments; track assignment.atribuicao_id) {
+              <li class="details-dialog__course details-dialog__course--assignment">
+                <i class="pi pi-briefcase" aria-hidden="true"></i>
                 <div class="details-dialog__course-body">
-                  <span class="details-dialog__course-name">{{ course.name }}</span>
-                  <span class="details-dialog__course-level">
-                    {{ course.level === 'pos' ? 'Pós-graduação' : 'Graduação' }}
-                  </span>
+                  <span class="details-dialog__course-name">{{ assignment.descricao }}</span>
+                  <span class="details-dialog__course-level">Cursos: {{ getAssignmentCourses(assignment.curso_ids) }}</span>
                 </div>
               </li>
             }

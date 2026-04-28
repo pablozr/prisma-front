@@ -138,6 +138,16 @@ export class DetailsDialogComponent {
     })
   }
 
+  getAssignmentCourses(courseIds: number[]): string {
+    if (!this.project || !courseIds.length) return 'Nao informado'
+
+    const names = courseIds
+      .map(courseId => this.project?.courses.find(course => course.id === courseId)?.name || `Curso #${courseId}`)
+      .filter(Boolean)
+
+    return names.length ? names.join(', ') : 'Nao informado'
+  }
+
   close() {
     this.visible = false
     this.visibleChange.emit(false)

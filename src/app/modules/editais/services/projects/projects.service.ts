@@ -7,6 +7,7 @@ import {
   IOrganizationalUnit,
   IProfessor,
   IProject,
+  IProjectAssignment,
   IProjectArea,
   IProjectFilters
 } from '../../interfaces/IProject'
@@ -57,6 +58,7 @@ interface IProjectsListItem {
   executing_unit_name?: string
   area_ids: number[]
   course_ids: number[]
+  atribuicoes?: IProjectAssignment[] | string | null
   status?: string
   starts_at?: string
   ends_at?: string
@@ -144,6 +146,7 @@ interface IProjectDetails {
   areas: IProjectDetailsArea[] | string
   courses?: IProjectDetailsCourse[] | string
   cursos?: IProjectDetailsCourse[] | string
+  atribuicoes?: IProjectAssignment[] | string
   images?: IProjectDetailsImage[] | string
   imagens?: IProjectDetailsImage[] | string
 }
@@ -712,6 +715,7 @@ export class ProjectsService {
 
       const executingUnit = this.resolveExecutingUnit(summary.executing_unit_name, units)
       const cover = this.mapSummaryCover(summary)
+      const assignments = this.parseAssignments(summary.atribuicoes)
 
       return {
         id: summary.id,
@@ -730,6 +734,7 @@ export class ProjectsService {
         executing_unit: executingUnit,
         areas: mappedAreas,
         courses: mappedCourses,
+        assignments,
         cover,
         vacancies: summary.vacancies,
         weekly_hours: summary.weekly_hours,
@@ -783,6 +788,8 @@ export class ProjectsService {
         }
       : project.executing_unit
 
+    const assignments = this.parseAssignments(details.atribuicoes)
+
     return {
       ...project,
       process_code: details.process_code || project.process_code,
@@ -804,6 +811,7 @@ export class ProjectsService {
       executing_unit: executingUnit,
       areas: areas.length ? areas : project.areas,
       courses: courses.length ? courses : project.courses,
+      assignments: assignments.length ? assignments : project.assignments,
       cover: cover
         ? {
             id: cover.id,
@@ -838,6 +846,19 @@ export class ProjectsService {
     } catch {
       return []
     }
+  }
+
+  private parseAssignments(value: IProjectAssignment[] | string | null | undefined): IProjectAssignment[] {
+    return this.parseJsonArray<IProjectAssignment>(value || undefined)
+      .map(item => ({
+        atribuicao_id: Number(item.atribuicao_id),
+        projeto_id: Number(item.projeto_id),
+        descricao: (item.descricao || '').trim(),
+        curso_ids: Array.isArray(item.curso_ids)
+          ? item.curso_ids.filter(courseId => Number.isInteger(courseId) && courseId > 0)
+          : []
+      }))
+      .filter(item => Number.isInteger(item.atribuicao_id) && Number.isInteger(item.projeto_id) && !!item.descricao)
   }
 
   private normalizeCourseLevel(
