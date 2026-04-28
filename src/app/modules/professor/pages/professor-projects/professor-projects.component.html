@@ -114,6 +114,14 @@
             <label>Título</label>
             <input type="text" class="professor-input" [(ngModel)]="editByProjectId[project.id].titulo" maxlength="255" />
 
+            <label>Descrição curta</label>
+            <textarea
+              rows="2"
+              class="professor-input"
+              maxlength="400"
+              [(ngModel)]="editByProjectId[project.id].descricao_curta"
+            ></textarea>
+
             <label>Descrição</label>
             <textarea
               rows="4"
@@ -198,7 +206,10 @@
                         </button>
                       </div>
                       <p>{{ assignment.descricao }}</p>
-                      <small>Cursos vinculados: {{ getCourseNames(assignment.curso_ids) }}</small>
+                      <details class="professor-assignment-details">
+                        <summary>Cursos relacionados</summary>
+                        <small>{{ getCourseNames(assignment.curso_ids) }}</small>
+                      </details>
                     </li>
                   }
                 }
@@ -236,12 +247,6 @@
                   emptyMessage="Nenhum curso encontrado"
                   emptyFilterMessage="Nenhum curso corresponde"
                 />
-
-                @if (newAssignmentByProjectId[project.id].curso_ids.length) {
-                  <small class="professor-helper">
-                    Selecionados: {{ getCourseNames(newAssignmentByProjectId[project.id].curso_ids) }}
-                  </small>
-                }
 
                 <button
                   type="button"

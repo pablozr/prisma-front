@@ -222,6 +222,22 @@
   font-size: 0.85rem;
 }
 
+.professor-assignment-details {
+  margin-top: 0.35rem;
+}
+
+.professor-assignment-details summary {
+  cursor: pointer;
+  color: var(--link-color);
+  font-size: 0.85rem;
+}
+
+.professor-assignment-details small {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--on-surface-variant);
+}
+
 .professor-icon-btn {
   width: 2rem;
   height: 2rem;

@@ -59,13 +59,18 @@ export class ProfessorProjectsComponent implements OnInit {
   managerProjectId: number | null = null
   showNewAssignmentFormByProjectId: Record<number, boolean> = {}
 
-  editByProjectId: Record<number, { titulo: string; descricao: string; image_url: string; alt_text: string }> = {}
+  editByProjectId: Record<
+    number,
+    { titulo: string; descricao_curta: string; descricao: string; image_url: string; alt_text: string }
+  > = {}
   newAssignmentByProjectId: Record<number, { descricao: string; curso_ids: number[] }> = {}
 
   private readonly TITLE_MIN = 3
   private readonly TITLE_MAX = 255
   private readonly DESCRIPTION_MIN = 10
   private readonly DESCRIPTION_MAX = 10000
+  private readonly SHORT_DESCRIPTION_MIN = 10
+  private readonly SHORT_DESCRIPTION_MAX = 400
   private readonly LOGO_URL_MAX = 2048
   private readonly ALT_TEXT_MAX = 255
   private readonly ASSIGNMENT_DESCRIPTION_MIN = 10
@@ -94,6 +99,7 @@ export class ProfessorProjectsComponent implements OnInit {
       for (const project of projects) {
         this.editByProjectId[project.id] = {
           titulo: project.title || '',
+          descricao_curta: project.short_description || '',
           descricao: project.full_description || '',
           image_url: project.cover_image_url || '',
           alt_text: project.cover_image_alt_text || ''
@@ -103,7 +109,16 @@ export class ProfessorProjectsComponent implements OnInit {
           curso_ids: []
         }
         this.showNewAssignmentFormByProjectId[project.id] = false
-        this.assignmentCountByProjectId[project.id] = this.assignmentCountByProjectId[project.id] || 0
+
+        const assignments = this.getAssignmentsFromProject(project)
+        if (assignments) {
+          this.assignmentsByProjectId[project.id] = assignments
+          this.assignmentCountByProjectId[project.id] = assignments.length
+          this.assignmentsLoadedByProjectId[project.id] = true
+          this.loadingAssignmentsByProjectId[project.id] = false
+        } else {
+          this.assignmentCountByProjectId[project.id] = this.assignmentCountByProjectId[project.id] || 0
+        }
       }
     })
   }
@@ -155,9 +170,10 @@ export class ProfessorProjectsComponent implements OnInit {
     if (!edit) return
 
     const titulo = edit.titulo.trim()
+    const descricaoCurta = edit.descricao_curta.trim()
     const descricao = edit.descricao.trim()
 
-    const payload: { titulo?: string; descricao?: string } = {}
+    const payload: { titulo?: string; descricao?: string; descricao_curta?: string } = {}
 
     if (titulo) {
       if (titulo.length < this.TITLE_MIN || titulo.length > this.TITLE_MAX) {
@@ -175,8 +191,19 @@ export class ProfessorProjectsComponent implements OnInit {
       payload.descricao = descricao
     }
 
-    if (!payload.titulo && !payload.descricao) {
-      this.toast.warn('Nada para atualizar', 'Preencha ao menos titulo ou descricao.')
+    if (descricaoCurta) {
+      if (descricaoCurta.length < this.SHORT_DESCRIPTION_MIN || descricaoCurta.length > this.SHORT_DESCRIPTION_MAX) {
+        this.toast.warn(
+          'Descricao curta invalida',
+          `A descricao curta deve ter entre ${this.SHORT_DESCRIPTION_MIN} e ${this.SHORT_DESCRIPTION_MAX} caracteres.`
+        )
+        return
+      }
+      payload.descricao_curta = descricaoCurta
+    }
+
+    if (!payload.titulo && !payload.descricao && !payload.descricao_curta) {
+      this.toast.warn('Nada para atualizar', 'Preencha ao menos titulo, descricao curta ou descricao completa.')
       return
     }
 
@@ -335,6 +362,41 @@ export class ProfessorProjectsComponent implements OnInit {
       .map(courseId => this.courses.find(course => course.id === courseId)?.name || `Curso #${courseId}`)
       .filter(Boolean)
     return names.join(', ')
+  }
+
+  private getAssignmentsFromProject(project: IProfessorProject): IProfessorProjectAssignment[] | null {
+    const raw = project.atribuicoes
+    if (raw == null) return null
+
+    let parsed: unknown = raw
+    if (typeof raw === 'string') {
+      try {
+        parsed = JSON.parse(raw)
+      } catch {
+        return []
+      }
+    }
+
+    if (!Array.isArray(parsed)) return []
+
+    return parsed
+      .map((item: unknown) => {
+        if (!item || typeof item !== 'object') return null
+        const assignment = item as Partial<IProfessorProjectAssignment>
+        const courseIds = Array.isArray(assignment.curso_ids)
+          ? assignment.curso_ids.filter(id => Number.isInteger(id) && id > 0)
+          : []
+
+        if (!Number.isInteger(assignment.atribuicao_id) || !Number.isInteger(assignment.projeto_id)) return null
+
+        return {
+          atribuicao_id: assignment.atribuicao_id,
+          projeto_id: assignment.projeto_id,
+          descricao: String(assignment.descricao || '').trim(),
+          curso_ids: courseIds
+        }
+      })
+      .filter((assignment): assignment is IProfessorProjectAssignment => !!assignment)
   }
 
   private isHttpUrl(value: string) {

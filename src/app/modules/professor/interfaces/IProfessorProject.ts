@@ -10,6 +10,8 @@ export interface IProfessorProject {
   is_active: boolean
   process_code?: string
   contact_email?: string
+  course_ids?: number[]
+  atribuicoes?: IProfessorProjectAssignment[] | string | null
   vacancies?: number
   weekly_hours?: number
   modality?: string
