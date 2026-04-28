@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'http://localhost:8000/api/v1/unirio'
+export const API_BASE_URL = 'http://localhost:5685/api/v1/unirio'
 
 export const AUTH_ROUTES = {
   login: `${API_BASE_URL}/auth/login`,
