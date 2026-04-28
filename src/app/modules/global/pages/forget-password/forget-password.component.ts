@@ -29,6 +29,12 @@ const strongPassword: ValidatorFn = (control: AbstractControl): ValidationErrors
   return Object.keys(errors).length ? errors : null
 }
 
+const noEdgeWhitespace: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  const value = control.value as string | null
+  if (!value) return null
+  return value === value.trim() ? null : { whitespaceEdges: true }
+}
+
 const matchPasswords: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
   const newPassword = group.get('newPassword')?.value
   const confirm = group.get('passwordConfirm')?.value
@@ -72,7 +78,7 @@ export class ForgetPasswordComponent implements OnInit {
     ]
 
     this.forgetPasswordEmailForm = new FormGroup({
-      email: new FormControl('', [Validators.required, Validators.email])
+      email: new FormControl('', [Validators.required, Validators.email, Validators.maxLength(254), noEdgeWhitespace])
     })
 
     this.forgetPasswordHashForm = new FormGroup({
@@ -81,7 +87,7 @@ export class ForgetPasswordComponent implements OnInit {
 
     this.forgetPasswordNewPasswordForm = new FormGroup(
       {
-        newPassword: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(128), strongPassword]),
+        newPassword: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(128), noEdgeWhitespace, strongPassword]),
         passwordConfirm: new FormControl('', [Validators.required])
       },
       { validators: matchPasswords }
@@ -141,7 +147,7 @@ export class ForgetPasswordComponent implements OnInit {
         this.toast.error('Senhas diferentes', 'A confirmacao nao coincide com a nova senha.')
         this.isInvalidPasswordConfirm = true
       } else {
-        this.toast.error('Senha fraca', 'A senha deve ter 8+ caracteres, maiuscula, minuscula, numero e caractere especial.')
+        this.toast.error('Senha invalida', 'A senha deve ter 8 a 128 caracteres, sem espacos, com maiuscula, minuscula, numero e caractere especial.')
         this.isInvalidNewPassword = true
       }
       return
