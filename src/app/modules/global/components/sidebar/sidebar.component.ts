@@ -87,12 +87,12 @@ export class SidebarComponent implements OnInit {
         status: true,
         routes: [
           {
-            route: '/page1',
+            route: '/professor/projects',
             routeQuery: [],
-            label: 'Projetos',
-            class: 'pi pi-book',
+            label: 'Gestão de projetos',
+            class: 'pi pi-briefcase',
             codesCanAccess: [],
-            rolesCanAccess: ['ALL'],
+            rolesCanAccess: ['professor'],
             status: true,
             routes: []
           },

@@ -1,0 +1,112 @@
+<div class="professor-shell">
+  <app-header></app-header>
+
+  <main class="professor-page">
+    <app-breadcrumbs [items]="breadcrumbs"></app-breadcrumbs>
+
+    <header class="professor-hero">
+      <div>
+        <p class="professor-hero__eyebrow">Área docente</p>
+        <h1 class="professor-hero__title">Gestão de projetos</h1>
+        <p class="professor-hero__lead">Atualize informações dos seus projetos, capa e atribuições.</p>
+      </div>
+      <span class="professor-hero__total">{{ total }} projetos</span>
+    </header>
+
+    <section class="professor-search">
+      <input
+        type="text"
+        [(ngModel)]="search"
+        placeholder="Buscar por título"
+        class="professor-input"
+      />
+      <button type="button" class="professor-btn" (click)="onSearch()">Buscar</button>
+    </section>
+
+    @if (loading) {
+      <p class="professor-loading">Carregando projetos...</p>
+    } @else if (!projects.length) {
+      <p class="professor-loading">Nenhum projeto encontrado.</p>
+    } @else {
+      <section class="professor-grid">
+        @for (project of projects; track project.id) {
+          <article class="professor-card">
+            <header class="professor-card__header">
+              <h2>{{ project.title }}</h2>
+              <span class="professor-badge">{{ project.status || 'draft' }}</span>
+            </header>
+
+            <label>Título</label>
+            <input type="text" class="professor-input" [(ngModel)]="editByProjectId[project.id].titulo" maxlength="255" />
+
+            <label>Descrição</label>
+            <textarea
+              rows="4"
+              class="professor-input"
+              maxlength="10000"
+              [(ngModel)]="editByProjectId[project.id].descricao"
+            ></textarea>
+
+            <button type="button" class="professor-btn" (click)="saveProject(project)">Salvar projeto</button>
+
+            <div class="professor-divider"></div>
+
+            <label>URL da logo</label>
+            <input type="url" class="professor-input" maxlength="2048" [(ngModel)]="editByProjectId[project.id].image_url" />
+
+            <label>Texto alternativo</label>
+            <input type="text" class="professor-input" maxlength="255" [(ngModel)]="editByProjectId[project.id].alt_text" />
+
+            <button type="button" class="professor-btn professor-btn--ghost" (click)="saveLogo(project.id)">
+              Salvar logo
+            </button>
+
+            <div class="professor-divider"></div>
+
+            <h3>Atribuições</h3>
+            <ul class="professor-list">
+              @for (assignment of assignmentsByProjectId[project.id] || []; track assignment.atribuicao_id) {
+                <li>
+                  <p>{{ assignment.descricao }}</p>
+                  <small>Cursos: {{ assignment.curso_ids.join(', ') }}</small>
+                  <button
+                    type="button"
+                    class="professor-link"
+                    (click)="deleteAssignment(project.id, assignment.atribuicao_id)"
+                  >
+                    Remover
+                  </button>
+                </li>
+              }
+            </ul>
+
+            <label>Nova atribuição</label>
+            <textarea
+              rows="3"
+              class="professor-input"
+              maxlength="1000"
+              [(ngModel)]="newAssignmentByProjectId[project.id].descricao"
+            ></textarea>
+            <label>IDs de curso (separados por vírgula)</label>
+            <input
+              type="text"
+              class="professor-input"
+              [(ngModel)]="newAssignmentByProjectId[project.id].curso_ids"
+            />
+            <button type="button" class="professor-btn" (click)="createAssignment(project.id)">
+              Criar atribuição
+            </button>
+          </article>
+        }
+      </section>
+
+      @if (totalPages > 1) {
+        <nav class="professor-pagination" aria-label="Paginação dos projetos">
+          <button type="button" class="professor-btn professor-btn--ghost" (click)="onPageChange(page - 1)">Anterior</button>
+          <span>Página {{ page }} de {{ totalPages }}</span>
+          <button type="button" class="professor-btn professor-btn--ghost" (click)="onPageChange(page + 1)">Próxima</button>
+        </nav>
+      }
+    }
+  </main>
+</div>

@@ -31,6 +31,14 @@ export const routes: Routes = [
     loadComponent: () => import('./modules/editais/pages/editais/editais.component').then(m => m.EditaisComponent)
   },
   {
+    path: 'professor/projects',
+    loadComponent: () =>
+      import('./modules/professor/pages/professor-projects/professor-projects.component').then(
+        m => m.ProfessorProjectsComponent
+      ),
+    canActivate: [AuthService]
+  },
+  {
     path: '**',
     loadComponent: () => import('./modules/global/pages/not-found/not-found.component').then(m => m.NotFoundComponent)
   }
