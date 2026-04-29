@@ -36,6 +36,14 @@ interface IProjectPayload {
   project?: IProfessorProject
 }
 
+interface IProjectLogoPayload {
+  logo?: {
+    projeto_id: number
+    image_url: string
+    alt_text?: string | null
+  }
+}
+
 @Injectable({ providedIn: 'root' })
 export class ProfessorProjectsService {
   private http = inject(HttpClient)
@@ -91,11 +99,17 @@ export class ProfessorProjectsService {
       )
   }
 
-  updateLogo(projectId: number, payload: { image_url: string; alt_text?: string }) {
+  updateLogo(projectId: number, image: File, altText?: string) {
+    const formData = new FormData()
+    formData.append('image', image)
+    if (altText) {
+      formData.append('alt_text', altText)
+    }
+
     return this.http
-      .post(`${API_BASE_URL}/projects/${projectId}/logo`, payload, this.withCreds)
+      .post<IApiEnvelope<IProjectLogoPayload>>(`${API_BASE_URL}/projects/${projectId}/logo`, formData, this.withCreds)
       .pipe(
-        map(() => true),
+        map(res => res?.data?.logo || null),
         catchError((err: unknown) => {
           this.toast.error('Falha ao atualizar logo', this.extractDetail(err, 'Nao foi possivel salvar a imagem.'))
           return throwError(() => err)

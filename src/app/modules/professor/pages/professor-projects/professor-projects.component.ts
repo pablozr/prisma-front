@@ -61,8 +61,17 @@ export class ProfessorProjectsComponent implements OnInit {
 
   editByProjectId: Record<
     number,
-    { titulo: string; descricao_curta: string; descricao: string; image_url: string; alt_text: string }
+    {
+      titulo: string
+      descricao_curta: string
+      descricao: string
+      image_url: string
+      alt_text: string
+      image_file: File | null
+      preview_url: string
+    }
   > = {}
+  private previewObjectUrls: Record<number, string> = {}
   newAssignmentByProjectId: Record<number, { descricao: string; curso_ids: number[] }> = {}
 
   private readonly TITLE_MIN = 3
@@ -71,7 +80,8 @@ export class ProfessorProjectsComponent implements OnInit {
   private readonly DESCRIPTION_MAX = 10000
   private readonly SHORT_DESCRIPTION_MIN = 10
   private readonly SHORT_DESCRIPTION_MAX = 400
-  private readonly LOGO_URL_MAX = 2048
+  private readonly LOGO_MAX_BYTES = 5 * 1024 * 1024
+  private readonly LOGO_ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
   private readonly ALT_TEXT_MAX = 255
   private readonly ASSIGNMENT_DESCRIPTION_MIN = 10
   private readonly ASSIGNMENT_DESCRIPTION_MAX = 1000
@@ -102,7 +112,9 @@ export class ProfessorProjectsComponent implements OnInit {
           descricao_curta: project.short_description || '',
           descricao: project.full_description || '',
           image_url: project.cover_image_url || '',
-          alt_text: project.cover_image_alt_text || ''
+          alt_text: project.cover_image_alt_text || '',
+          image_file: null,
+          preview_url: project.cover_image_url || ''
         }
         this.newAssignmentByProjectId[project.id] = {
           descricao: '',
@@ -226,16 +238,20 @@ export class ProfessorProjectsComponent implements OnInit {
 
   saveLogo(projectId: number) {
     const edit = this.editByProjectId[projectId]
-    const imageUrl = edit?.image_url?.trim() || ''
     const altText = edit?.alt_text?.trim() || ''
 
-    if (!imageUrl) {
-      this.toast.warn('Logo invalida', 'Informe uma URL HTTP/HTTPS valida.')
+    if (!edit?.image_file) {
+      this.toast.warn('Logo invalida', 'Selecione uma imagem para enviar.')
       return
     }
 
-    if (imageUrl.length > this.LOGO_URL_MAX || !this.isHttpUrl(imageUrl)) {
-      this.toast.warn('Logo invalida', 'A URL da imagem deve ser HTTP/HTTPS e ter no maximo 2048 caracteres.')
+    if (!this.LOGO_ALLOWED_TYPES.has(edit.image_file.type)) {
+      this.toast.warn('Logo invalida', 'Use uma imagem JPG, PNG, WEBP ou GIF.')
+      return
+    }
+
+    if (edit.image_file.size > this.LOGO_MAX_BYTES) {
+      this.toast.warn('Logo invalida', 'A imagem deve ter no maximo 5MB.')
       return
     }
 
@@ -245,24 +261,51 @@ export class ProfessorProjectsComponent implements OnInit {
     }
 
     this.savingLogoById[projectId] = true
-    this.projectsService
-      .updateLogo(projectId, {
-        image_url: imageUrl,
-        alt_text: altText || undefined
-      })
-      .subscribe({
-        next: () => {
-          this.toast.success('Logo atualizada', 'A imagem de capa foi atualizada.')
-          this.editByProjectId[projectId].image_url = imageUrl
-          this.editByProjectId[projectId].alt_text = altText
-        },
-        error: () => {
-          this.savingLogoById[projectId] = false
-        },
-        complete: () => {
-          this.savingLogoById[projectId] = false
-        }
-      })
+    this.projectsService.updateLogo(projectId, edit.image_file, altText || undefined).subscribe({
+      next: logo => {
+        const imageUrl = logo?.image_url || ''
+        this.toast.success('Logo atualizada', 'A imagem de capa foi atualizada.')
+        edit.image_url = imageUrl
+        edit.preview_url = imageUrl
+        edit.alt_text = logo?.alt_text || altText
+        edit.image_file = null
+        this.clearPreviewObjectUrl(projectId)
+        this.projects = this.projects.map(project =>
+          project.id === projectId ? { ...project, cover_image_url: imageUrl, cover_image_alt_text: edit.alt_text } : project
+        )
+      },
+      error: () => {
+        this.savingLogoById[projectId] = false
+      },
+      complete: () => {
+        this.savingLogoById[projectId] = false
+      }
+    })
+  }
+
+  onLogoSelected(projectId: number, event: Event) {
+    const input = event.target as HTMLInputElement
+    const file = input.files?.[0] || null
+    const edit = this.editByProjectId[projectId]
+    if (!edit || !file) return
+
+    if (!this.LOGO_ALLOWED_TYPES.has(file.type)) {
+      this.toast.warn('Logo invalida', 'Use uma imagem JPG, PNG, WEBP ou GIF.')
+      input.value = ''
+      return
+    }
+
+    if (file.size > this.LOGO_MAX_BYTES) {
+      this.toast.warn('Logo invalida', 'A imagem deve ter no maximo 5MB.')
+      input.value = ''
+      return
+    }
+
+    this.clearPreviewObjectUrl(projectId)
+    const previewUrl = URL.createObjectURL(file)
+    this.previewObjectUrls[projectId] = previewUrl
+    edit.image_file = file
+    edit.preview_url = previewUrl
   }
 
   createAssignment(projectId: number) {
@@ -399,12 +442,11 @@ export class ProfessorProjectsComponent implements OnInit {
       .filter((assignment): assignment is IProfessorProjectAssignment => !!assignment)
   }
 
-  private isHttpUrl(value: string) {
-    try {
-      const parsed = new URL(value)
-      return parsed.protocol === 'http:' || parsed.protocol === 'https:'
-    } catch {
-      return false
-    }
+  private clearPreviewObjectUrl(projectId: number) {
+    const previewUrl = this.previewObjectUrls[projectId]
+    if (!previewUrl) return
+
+    URL.revokeObjectURL(previewUrl)
+    delete this.previewObjectUrls[projectId]
   }
 }

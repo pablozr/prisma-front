@@ -144,20 +144,23 @@
               </button>
             </header>
 
-            @if (editByProjectId[project.id].image_url) {
+            @if (editByProjectId[project.id].preview_url || editByProjectId[project.id].image_url) {
               <figure class="professor-cover-preview">
-                <img [src]="editByProjectId[project.id].image_url" [alt]="editByProjectId[project.id].alt_text || project.title" />
+                <img
+                  [src]="editByProjectId[project.id].preview_url || editByProjectId[project.id].image_url"
+                  [alt]="editByProjectId[project.id].alt_text || project.title"
+                />
               </figure>
             }
 
-            <label>URL da imagem</label>
+            <label>Arquivo da imagem</label>
             <input
-              type="url"
+              type="file"
               class="professor-input"
-              maxlength="2048"
-              placeholder="https://exemplo.com/capa-do-projeto.jpg"
-              [(ngModel)]="editByProjectId[project.id].image_url"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              (change)="onLogoSelected(project.id, $event)"
             />
+            <small class="professor-helper">Formatos aceitos: JPG, PNG, WEBP ou GIF. Tamanho maximo: 5MB.</small>
 
             <label>Texto alternativo</label>
             <input
