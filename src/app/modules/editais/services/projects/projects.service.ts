@@ -165,6 +165,11 @@ interface IContactEmailStatusPayload {
   solicitacao?: IContactEmailRequestStatus
 }
 
+interface IContactEmailRequestsPayload {
+  requests?: IContactEmailRequestStatus[]
+  solicitacoes?: IContactEmailRequestStatus[]
+}
+
 type IProjectsApiSort = 'titulo_asc' | 'titulo_desc' | 'data_desc'
 
 const EDITAIS_ROUTES = {
@@ -172,6 +177,7 @@ const EDITAIS_ROUTES = {
   projectDetails: (projectId: number) => `${API_BASE_URL}/projects/${projectId}`,
   createContactEmail: `${API_BASE_URL}/contact/email`,
   contactEmailStatus: (requestId: number) => `${API_BASE_URL}/contact/email/${requestId}`,
+  contactEmailsSentByMe: `${API_BASE_URL}/contact/email/me`,
   listAreas: `${API_BASE_URL}/catalogues/areas-tematicas`,
   listUnits: `${API_BASE_URL}/catalogues/unidades`,
   listCenters: `${API_BASE_URL}/catalogues/centros`,
@@ -417,6 +423,17 @@ export class ProjectsService {
           }
           return request
         })
+      )
+  }
+
+  getContactEmailsSentByMe(): Observable<IContactEmailRequestStatus[]> {
+    return this.http
+      .get<IApiResponse<IContactEmailRequestsPayload>>(
+        EDITAIS_ROUTES.contactEmailsSentByMe,
+        this.withCreds
+      )
+      .pipe(
+        map(response => response?.data?.requests || response?.data?.solicitacoes || [])
       )
   }
 

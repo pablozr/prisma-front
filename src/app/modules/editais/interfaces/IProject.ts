@@ -93,6 +93,10 @@ export interface IEmailDispatch {
 
 export interface IContactEmailRequestStatus {
   request_id: number
+  project_id?: number
+  to_email?: string
+  subject?: string
+  body?: string
   status: 'queued' | 'processing' | 'sent' | 'failed' | 'dead_letter'
   attempt_count?: number
   next_attempt_at?: string | null
