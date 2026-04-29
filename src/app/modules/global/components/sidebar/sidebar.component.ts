@@ -106,6 +106,16 @@ export class SidebarComponent implements OnInit {
             status: true,
             routes: []
           },
+          {
+            route: '/student/emails',
+            routeQuery: [],
+            label: 'Meus emails',
+            class: 'pi pi-envelope',
+            codesCanAccess: [],
+            rolesCanAccess: ['student'],
+            status: true,
+            routes: []
+          },
         ]
       },
     ];
