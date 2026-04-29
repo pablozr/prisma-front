@@ -50,7 +50,6 @@ interface IProjectsListItem {
   id: number
   title: string
   short_description?: string
-  full_description?: string
   contact_email?: string | null
   owner_professor_name?: string
   owner_professor_email?: string | null
@@ -58,7 +57,6 @@ interface IProjectsListItem {
   executing_unit_name?: string
   area_ids: number[]
   course_ids: number[]
-  atribuicoes?: IProjectAssignment[] | string | null
   status?: string
   starts_at?: string
   ends_at?: string
@@ -715,14 +713,12 @@ export class ProjectsService {
 
       const executingUnit = this.resolveExecutingUnit(summary.executing_unit_name, units)
       const cover = this.mapSummaryCover(summary)
-      const assignments = this.parseAssignments(summary.atribuicoes)
 
       return {
         id: summary.id,
         process_code: summary.process_code,
         title: summary.title,
         short_description: summary.short_description,
-        full_description: summary.full_description,
         contact_email: summary.contact_email?.trim() || ownerProfessorEmail,
         status: this.normalizeStatus(summary.status),
         is_active: true,
@@ -734,7 +730,7 @@ export class ProjectsService {
         executing_unit: executingUnit,
         areas: mappedAreas,
         courses: mappedCourses,
-        assignments,
+        assignments: [],
         cover,
         vacancies: summary.vacancies,
         weekly_hours: summary.weekly_hours,
