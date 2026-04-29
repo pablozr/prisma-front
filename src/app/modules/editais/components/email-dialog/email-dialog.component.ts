@@ -101,11 +101,7 @@ export class EmailDialogComponent implements OnChanges {
   send() {
     if (!this.project || !this.subject.trim() || !this.body.trim()) return
 
-    const destination =
-      this.project.contact_email?.trim() ||
-      this.project.owner_professor.institutional_email?.trim()
-
-    if (!destination) {
+    if (!this.project.contact_email?.trim()) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Contato indisponivel',
@@ -117,19 +113,18 @@ export class EmailDialogComponent implements OnChanges {
 
     const dispatch: IEmailDispatch = {
       project_id: this.project.id,
-      to_email: destination,
       subject: this.subject.trim(),
       body: this.body.trim()
     }
 
     this.sending = true
     this.projectsService.sendEmail(dispatch).subscribe({
-      next: () => {
+      next: request => {
         this.sending = false
         this.messageService.add({
           severity: 'success',
-          summary: 'Email enviado',
-          detail: `Sua mensagem foi encaminhada para ${this.project?.owner_professor.full_name}.`,
+          summary: 'Solicitacao criada',
+          detail: `Sua mensagem entrou na fila de envio. Protocolo #${request.request_id}.`,
           life: 4000
         })
         this.sent.emit(dispatch)

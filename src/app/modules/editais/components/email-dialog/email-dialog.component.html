@@ -64,14 +64,14 @@
           rows="8"
           placeholder="Escreva sua mensagem..."
           [disabled]="sending"
-          maxlength="2000"
+          maxlength="5000"
         ></textarea>
-        <span class="email-dialog__counter">{{ body.length }} / 2000</span>
+        <span class="email-dialog__counter">{{ body.length }} / 5000</span>
       </label>
 
       <p class="email-dialog__note">
         <i class="pi pi-info-circle" aria-hidden="true"></i>
-        O email será enviado em seu nome pelo sistema SIEPA. O professor responderá
+        O email será enfileirado em seu nome pelo sistema SIEPA. O professor responderá
         diretamente para o seu e-mail institucional.
       </p>
     </div>
@@ -95,10 +95,10 @@
       >
         @if (sending) {
           <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
-          <span>Enviando...</span>
+          <span>Enfileirando...</span>
         } @else {
           <i class="pi pi-send" aria-hidden="true"></i>
-          <span>Enviar mensagem</span>
+          <span>Solicitar contato</span>
         }
       </button>
     </div>

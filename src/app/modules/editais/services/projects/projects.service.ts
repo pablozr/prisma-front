@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
-import { Observable, catchError, delay, forkJoin, map, of, shareReplay, tap, throwError } from 'rxjs'
+import { Observable, catchError, forkJoin, map, of, shareReplay, tap, throwError } from 'rxjs'
 import {
+  IContactEmailRequestStatus,
   ICourse,
   IEmailDispatch,
   IOrganizationalUnit,
@@ -154,11 +155,23 @@ interface IProjectDetailsPayload {
   projeto?: IProjectDetails
 }
 
+interface IContactEmailCreatePayload {
+  request?: IContactEmailRequestStatus
+  solicitacao?: IContactEmailRequestStatus
+}
+
+interface IContactEmailStatusPayload {
+  request?: IContactEmailRequestStatus
+  solicitacao?: IContactEmailRequestStatus
+}
+
 type IProjectsApiSort = 'titulo_asc' | 'titulo_desc' | 'data_desc'
 
 const EDITAIS_ROUTES = {
   listProjects: `${API_BASE_URL}/projects`,
   projectDetails: (projectId: number) => `${API_BASE_URL}/projects/${projectId}`,
+  createContactEmail: `${API_BASE_URL}/contact/email`,
+  contactEmailStatus: (requestId: number) => `${API_BASE_URL}/contact/email/${requestId}`,
   listAreas: `${API_BASE_URL}/catalogues/areas-tematicas`,
   listUnits: `${API_BASE_URL}/catalogues/unidades`,
   listCenters: `${API_BASE_URL}/catalogues/centros`,
@@ -169,6 +182,7 @@ const EDITAIS_ROUTES = {
 export class ProjectsService {
   private http = inject(HttpClient)
   private toast = inject(AppToastService)
+  private withCreds = { withCredentials: true } as const
   private readonly projectDetailsCache = new Map<number, Observable<IProjectDetails>>()
   private readonly unitsByCenterCache = new Map<string, Observable<IOrganizationalUnit[]>>()
   private readonly coursesByUnitCache = new Map<string, Observable<ICourse[]>>()
@@ -371,9 +385,39 @@ export class ProjectsService {
     )
   }
 
-  sendEmail(dispatch: IEmailDispatch): Observable<{ success: true; id: string }> {
-    const id = `mock-${Date.now()}`
-    return of({ success: true as const, id }).pipe(delay(800))
+  sendEmail(dispatch: IEmailDispatch): Observable<IContactEmailRequestStatus> {
+    return this.http
+      .post<IApiResponse<IContactEmailCreatePayload>>(
+        EDITAIS_ROUTES.createContactEmail,
+        dispatch,
+        this.withCreds
+      )
+      .pipe(
+        map(response => {
+          const request = response?.data?.request || response?.data?.solicitacao
+          if (!request) {
+            throw new Error('Contact email payload is empty')
+          }
+          return request
+        })
+      )
+  }
+
+  getContactEmailStatus(requestId: number): Observable<IContactEmailRequestStatus> {
+    return this.http
+      .get<IApiResponse<IContactEmailStatusPayload>>(
+        EDITAIS_ROUTES.contactEmailStatus(requestId),
+        this.withCreds
+      )
+      .pipe(
+        map(response => {
+          const request = response?.data?.request || response?.data?.solicitacao
+          if (!request) {
+            throw new Error('Contact email status payload is empty')
+          }
+          return request
+        })
+      )
   }
 
   private fetchProjectDetails(projectId: number): Observable<IProjectDetails> {
