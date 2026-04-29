@@ -1,0 +1,536 @@
+.student-emails-shell {
+  min-height: 100vh;
+  background: #fbf9f8;
+  color: #1b1c1c;
+}
+
+:host-context(.my-app-dark) .student-emails-shell {
+  background: #151a21;
+  color: #f3f0f0;
+}
+
+.student-emails-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.5rem clamp(1rem, 3vw, 2rem) 2rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.student-emails-hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  align-items: flex-end;
+  border-bottom: 1px solid rgba(15, 23, 32, 0.1);
+  padding-bottom: 1rem;
+}
+
+:host-context(.my-app-dark) .student-emails-hero {
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+.student-emails-hero__eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #004b82;
+}
+
+:host-context(.my-app-dark) .student-emails-hero__eyebrow {
+  color: #a0caff;
+}
+
+.student-emails-hero__title {
+  margin: 0.25rem 0;
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  color: #1b1c1c;
+}
+
+:host-context(.my-app-dark) .student-emails-hero__title {
+  color: #ffffff;
+}
+
+.student-emails-hero__lead {
+  margin: 0;
+  color: #424750;
+}
+
+:host-context(.my-app-dark) .student-emails-hero__lead {
+  color: #c2c7d1;
+}
+
+.student-emails-hero__scope {
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(0, 75, 130, 0.2);
+  border-radius: 0.85rem;
+  background: rgba(0, 75, 130, 0.06);
+  text-align: right;
+}
+
+:host-context(.my-app-dark) .student-emails-hero__scope {
+  background: rgba(137, 188, 250, 0.1);
+  border-color: rgba(137, 188, 250, 0.25);
+}
+
+.student-emails-hero__scope-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #00345d;
+}
+
+:host-context(.my-app-dark) .student-emails-hero__scope-value {
+  color: #a0caff;
+}
+
+.student-emails-hero__scope-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #424750;
+}
+
+:host-context(.my-app-dark) .student-emails-hero__scope-label {
+  color: #c2c7d1;
+}
+
+.student-emails-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.student-emails-stat {
+  border: 1px solid rgba(15, 23, 32, 0.12);
+  border-radius: 0.8rem;
+  padding: 0.8rem 0.9rem;
+  background: #ffffff;
+  display: grid;
+  gap: 0.2rem;
+}
+
+:host-context(.my-app-dark) .student-emails-stat {
+  background: #1f262f;
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.student-emails-stat__label {
+  font-size: 0.82rem;
+  color: #565c64;
+}
+
+:host-context(.my-app-dark) .student-emails-stat__label {
+  color: #c2c7d1;
+}
+
+.student-emails-stat__value {
+  font-size: 1.3rem;
+}
+
+.student-emails-stat--sent .student-emails-stat__value {
+  color: #0d6d38;
+}
+
+.student-emails-stat--processing .student-emails-stat__value {
+  color: #004b82;
+}
+
+.student-emails-stat--failed .student-emails-stat__value {
+  color: #b42318;
+}
+
+.student-emails-toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.student-emails-toolbar__search,
+.student-emails-toolbar__status {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.student-emails-toolbar__search {
+  position: relative;
+
+  i {
+    position: absolute;
+    left: 0.75rem;
+    top: 0.95rem;
+    color: #727781;
+    font-size: 0.9rem;
+  }
+
+  input {
+    border: 1px solid var(--outline-variant);
+    background: #ffffff;
+    color: #1b1c1c;
+    border-radius: 0.6rem;
+    padding: 0.7rem 0.8rem 0.7rem 2.1rem;
+    font: inherit;
+  }
+}
+
+.student-emails-toolbar__status span {
+  font-size: 0.8rem;
+  color: #565c64;
+}
+
+.student-emails-toolbar__status select {
+  border: 1px solid var(--outline-variant);
+  background: #ffffff;
+  color: #1b1c1c;
+  border-radius: 0.6rem;
+  padding: 0.67rem 0.8rem;
+  font: inherit;
+  min-width: 180px;
+}
+
+.student-emails-toolbar__refresh {
+  border: 1px solid transparent;
+  border-radius: 0.6rem;
+  background: #004b82;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 600;
+  padding: 0.7rem 0.95rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+:host-context(.my-app-dark) .student-emails-toolbar__search input,
+:host-context(.my-app-dark) .student-emails-toolbar__status select {
+  background: #1f262f;
+  color: #f3f0f0;
+}
+
+.student-emails-error,
+.student-emails-loading,
+.student-emails-empty {
+  border: 1px solid var(--outline-variant);
+  border-radius: 0.9rem;
+  background: #ffffff;
+  padding: 1rem;
+}
+
+:host-context(.my-app-dark) .student-emails-error,
+:host-context(.my-app-dark) .student-emails-loading,
+:host-context(.my-app-dark) .student-emails-empty {
+  background: #1f262f;
+}
+
+.student-emails-error {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+
+  button {
+    border: 1px solid var(--outline-variant);
+    background: transparent;
+    color: inherit;
+    border-radius: 0.5rem;
+    padding: 0.45rem 0.7rem;
+    cursor: pointer;
+  }
+}
+
+.student-emails-empty {
+  text-align: center;
+}
+
+.student-emails-empty__icon {
+  width: 54px;
+  height: 54px;
+  margin: 0 auto;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 75, 130, 0.08);
+  color: #004b82;
+}
+
+.student-emails-empty a {
+  display: inline-flex;
+  margin-top: 0.35rem;
+}
+
+.student-emails-workspace {
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+  gap: 1rem;
+  min-height: 460px;
+}
+
+.student-emails-list,
+.student-emails-detail {
+  border: 1px solid var(--outline-variant);
+  border-radius: 0.9rem;
+  background: #ffffff;
+}
+
+:host-context(.my-app-dark) .student-emails-list,
+:host-context(.my-app-dark) .student-emails-detail {
+  background: #1f262f;
+}
+
+.student-emails-list {
+  padding: 0.35rem;
+  max-height: 70vh;
+  overflow: auto;
+  display: grid;
+  gap: 0.35rem;
+  align-content: start;
+  grid-auto-rows: max-content;
+}
+
+.student-emails-item {
+  border: 1px solid transparent;
+  border-radius: 0.7rem;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.65rem;
+  padding: 0.65rem;
+  align-items: start;
+}
+
+.student-emails-item:hover {
+  background: rgba(0, 75, 130, 0.05);
+}
+
+.student-emails-item--active {
+  border-color: rgba(0, 75, 130, 0.3);
+  background: rgba(0, 75, 130, 0.08);
+}
+
+.student-emails-item__status {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(0, 75, 130, 0.1);
+  color: #004b82;
+  display: grid;
+  place-items: center;
+  margin-top: 0.1rem;
+}
+
+.student-emails-item__status[data-status='sent'] {
+  background: rgba(13, 109, 56, 0.14);
+  color: #0d6d38;
+}
+
+.student-emails-item__status[data-status='failed'],
+.student-emails-item__status[data-status='dead_letter'] {
+  background: rgba(180, 35, 24, 0.14);
+  color: #b42318;
+}
+
+.student-emails-item__content {
+  min-width: 0;
+  display: grid;
+  gap: 0.15rem;
+
+  strong,
+  small {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  strong {
+    font-size: 0.95rem;
+  }
+
+  small {
+    color: #565c64;
+  }
+}
+
+:host-context(.my-app-dark) .student-emails-item__content small {
+  color: #c2c7d1;
+}
+
+.student-emails-item__meta {
+  text-align: right;
+  display: grid;
+  gap: 0.3rem;
+  justify-items: end;
+  align-content: start;
+
+  small {
+    color: #565c64;
+    font-size: 0.75rem;
+  }
+}
+
+:host-context(.my-app-dark) .student-emails-item__meta small {
+  color: #c2c7d1;
+}
+
+.student-emails-item__badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  background: rgba(0, 75, 130, 0.12);
+  color: #00345d;
+}
+
+.student-emails-item__badge[data-status='sent'] {
+  background: rgba(13, 109, 56, 0.16);
+  color: #0d6d38;
+}
+
+.student-emails-item__badge[data-status='processing'],
+.student-emails-item__badge[data-status='queued'] {
+  background: rgba(0, 75, 130, 0.14);
+  color: #00345d;
+}
+
+.student-emails-item__badge[data-status='failed'],
+.student-emails-item__badge[data-status='dead_letter'] {
+  background: rgba(180, 35, 24, 0.14);
+  color: #b42318;
+}
+
+.student-emails-detail {
+  padding: 1rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.student-emails-detail__header {
+  border-bottom: 1px solid var(--outline-variant);
+  padding-bottom: 0.8rem;
+
+  p,
+  h2 {
+    margin: 0;
+  }
+
+  h2 {
+    margin: 0.25rem 0 0.35rem;
+    font-size: 1.15rem;
+  }
+}
+
+.student-emails-detail__eyebrow {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #565c64;
+}
+
+:host-context(.my-app-dark) .student-emails-detail__eyebrow {
+  color: #c2c7d1;
+}
+
+.student-emails-detail__status {
+  display: grid;
+  gap: 0.35rem;
+
+  p {
+    margin: 0;
+    color: #565c64;
+  }
+}
+
+:host-context(.my-app-dark) .student-emails-detail__status p {
+  color: #c2c7d1;
+}
+
+.student-emails-detail__body {
+  border: 1px solid var(--outline-variant);
+  border-radius: 0.75rem;
+  padding: 0.85rem;
+  background: rgba(0, 75, 130, 0.03);
+
+  h3,
+  p {
+    margin: 0;
+  }
+
+  h3 {
+    margin-bottom: 0.55rem;
+    font-size: 0.95rem;
+  }
+
+  p {
+    line-height: 1.65;
+    white-space: pre-line;
+  }
+}
+
+:host-context(.my-app-dark) .student-emails-detail__body {
+  background: rgba(137, 188, 250, 0.08);
+}
+
+.student-emails-detail__error {
+  border: 1px solid rgba(180, 35, 24, 0.3);
+  border-radius: 0.75rem;
+  background: rgba(180, 35, 24, 0.08);
+  padding: 0.75rem;
+
+  h3,
+  p {
+    margin: 0;
+  }
+
+  h3 {
+    margin-bottom: 0.45rem;
+    color: #8f1f15;
+    font-size: 0.92rem;
+  }
+}
+
+.student-emails-detail__updating {
+  margin: 0;
+  color: #565c64;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 980px) {
+  .student-emails-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .student-emails-list {
+    max-height: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .student-emails-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .student-emails-hero__scope {
+    text-align: left;
+  }
+
+  .student-emails-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .student-emails-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .student-emails-toolbar__status select {
+    min-width: 0;
+  }
+}
