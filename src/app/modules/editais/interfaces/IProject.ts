@@ -85,21 +85,3 @@ export interface IProjectFilters {
   sort: 'recent' | 'deadline' | 'alphabetical'
 }
 
-export interface IEmailDispatch {
-  project_id: number
-  subject: string
-  body: string
-}
-
-export interface IContactEmailRequestStatus {
-  request_id: number
-  project_id?: number
-  to_email?: string
-  subject?: string
-  body?: string
-  status: 'queued' | 'processing' | 'sent' | 'failed' | 'dead_letter'
-  attempt_count?: number
-  next_attempt_at?: string | null
-  last_error?: string | null
-  sent_at?: string | null
-}
