@@ -7,7 +7,6 @@ import {
 } from '../../../global/components/breadcrumbs/breadcrumbs.component'
 import { EditalCardComponent } from '../../components/edital-card/edital-card.component'
 import { EditalFiltersComponent } from '../../components/edital-filters/edital-filters.component'
-import { EmailDialogComponent } from '../../components/email-dialog/email-dialog.component'
 import { DetailsDialogComponent } from '../../components/details-dialog/details-dialog.component'
 import {
   IProjectsListResponse,
@@ -43,7 +42,6 @@ interface IProjectsQueryState {
     BreadcrumbsComponent,
     EditalCardComponent,
     EditalFiltersComponent,
-    EmailDialogComponent,
     DetailsDialogComponent
   ],
   templateUrl: './editais.component.html',
@@ -79,9 +77,6 @@ export class EditaisComponent implements OnInit, OnDestroy {
   totalProjects = 0
 
   filters: IProjectFilters = this.defaultFilters()
-
-  emailDialogVisible = false
-  emailProject: IProject | null = null
 
   detailsDialogVisible = false
   detailsProject: IProject | null = null
@@ -179,16 +174,14 @@ export class EditaisComponent implements OnInit, OnDestroy {
   }
 
   openContact(project: IProject) {
-    this.emailProject = project
-    this.emailDialogVisible = true
-  }
+    const contactEmail = project.contact_email?.trim() || project.owner_professor.institutional_email?.trim()
+    if (!contactEmail) return
 
-  onEmailDialogVisibleChange(visible: boolean) {
-    this.emailDialogVisible = visible
-
-    if (!visible) {
-      this.emailProject = null
-    }
+    const subject = encodeURIComponent(`[SIEPA] Interesse no projeto ${project.process_code || ''}`.trim())
+    const body = encodeURIComponent(
+      `Ola, tenho interesse no projeto \"${project.title}\" e gostaria de mais informacoes.`
+    )
+    window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`
   }
 
   onDetails(project: IProject) {
@@ -209,8 +202,6 @@ export class EditaisComponent implements OnInit, OnDestroy {
   }
 
   onDetailsContact(project: IProject) {
-    this.detailsDialogVisible = false
-    this.detailsProject = null
     this.openContact(project)
   }
 

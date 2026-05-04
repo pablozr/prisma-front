@@ -1,8 +1,7 @@
-import { Component, EventEmitter, Input, Output, ViewEncapsulation, inject } from '@angular/core'
+import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { DialogModule } from 'primeng/dialog'
 import { IProject } from '../../interfaces/IProject'
-import { UsersService } from '../../../global/services/users/users.service'
 
 type DeadlineState = 'open' | 'closing_soon' | 'closed' | 'upcoming'
 
@@ -15,8 +14,6 @@ type DeadlineState = 'open' | 'closing_soon' | 'closed' | 'upcoming'
   encapsulation: ViewEncapsulation.None
 })
 export class DetailsDialogComponent {
-  private usersService = inject(UsersService)
-
   @Input() visible = false
   @Input() project: IProject | null = null
 
@@ -28,16 +25,15 @@ export class DetailsDialogComponent {
   }
 
   get canContact(): boolean {
-    const role = this.usersService.currentUser?.user?.role
-    return this.hasContactEmail && (role === 'professor' || role === 'admin')
+    return this.hasContactEmail
   }
 
   get contactHint(): string {
     if (!this.hasContactEmail) {
-      return 'Este edital ainda nao possui email de contato cadastrado.'
+      return 'Este projeto ainda nao possui email de contato cadastrado.'
     }
 
-    return 'Entre com sua conta docente ou administrador para contatar o responsavel.'
+    return 'Use o botao para abrir seu aplicativo de email e contatar o responsavel.'
   }
 
   get professorInitials(): string {

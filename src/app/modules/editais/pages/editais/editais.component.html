@@ -142,14 +142,6 @@
     }
   </main>
 
-  @if (emailDialogVisible && emailProject) {
-    <app-email-dialog
-      [visible]="emailDialogVisible"
-      (visibleChange)="onEmailDialogVisibleChange($event)"
-      [project]="emailProject"
-    ></app-email-dialog>
-  }
-
   @if (detailsDialogVisible && detailsProject) {
     <app-details-dialog
       [visible]="detailsDialogVisible"
