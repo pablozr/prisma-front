@@ -174,7 +174,10 @@ export class EditaisComponent implements OnInit, OnDestroy {
   }
 
   openContact(project: IProject) {
-    const contactEmail = project.contact_email?.trim() || project.owner_professor.institutional_email?.trim()
+    const contactEmail =
+      project.contact_email?.trim() ||
+      project.responsible_person?.institutional_email?.trim() ||
+      project.owner_professor.institutional_email?.trim()
     if (!contactEmail) return
 
     const subject = encodeURIComponent(`[SIEPA] Interesse no projeto ${project.process_code || ''}`.trim())

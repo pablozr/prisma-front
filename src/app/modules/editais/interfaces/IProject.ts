@@ -42,6 +42,13 @@ export interface IProjectImage {
   alt_text?: string
 }
 
+export interface IResponsiblePerson {
+  id: number
+  full_name: string
+  institutional_email: string
+  type: 'docente' | 'tecnico'
+}
+
 export interface IProjectAssignment {
   atribuicao_id: number
   projeto_id: number
@@ -63,6 +70,7 @@ export interface IProject {
   published_at?: string
   created_at: string
   owner_professor: IProfessor
+  responsible_person?: IResponsiblePerson
   executing_unit?: IOrganizationalUnit
   areas: IProjectArea[]
   courses: ICourse[]

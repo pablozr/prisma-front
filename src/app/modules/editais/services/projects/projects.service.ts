@@ -4,6 +4,7 @@ import { Observable, catchError, forkJoin, map, of, shareReplay, tap, throwError
 import {
   ICourse,
   IOrganizationalUnit,
+  IResponsiblePerson,
   IProfessor,
   IProject,
   IProjectAssignment,
@@ -53,6 +54,10 @@ interface IProjectsListItem {
   owner_professor_name?: string
   owner_professor_email?: string | null
   owner_professor_institutional_email?: string | null
+  responsible_id?: number
+  responsible_name?: string
+  responsible_email?: string | null
+  responsible_type?: 'docente' | 'tecnico' | string
   executing_unit_name?: string
   area_ids: number[]
   course_ids: number[]
@@ -133,6 +138,10 @@ interface IProjectDetails {
   created_at?: string
   owner_professor_id?: number
   owner_professor_name?: string
+  responsible_id?: number
+  responsible_name?: string
+  responsible_email?: string | null
+  responsible_type?: 'docente' | 'tecnico' | string
   executing_unit_id?: number
   executing_unit_name?: string
   executing_unit_short_name?: string
@@ -706,6 +715,13 @@ export class ProjectsService {
         institutional_email: ownerProfessorEmail
       }
 
+      const responsiblePerson: IResponsiblePerson = {
+        id: summary.responsible_id ?? 0,
+        full_name: summary.responsible_name || ownerProfessor.full_name,
+        institutional_email: summary.responsible_email?.trim() || ownerProfessorEmail,
+        type: summary.responsible_type === 'tecnico' ? 'tecnico' : 'docente'
+      }
+
       const executingUnit = this.resolveExecutingUnit(summary.executing_unit_name, units)
       const cover = this.mapSummaryCover(summary)
 
@@ -722,6 +738,7 @@ export class ProjectsService {
         published_at: summary.published_at,
         created_at: summary.created_at || summary.published_at || new Date().toISOString(),
         owner_professor: ownerProfessor,
+        responsible_person: responsiblePerson,
         executing_unit: executingUnit,
         areas: mappedAreas,
         courses: mappedCourses,
@@ -798,6 +815,18 @@ export class ProjectsService {
         ...project.owner_professor,
         id: details.owner_professor_id ?? project.owner_professor.id,
         full_name: details.owner_professor_name || project.owner_professor.full_name
+      },
+      responsible_person: {
+        id: details.responsible_id ?? project.responsible_person?.id ?? project.owner_professor.id,
+        full_name:
+          details.responsible_name ||
+          project.responsible_person?.full_name ||
+          project.owner_professor.full_name,
+        institutional_email:
+          details.responsible_email?.trim() ||
+          project.responsible_person?.institutional_email ||
+          project.owner_professor.institutional_email,
+        type: details.responsible_type === 'tecnico' ? 'tecnico' : (project.responsible_person?.type || 'docente')
       },
       executing_unit: executingUnit,
       areas: areas.length ? areas : project.areas,
