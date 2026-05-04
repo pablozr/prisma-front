@@ -30,7 +30,7 @@ export class EditalCardComponent {
   get canContact(): boolean {
     const role = this.viewerRole()
     const hasContact = !!this.project.contact_email?.trim()
-    return hasContact && (role === 'student' || role === 'admin')
+    return hasContact && (role === 'professor' || role === 'admin')
   }
 
   get professorInitials(): string {

@@ -26,7 +26,6 @@ export class HeaderComponent {
 
   private readonly roleMap: Record<string, string> = {
     admin: 'Administrador',
-    student: 'Estudante',
     professor: 'Docente'
   }
 

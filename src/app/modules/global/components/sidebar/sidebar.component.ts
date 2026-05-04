@@ -33,7 +33,6 @@ export class SidebarComponent implements OnInit {
 
   private readonly roleMap: Record<string, string> = {
     admin: 'Administrador',
-    student: 'Estudante',
     professor: 'Docente'
   }
 
@@ -63,7 +62,7 @@ export class SidebarComponent implements OnInit {
             label: 'Início',
             class: 'pi pi-home',
             codesCanAccess: [],
-            rolesCanAccess: ['student', 'professor'],
+            rolesCanAccess: ['professor', 'admin'],
             status: true,
             routes: []
           },
@@ -103,16 +102,6 @@ export class SidebarComponent implements OnInit {
             class: 'pi pi-file',
             codesCanAccess: [],
             rolesCanAccess: ['ALL'],
-            status: true,
-            routes: []
-          },
-          {
-            route: '/student/emails',
-            routeQuery: [],
-            label: 'Meus emails',
-            class: 'pi pi-envelope',
-            codesCanAccess: [],
-            rolesCanAccess: ['student'],
             status: true,
             routes: []
           },

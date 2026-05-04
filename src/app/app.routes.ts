@@ -39,14 +39,6 @@ export const routes: Routes = [
     canActivate: [AuthService]
   },
   {
-    path: 'student/emails',
-    loadComponent: () =>
-      import('./modules/student/pages/student-emails/student-emails.component').then(
-        m => m.StudentEmailsComponent
-      ),
-    canActivate: [AuthService]
-  },
-  {
     path: '**',
     loadComponent: () => import('./modules/global/pages/not-found/not-found.component').then(m => m.NotFoundComponent)
   }

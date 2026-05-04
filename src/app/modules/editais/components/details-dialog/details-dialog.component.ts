@@ -29,7 +29,7 @@ export class DetailsDialogComponent {
 
   get canContact(): boolean {
     const role = this.usersService.currentUser?.user?.role
-    return this.hasContactEmail && (role === 'student' || role === 'admin')
+    return this.hasContactEmail && (role === 'professor' || role === 'admin')
   }
 
   get contactHint(): string {
@@ -37,7 +37,7 @@ export class DetailsDialogComponent {
       return 'Este edital ainda nao possui email de contato cadastrado.'
     }
 
-    return 'Entre com sua conta de aluno ou administrador para contatar o professor.'
+    return 'Entre com sua conta docente ou administrador para contatar o responsavel.'
   }
 
   get professorInitials(): string {
