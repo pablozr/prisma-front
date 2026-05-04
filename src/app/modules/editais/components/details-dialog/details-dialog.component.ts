@@ -37,7 +37,7 @@ export class DetailsDialogComponent {
   }
 
   get professorInitials(): string {
-    const fullName = (this.project?.responsible_person?.full_name || this.project?.owner_professor.full_name || '').trim()
+    const fullName = (this.project?.responsible_person.full_name || '').trim()
     if (!fullName) {
       return 'PR'
     }

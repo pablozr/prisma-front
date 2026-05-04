@@ -5,7 +5,6 @@ import {
   ICourse,
   IOrganizationalUnit,
   IResponsiblePerson,
-  IProfessor,
   IProject,
   IProjectAssignment,
   IProjectArea,
@@ -51,9 +50,6 @@ interface IProjectsListItem {
   title: string
   short_description?: string
   contact_email?: string | null
-  owner_professor_name?: string
-  owner_professor_email?: string | null
-  owner_professor_institutional_email?: string | null
   responsible_id?: number
   responsible_name?: string
   responsible_email?: string | null
@@ -136,8 +132,6 @@ interface IProjectDetails {
   ends_at?: string
   published_at?: string
   created_at?: string
-  owner_professor_id?: number
-  owner_professor_name?: string
   responsible_id?: number
   responsible_name?: string
   responsible_email?: string | null
@@ -704,21 +698,10 @@ export class ProjectsService {
         }
       })
 
-      const ownerProfessorEmail =
-        summary.owner_professor_institutional_email?.trim() ||
-        summary.owner_professor_email?.trim() ||
-        ''
-
-      const ownerProfessor: IProfessor = {
-        id: 0,
-        full_name: summary.owner_professor_name || 'Professor(a) nao informado(a)',
-        institutional_email: ownerProfessorEmail
-      }
-
       const responsiblePerson: IResponsiblePerson = {
         id: summary.responsible_id ?? 0,
-        full_name: summary.responsible_name || ownerProfessor.full_name,
-        institutional_email: summary.responsible_email?.trim() || ownerProfessorEmail,
+        full_name: summary.responsible_name || 'Responsavel nao informado(a)',
+        institutional_email: summary.responsible_email?.trim() || '',
         type: summary.responsible_type === 'tecnico' ? 'tecnico' : 'docente'
       }
 
@@ -730,14 +713,13 @@ export class ProjectsService {
         process_code: summary.process_code,
         title: summary.title,
         short_description: summary.short_description,
-        contact_email: summary.contact_email?.trim() || ownerProfessorEmail,
+        contact_email: summary.contact_email?.trim() || responsiblePerson.institutional_email,
         status: this.normalizeStatus(summary.status),
         is_active: true,
         starts_at: summary.starts_at,
         ends_at: summary.ends_at,
         published_at: summary.published_at,
         created_at: summary.created_at || summary.published_at || new Date().toISOString(),
-        owner_professor: ownerProfessor,
         responsible_person: responsiblePerson,
         executing_unit: executingUnit,
         areas: mappedAreas,
@@ -811,22 +793,15 @@ export class ProjectsService {
       ends_at: details.ends_at || project.ends_at,
       published_at: details.published_at || project.published_at,
       created_at: details.created_at || project.created_at,
-      owner_professor: {
-        ...project.owner_professor,
-        id: details.owner_professor_id ?? project.owner_professor.id,
-        full_name: details.owner_professor_name || project.owner_professor.full_name
-      },
       responsible_person: {
-        id: details.responsible_id ?? project.responsible_person?.id ?? project.owner_professor.id,
+        id: details.responsible_id ?? project.responsible_person.id,
         full_name:
           details.responsible_name ||
-          project.responsible_person?.full_name ||
-          project.owner_professor.full_name,
+          project.responsible_person.full_name,
         institutional_email:
           details.responsible_email?.trim() ||
-          project.responsible_person?.institutional_email ||
-          project.owner_professor.institutional_email,
-        type: details.responsible_type === 'tecnico' ? 'tecnico' : (project.responsible_person?.type || 'docente')
+          project.responsible_person.institutional_email,
+        type: details.responsible_type === 'tecnico' ? 'tecnico' : project.responsible_person.type
       },
       executing_unit: executingUnit,
       areas: areas.length ? areas : project.areas,

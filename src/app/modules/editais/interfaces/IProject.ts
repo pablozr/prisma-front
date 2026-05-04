@@ -4,15 +4,6 @@ export type UnitType = 'centro' | 'escola' | 'departamento' | 'instituto'
 
 export type CourseLevel = 'graduacao' | 'pos'
 
-export interface IProfessor {
-  id: number
-  full_name: string
-  institutional_email: string
-  siape?: string
-  unit_id?: number
-  avatar_url?: string
-}
-
 export interface IOrganizationalUnit {
   id: number
   name: string
@@ -69,8 +60,7 @@ export interface IProject {
   ends_at?: string
   published_at?: string
   created_at: string
-  owner_professor: IProfessor
-  responsible_person?: IResponsiblePerson
+  responsible_person: IResponsiblePerson
   executing_unit?: IOrganizationalUnit
   areas: IProjectArea[]
   courses: ICourse[]

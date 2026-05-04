@@ -24,7 +24,7 @@ export class EditalCardComponent {
   }
 
   get professorInitials(): string {
-    const name = this.project.responsible_person?.full_name || this.project.owner_professor.full_name
+    const name = this.project.responsible_person.full_name
     const parts = name.trim().split(/\s+/).filter(Boolean)
     const first = parts[0]?.[0] || ''
     const last = parts.length > 1 ? parts[parts.length - 1][0] : ''

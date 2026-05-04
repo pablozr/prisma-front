@@ -159,18 +159,16 @@
       }
 
       <section class="details-dialog__section details-dialog__section--prof">
-        <h3 class="details-dialog__section-title">Professor(a) responsável</h3>
+        <h3 class="details-dialog__section-title">Responsável pelo projeto</h3>
         <div class="details-dialog__prof">
           <span class="details-dialog__prof-avatar" aria-hidden="true">{{ professorInitials }}</span>
           <div class="details-dialog__prof-body">
-            <span class="details-dialog__prof-name">{{ project.owner_professor.full_name }}</span>
+            <span class="details-dialog__prof-name">{{ project.responsible_person.full_name }}</span>
             <span class="details-dialog__prof-email">
               <i class="pi pi-at" aria-hidden="true"></i>
-              {{ project.contact_email || project.owner_professor.institutional_email || 'Nao informado' }}
+              {{ project.contact_email || project.responsible_person.institutional_email || 'Nao informado' }}
             </span>
-            @if (project.owner_professor.siape) {
-              <span class="details-dialog__prof-meta">SIAPE · {{ project.owner_professor.siape }}</span>
-            }
+            <span class="details-dialog__prof-meta">Perfil · {{ project.responsible_person.type }}</span>
           </div>
         </div>
       </section>
