@@ -62,7 +62,6 @@ export class ProfessorProjectsComponent implements OnInit {
   editByProjectId: Record<
     number,
     {
-      titulo: string
       descricao_curta: string
       descricao: string
       image_url: string
@@ -74,8 +73,6 @@ export class ProfessorProjectsComponent implements OnInit {
   private previewObjectUrls: Record<number, string> = {}
   newAssignmentByProjectId: Record<number, { descricao: string; curso_ids: number[] }> = {}
 
-  private readonly TITLE_MIN = 3
-  private readonly TITLE_MAX = 255
   private readonly DESCRIPTION_MIN = 10
   private readonly DESCRIPTION_MAX = 10000
   private readonly SHORT_DESCRIPTION_MIN = 10
@@ -108,7 +105,6 @@ export class ProfessorProjectsComponent implements OnInit {
 
       for (const project of projects) {
         this.editByProjectId[project.id] = {
-          titulo: project.title || '',
           descricao_curta: project.short_description || '',
           descricao: project.full_description || '',
           image_url: project.cover_image_url || '',
@@ -181,19 +177,10 @@ export class ProfessorProjectsComponent implements OnInit {
     const edit = this.editByProjectId[project.id]
     if (!edit) return
 
-    const titulo = edit.titulo.trim()
     const descricaoCurta = edit.descricao_curta.trim()
     const descricao = edit.descricao.trim()
 
-    const payload: { titulo?: string; descricao?: string; descricao_curta?: string } = {}
-
-    if (titulo) {
-      if (titulo.length < this.TITLE_MIN || titulo.length > this.TITLE_MAX) {
-        this.toast.warn('Titulo invalido', `O titulo deve ter entre ${this.TITLE_MIN} e ${this.TITLE_MAX} caracteres.`)
-        return
-      }
-      payload.titulo = titulo
-    }
+    const payload: { descricao?: string; descricao_curta?: string } = {}
 
     if (descricao) {
       if (descricao.length < this.DESCRIPTION_MIN || descricao.length > this.DESCRIPTION_MAX) {
@@ -214,8 +201,8 @@ export class ProfessorProjectsComponent implements OnInit {
       payload.descricao_curta = descricaoCurta
     }
 
-    if (!payload.titulo && !payload.descricao && !payload.descricao_curta) {
-      this.toast.warn('Nada para atualizar', 'Preencha ao menos titulo, descricao curta ou descricao completa.')
+    if (!payload.descricao && !payload.descricao_curta) {
+      this.toast.warn('Nada para atualizar', 'Preencha ao menos descricao curta ou descricao completa.')
       return
     }
 

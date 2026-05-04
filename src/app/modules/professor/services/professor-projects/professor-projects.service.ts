@@ -87,7 +87,7 @@ export class ProfessorProjectsService {
       )
   }
 
-  updateProject(projectId: number, payload: { titulo?: string; descricao?: string; descricao_curta?: string }) {
+  updateProject(projectId: number, payload: { descricao?: string; descricao_curta?: string }) {
     return this.http
       .patch<IApiEnvelope<IProjectPayload>>(`${API_BASE_URL}/projects/${projectId}`, payload, this.withCreds)
       .pipe(
