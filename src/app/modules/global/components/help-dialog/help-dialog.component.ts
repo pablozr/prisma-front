@@ -31,31 +31,31 @@ export class HelpDialogComponent {
       title: 'O que é o SIEPA?',
       summary: 'Sistema de Iniciação, Extensão e Projetos Acadêmicos da UNIRIO.',
       body: [
-        'O SIEPA reúne, num único espaço, as oportunidades acadêmicas oferecidas pela UNIRIO: projetos de iniciação científica (PIBIC), extensão (PIBEX) e demais atividades vinculadas a docentes.',
-        'Visitantes podem conhecer os editais publicados. Alunos e docentes acessam recursos adicionais após entrar com a conta institucional.'
+        'O SIEPA reúne, num único espaço, os projetos acadêmicos vigentes oferecidos pela UNIRIO.',
+        'Visitantes podem conhecer os projetos publicados. Docentes, tecnicos e administradores acessam recursos adicionais após entrar com a conta institucional.'
       ]
     },
     {
       id: 'perfis',
       icon: 'pi-users',
       title: 'Tipos de usuário',
-      summary: 'Visitante, aluno, docente e administrador.',
+      summary: 'Visitante, docente, tecnico e administrador.',
       body: [
-        'Visitante: navega pela página inicial e lista de editais abertos, sem precisar entrar.',
-        'Aluno: além da navegação pública, pode contatar o professor responsável por um edital e gerenciar sua conta.',
-        'Docente: publica e acompanha seus editais, recebe mensagens de estudantes interessados.',
+        'Visitante: navega pela página inicial e lista de projetos vigentes, sem precisar entrar.',
+        'Docente: gerencia seus projetos e atribuicoes.',
+        'Tecnico: gerencia seus projetos e atribuicoes.',
         'Administrador: gerencia usuários, configurações institucionais e dados mestres do sistema.'
       ]
     },
     {
       id: 'editais',
       icon: 'pi-file',
-      title: 'Editais abertos',
-      summary: 'Como navegar, filtrar e se candidatar.',
+      title: 'Projetos vigentes',
+      summary: 'Como navegar, filtrar e entrar em contato.',
       body: [
-        'Na tela Editais você vê cards com título, unidade responsável, áreas de conhecimento, vagas, carga semanal e professor(a) responsável.',
+        'Na tela de projetos você vê cards com título, unidade responsável, áreas de conhecimento e responsável.',
         'Use a busca e os filtros para refinar por curso, unidade, área ou modalidade.',
-        'Clique no card ou em "Detalhes" para ver o edital completo. Alunos logados podem contatar o docente diretamente pelo botão "Contatar".'
+        'Clique no card ou em "Detalhes" para ver o projeto completo. Quando houver email de contato, use o botão para abrir seu aplicativo de email.'
       ]
     },
     {
@@ -64,21 +64,21 @@ export class HelpDialogComponent {
       title: 'Status dos prazos',
       summary: 'O que significa cada badge colorido no card.',
       body: [
-        'Aberto (verde): inscrições em andamento dentro do prazo normal.',
-        'Encerra em breve (amarelo/laranja): faltam poucos dias para o encerramento — candidatura urgente.',
-        'Em breve (azul): edital publicado, mas as inscrições começarão em data futura.',
-        'Encerrado (cinza): o prazo de inscrição já foi concluído e o edital não aceita mais candidatos.'
+        'Publicado: projeto visivel na listagem publica.',
+        'Rascunho: projeto ainda em preparacao.',
+        'Arquivado: projeto encerrado e sem novas atualizacoes publicas.',
+        'As datas de inicio e fim indicam o periodo de vigencia quando informadas.'
       ]
     },
     {
       id: 'contato',
       icon: 'pi-envelope',
-      title: 'Contatar um docente',
-      summary: 'Disponível para alunos e administradores logados.',
+      title: 'Email de contato',
+      summary: 'Disponível para qualquer visitante quando houver email.',
       body: [
-        'Dentro dos detalhes de um edital, o botão "Contatar professor(a)" abre um formulário pré-preenchido com seus dados.',
-        'Você escreve o assunto e a mensagem; o envio é registrado no sistema e o docente recebe a notificação por e-mail institucional.',
-        'Se você está como visitante ou docente, o botão não aparece — faça login como aluno ou administrador para habilitá-lo.'
+        'Dentro dos detalhes de um projeto, o botão "Abrir email de contato" abre o seu aplicativo de email padrão.',
+        'O assunto e o corpo inicial podem vir preenchidos para facilitar o envio.',
+        'O envio da mensagem acontece fora do sistema, no seu proprio email.'
       ]
     },
     {
