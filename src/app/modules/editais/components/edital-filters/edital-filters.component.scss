@@ -150,8 +150,8 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--on-surface-variant);
-  opacity: 0.75;
+  color: #4b5563;
+  opacity: 1;
 }
 
 /* PrimeNG multiselect/select overrides (scoped) */
@@ -161,6 +161,9 @@
   width: 100%;
   border-radius: 10px !important;
   min-height: 42px;
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 32, 0.22) !important;
+  color: #111827 !important;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
   &:not(.p-disabled):hover {
@@ -187,6 +190,13 @@
 :host ::ng-deep .p-select-label {
   font-size: 0.85rem;
   padding: 0.55rem 0.85rem;
+  color: #111827 !important;
+}
+
+:host ::ng-deep .p-select-label.p-placeholder,
+:host ::ng-deep .p-multiselect-label.p-placeholder {
+  color: #6b7280 !important;
+  opacity: 1 !important;
 }
 
 :host ::ng-deep .p-multiselect-label-container {
