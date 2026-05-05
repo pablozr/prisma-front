@@ -21,3 +21,18 @@ export interface IAdminUsersPagination {
   total: number
   total_pages: number
 }
+
+export interface IAdminProject {
+  id: number
+  process_code: string | null
+  title: string
+  short_description: string | null
+  status: 'draft' | 'published' | 'archived' | string
+  is_active: boolean
+  updated_at: string
+  published_at: string | null
+  responsible_id: number | null
+  responsible_name: string | null
+  responsible_email: string | null
+  responsible_type: 'docente' | 'tecnico' | string
+}

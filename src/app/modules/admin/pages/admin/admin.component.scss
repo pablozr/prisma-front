@@ -218,6 +218,15 @@
   }
 }
 
+.admin-projects__table {
+  min-width: 940px;
+}
+
+.admin-projects__title {
+  font-weight: 600;
+  color: var(--on-surface);
+}
+
 :host-context(.my-app-dark) .admin-users__table {
   th,
   td {

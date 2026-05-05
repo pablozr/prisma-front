@@ -10,7 +10,7 @@ import { BreadcrumbsComponent, IBreadcrumbItem } from '../../../global/component
 import { ISigninData } from '../../../global/interfaces/ISignin'
 import { UsersService } from '../../../global/services/users/users.service'
 import { AdminService } from '../../services/admin.service'
-import { IAdminMetrics, IAdminUser, IAdminUsersPagination } from '../../interfaces/IAdmin'
+import { IAdminMetrics, IAdminProject, IAdminUser, IAdminUsersPagination } from '../../interfaces/IAdmin'
 
 interface IMetric {
   label: string
@@ -41,21 +41,36 @@ export class AdminComponent implements OnInit {
   userData: ISigninData | null = null
   metricsLoading = false
   usersLoading = false
+  projectsLoading = false
   savingUserById: Record<number, boolean> = {}
+  savingProjectById: Record<number, boolean> = {}
 
   metrics: IMetric[] = []
   users: IAdminUser[] = []
+  projects: IAdminProject[] = []
   userDraftById: Record<number, { role: 'admin' | 'professor' | 'tecnico'; is_active: boolean }> = {}
+  projectDraftById: Record<number, { status: 'draft' | 'published' | 'archived'; is_active: boolean }> = {}
 
   userSearch = ''
   usersPage = 1
   usersPageSize = 10
   usersPagination: IAdminUsersPagination = { page: 1, page_size: 10, total: 0, total_pages: 0 }
 
+  projectSearch = ''
+  projectsPage = 1
+  projectsPageSize = 10
+  projectsPagination: IAdminUsersPagination = { page: 1, page_size: 10, total: 0, total_pages: 0 }
+
   readonly roleOptions = [
     { label: 'Admin', value: 'admin' },
     { label: 'Docente', value: 'professor' },
     { label: 'Tecnico', value: 'tecnico' }
+  ]
+
+  readonly projectStatusOptions = [
+    { label: 'Rascunho', value: 'draft' },
+    { label: 'Publicado', value: 'published' },
+    { label: 'Arquivado', value: 'archived' }
   ]
 
   readonly breadcrumbs: IBreadcrumbItem[] = [
@@ -70,6 +85,7 @@ export class AdminComponent implements OnInit {
 
     await this.loadMetrics()
     await this.loadUsers()
+    await this.loadProjects()
   }
 
   get firstName(): string {
@@ -110,6 +126,25 @@ export class AdminComponent implements OnInit {
     return 'professor'
   }
 
+  private normalizeProjectStatus(status: string): 'draft' | 'published' | 'archived' {
+    if (status === 'draft' || status === 'published' || status === 'archived') {
+      return status
+    }
+    return 'draft'
+  }
+
+  private buildProjectDraftMap(projects: IAdminProject[]) {
+    const entries = projects.map((project) => [
+      project.id,
+      {
+        status: this.normalizeProjectStatus(project.status),
+        is_active: project.is_active
+      }
+    ])
+
+    this.projectDraftById = Object.fromEntries(entries)
+  }
+
   async loadMetrics() {
     this.metricsLoading = true
     const metrics = await this.adminService.getMetrics()
@@ -132,6 +167,21 @@ export class AdminComponent implements OnInit {
     this.buildUserDraftMap(result.users)
   }
 
+  async loadProjects() {
+    this.projectsLoading = true
+    const result = await this.adminService.listProjects(this.projectsPage, this.projectsPageSize, this.projectSearch)
+    this.projectsLoading = false
+
+    if (!result) {
+      this.projects = []
+      return
+    }
+
+    this.projects = result.projects
+    this.projectsPagination = result.pagination
+    this.buildProjectDraftMap(result.projects)
+  }
+
   async onSearchUsers() {
     this.usersPage = 1
     await this.loadUsers()
@@ -146,11 +196,32 @@ export class AdminComponent implements OnInit {
     await this.loadUsers()
   }
 
+  async onSearchProjects() {
+    this.projectsPage = 1
+    await this.loadProjects()
+  }
+
+  async onProjectsPageChange(nextPage: number) {
+    if (nextPage < 1 || nextPage > this.projectsPagination.total_pages || nextPage === this.projectsPage) {
+      return
+    }
+
+    this.projectsPage = nextPage
+    await this.loadProjects()
+  }
+
   hasUserChanges(user: IAdminUser): boolean {
     const draft = this.userDraftById[user.id]
     if (!draft) return false
 
     return draft.role !== this.normalizeRole(user.role) || draft.is_active !== user.is_active
+  }
+
+  hasProjectChanges(project: IAdminProject): boolean {
+    const draft = this.projectDraftById[project.id]
+    if (!draft) return false
+
+    return draft.status !== this.normalizeProjectStatus(project.status) || draft.is_active !== project.is_active
   }
 
   async saveUser(user: IAdminUser) {
@@ -169,6 +240,26 @@ export class AdminComponent implements OnInit {
     this.users = this.users.map((item) => (item.id === user.id ? updated : item))
     this.userDraftById[user.id] = {
       role: this.normalizeRole(updated.role),
+      is_active: updated.is_active
+    }
+  }
+
+  async saveProject(project: IAdminProject) {
+    const draft = this.projectDraftById[project.id]
+    if (!draft || !this.hasProjectChanges(project)) return
+
+    this.savingProjectById[project.id] = true
+    const updated = await this.adminService.updateProject(project.id, {
+      status: draft.status,
+      is_active: draft.is_active
+    })
+    this.savingProjectById[project.id] = false
+
+    if (!updated) return
+
+    this.projects = this.projects.map((item) => (item.id === project.id ? { ...item, ...updated } : item))
+    this.projectDraftById[project.id] = {
+      status: this.normalizeProjectStatus(updated.status),
       is_active: updated.is_active
     }
   }

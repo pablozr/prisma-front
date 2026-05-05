@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs'
 
 import { API_BASE_URL } from '../../global/constants/apiConfig'
 import { AppToastService } from '../../global/services/toast/app-toast.service'
-import { IAdminMetrics, IAdminUser, IAdminUsersPagination } from '../interfaces/IAdmin'
+import { IAdminMetrics, IAdminProject, IAdminUser, IAdminUsersPagination } from '../interfaces/IAdmin'
 
 interface IApiResponse<T> {
   message: string
@@ -70,6 +70,43 @@ export class AdminService {
       return res?.data?.user ?? null
     } catch (err) {
       this.toast.error('Erro ao atualizar usuario', this.extractDetail(err, 'Tente novamente.'))
+      return null
+    }
+  }
+
+  async listProjects(page: number, pageSize: number, q?: string): Promise<{ projects: IAdminProject[]; pagination: IAdminUsersPagination } | null> {
+    try {
+      let params = new HttpParams().set('page', page).set('page_size', pageSize)
+      if (q?.trim()) {
+        params = params.set('q', q.trim())
+      }
+
+      const res = await firstValueFrom(
+        this.http.get<IApiResponse<{ projects: IAdminProject[]; pagination: IAdminUsersPagination }>>(
+          `${this.endpoint}/projects`,
+          { ...this.withCreds, params }
+        )
+      )
+      return res?.data ?? null
+    } catch (err) {
+      this.toast.error('Erro ao carregar projetos', this.extractDetail(err, 'Tente novamente.'))
+      return null
+    }
+  }
+
+  async updateProject(projectId: number, payload: { status?: 'draft' | 'published' | 'archived'; is_active?: boolean }): Promise<IAdminProject | null> {
+    try {
+      const res = await firstValueFrom(
+        this.http.patch<IApiResponse<{ project: IAdminProject }>>(
+          `${this.endpoint}/projects/${projectId}`,
+          payload,
+          this.withCreds
+        )
+      )
+      this.toast.success('Projeto atualizado', 'As alteracoes foram salvas com sucesso.')
+      return res?.data?.project ?? null
+    } catch (err) {
+      this.toast.error('Erro ao atualizar projeto', this.extractDetail(err, 'Tente novamente.'))
       return null
     }
   }

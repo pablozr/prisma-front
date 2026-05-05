@@ -117,9 +117,84 @@
           </p-tabpanel>
 
           <p-tabpanel value="projects">
-            <p class="admin-placeholder">
-              Proximo bloco: listar todos os projetos (inclusive inativos) e liberar gestao administrativa.
-            </p>
+            <div class="admin-users__toolbar">
+              <input
+                pInputText
+                type="text"
+                placeholder="Buscar por titulo, responsavel ou email"
+                [(ngModel)]="projectSearch"
+                (keydown.enter)="onSearchProjects()"
+              />
+              <button pButton type="button" label="Buscar" (click)="onSearchProjects()" [disabled]="projectsLoading"></button>
+            </div>
+
+            @if (projectsLoading) {
+              <p class="admin-loading">Carregando projetos...</p>
+            } @else if (!projects.length) {
+              <p class="admin-loading">Nenhum projeto encontrado.</p>
+            } @else {
+              <div class="admin-users__table-wrap">
+                <table class="admin-users__table admin-projects__table">
+                  <thead>
+                    <tr>
+                      <th>Projeto</th>
+                      <th>Responsavel</th>
+                      <th>Status</th>
+                      <th>Ativo</th>
+                      <th>Atualizado em</th>
+                      <th>Acoes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (project of projects; track project.id) {
+                      <tr>
+                        <td>
+                          <div class="admin-projects__title">{{ project.title }}</div>
+                          <small>{{ project.process_code || 'Sem codigo' }}</small>
+                        </td>
+                        <td>
+                          <div>{{ project.responsible_name || 'Nao informado' }}</div>
+                          <small>{{ project.responsible_email || 'Sem email' }}</small>
+                        </td>
+                        <td>
+                          <p-select
+                            [options]="projectStatusOptions"
+                            optionLabel="label"
+                            optionValue="value"
+                            appendTo="body"
+                            [(ngModel)]="projectDraftById[project.id].status"
+                          />
+                        </td>
+                        <td>
+                          <label class="admin-users__switch">
+                            <input type="checkbox" [(ngModel)]="projectDraftById[project.id].is_active" />
+                            <span>{{ projectDraftById[project.id].is_active ? 'Sim' : 'Nao' }}</span>
+                          </label>
+                        </td>
+                        <td>{{ project.updated_at | date: 'dd/MM/yyyy HH:mm' }}</td>
+                        <td>
+                          <button
+                            pButton
+                            type="button"
+                            label="Salvar"
+                            [disabled]="!hasProjectChanges(project) || savingProjectById[project.id]"
+                            (click)="saveProject(project)"
+                          ></button>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+
+              @if (projectsPagination.total_pages > 1) {
+                <nav class="admin-pagination" aria-label="Paginacao de projetos">
+                  <button pButton type="button" severity="secondary" label="Anterior" (click)="onProjectsPageChange(projectsPage - 1)"></button>
+                  <span>Pagina {{ projectsPagination.page }} de {{ projectsPagination.total_pages }}</span>
+                  <button pButton type="button" severity="secondary" label="Proxima" (click)="onProjectsPageChange(projectsPage + 1)"></button>
+                </nav>
+              }
+            }
           </p-tabpanel>
 
           <p-tabpanel value="import">
