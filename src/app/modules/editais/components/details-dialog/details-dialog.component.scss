@@ -30,7 +30,7 @@
   :host ::ng-deep .details-dialog-mask.p-dialog-mask {
     align-items: flex-start !important;
     justify-content: center;
-    padding: max(0.5rem, env(safe-area-inset-top)) 0.25rem max(0.5rem, env(safe-area-inset-bottom));
+    padding: max(0.6rem, env(safe-area-inset-top)) 0.5rem max(0.6rem, env(safe-area-inset-bottom));
   }
 
   :host ::ng-deep .details-dialog.p-dialog {
@@ -258,7 +258,7 @@
   }
 
   .details-dialog__header {
-    padding: 1rem 3.25rem 1rem 1rem;
+    padding: 1.2rem 3.25rem 1.05rem 1.1rem;
     gap: 0.6rem;
   }
 
