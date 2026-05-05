@@ -124,6 +124,7 @@
         <span>Detalhes</span>
       </button>
       <span class="edital-card__contact" [title]="project.contact_email || project.responsible_person.institutional_email || 'Contato nao informado'">
+        <span class="edital-card__contact-label">Contato</span>
         <i class="pi pi-at" aria-hidden="true"></i>
         <span class="edital-card__contact-text">{{ project.contact_email || project.responsible_person.institutional_email || 'Contato nao informado' }}</span>
         @if (project.contact_email || project.responsible_person.institutional_email) {

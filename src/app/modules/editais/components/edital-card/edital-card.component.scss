@@ -438,35 +438,52 @@
 .edital-card__actions {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 0.35rem;
+  align-items: stretch;
+  gap: 0.5rem;
   min-width: 0;
+  width: min(290px, 100%);
 }
 
 .edital-card__contact {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  max-width: 220px;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  color: #565c64;
+  gap: 0.38rem;
+  width: 100%;
+  max-width: 100%;
+  padding: 0.38rem 0.52rem;
+  border-radius: 8px;
+  border: 1px solid rgba(15, 23, 32, 0.12);
+  background: rgba(15, 23, 32, 0.035);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #39414a;
 
   i {
     flex-shrink: 0;
-    font-size: 0.72rem;
+    font-size: 0.8rem;
+    opacity: 0.85;
   }
+}
+
+.edital-card__contact-label {
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #6b737d;
+  flex-shrink: 0;
 }
 
 .edital-card__contact-text {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
 }
 
 .edital-card__copy-btn {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -479,7 +496,7 @@
   flex-shrink: 0;
 
   i {
-    font-size: 0.72rem;
+    font-size: 0.8rem;
   }
 
   &:hover {
@@ -497,7 +514,16 @@
 }
 
 :host-context(.my-app-dark) .edital-card__contact {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+:host-context(.my-app-dark) .edital-card__contact {
   color: #c2c7d1;
+}
+
+:host-context(.my-app-dark) .edital-card__contact-label {
+  color: #d3d8e1;
 }
 
 @media (max-width: 560px) {
@@ -509,6 +535,7 @@
 
   .edital-card__actions {
     align-items: flex-start;
+    width: 100%;
   }
 
   .edital-card__contact {
