@@ -380,6 +380,25 @@
   color: #edf3ff;
 }
 
+:host-context(.my-app-dark) ::ng-deep .admin-select .p-select-overlay {
+  background: #151d27;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #edf3ff;
+}
+
+:host-context(.my-app-dark) ::ng-deep .admin-select .p-select-option {
+  color: #edf3ff;
+}
+
+:host-context(.my-app-dark) ::ng-deep .admin-select .p-select-option.p-focus {
+  background: rgba(137, 188, 250, 0.16);
+}
+
+:host-context(.my-app-dark) ::ng-deep .admin-select .p-select-option.p-select-option-selected {
+  background: rgba(137, 188, 250, 0.22);
+  color: #f6f9ff;
+}
+
 :host-context(.my-app-dark) ::ng-deep .admin-select .p-select:hover {
   border-color: rgba(137, 188, 250, 0.45);
 }
