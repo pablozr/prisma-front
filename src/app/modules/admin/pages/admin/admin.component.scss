@@ -183,10 +183,19 @@
 
 :host-context(.my-app-dark) ::ng-deep .admin-panel--tabs .p-tablist-tab-list {
   border-bottom-color: rgba(255, 255, 255, 0.1);
+  background: #1f262f;
 }
 
 :host-context(.my-app-dark) ::ng-deep .admin-panel--tabs .p-tabpanels {
-  background: transparent;
+  background: #1f262f;
+}
+
+:host-context(.my-app-dark) ::ng-deep .admin-panel--tabs .p-tab {
+  color: #c8d1df;
+}
+
+:host-context(.my-app-dark) ::ng-deep .admin-panel--tabs .p-tab.p-tab-active {
+  color: #89bcfa;
 }
 
 .admin-users__toolbar {
@@ -200,6 +209,20 @@
 
   @media (max-width: 640px) {
     flex-direction: column;
+  }
+}
+
+:host-context(.my-app-dark) .admin-users__toolbar {
+  input,
+  .p-inputtext {
+    background: #151d27;
+    color: #edf3ff;
+    border-color: rgba(255, 255, 255, 0.14);
+  }
+
+  input::placeholder,
+  .p-inputtext::placeholder {
+    color: #9facc0;
   }
 }
 
@@ -260,6 +283,11 @@
   td {
     color: #f1f5fb;
   }
+}
+
+:host-context(.my-app-dark) .admin-users__table-wrap {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
 }
 
 .admin-toggle {
@@ -342,7 +370,7 @@
 }
 
 :host-context(.my-app-dark) ::ng-deep .admin-select .p-select {
-  background: #1f262f;
+  background: #151d27;
   border-color: rgba(255, 255, 255, 0.16);
   color: #edf3ff;
 }
@@ -350,6 +378,19 @@
 :host-context(.my-app-dark) ::ng-deep .admin-select .p-select-label,
 :host-context(.my-app-dark) ::ng-deep .admin-select .p-select-dropdown {
   color: #edf3ff;
+}
+
+:host-context(.my-app-dark) ::ng-deep .admin-select .p-select:hover {
+  border-color: rgba(137, 188, 250, 0.45);
+}
+
+:host-context(.my-app-dark) ::ng-deep .admin-select.p-disabled .p-select {
+  background: #273140;
+  color: #9facc0;
+}
+
+:host-context(.my-app-dark) ::ng-deep .admin-toggle input:checked + .admin-toggle__track {
+  background: #6ea8ef;
 }
 
 .admin-placeholder {
