@@ -6,7 +6,7 @@
   (click)="onDetails()"
   (keydown.enter)="onDetails()"
   tabindex="0"
-  [attr.aria-label]="'Abrir detalhes do edital ' + project.title"
+  [attr.aria-label]="'Abrir detalhes do projeto ' + project.title"
 >
   @if (project.cover?.image_url) {
     <figure class="edital-card__cover">

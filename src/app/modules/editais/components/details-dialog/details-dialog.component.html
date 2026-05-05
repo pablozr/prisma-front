@@ -18,7 +18,7 @@
         <div class="details-dialog__header-body">
           <span class="details-dialog__kicker">
             <i class="pi pi-hashtag" aria-hidden="true"></i>
-            {{ project.process_code || 'Edital' }}
+            {{ project.process_code || 'Projeto' }}
           </span>
           <h2 class="details-dialog__title">{{ project.title }}</h2>
           @if (project.executing_unit) {
@@ -74,7 +74,7 @@
       <section class="details-dialog__section">
         <h3 class="details-dialog__section-title">Sobre o projeto</h3>
         <p class="details-dialog__desc">
-          {{ project.full_description || project.short_description || 'Descrição detalhada ainda não foi publicada para este edital.' }}
+          {{ project.full_description || project.short_description || 'Descricao detalhada ainda nao foi publicada para este projeto.' }}
         </p>
       </section>
 

@@ -57,7 +57,7 @@ export class EditaisComponent implements OnInit, OnDestroy {
 
   readonly breadcrumbs: IBreadcrumbItem[] = [
     { label: 'Início', route: '/home', icon: 'pi pi-home' },
-    { label: 'Editais abertos', icon: 'pi pi-file' }
+    { label: 'Projetos vigentes', icon: 'pi pi-file' }
   ]
 
   allProjects: IProject[] = []
