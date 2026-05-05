@@ -123,9 +123,9 @@
         <i class="pi pi-arrow-up-right" aria-hidden="true"></i>
         <span>Detalhes</span>
       </button>
-      <span class="edital-card__prof-role">
+      <span class="edital-card__contact" [title]="project.contact_email || project.responsible_person.institutional_email || 'Contato nao informado'">
         <i class="pi pi-at" aria-hidden="true"></i>
-        {{ project.contact_email || project.responsible_person.institutional_email || 'Contato nao informado' }}
+        <span class="edital-card__contact-text">{{ project.contact_email || project.responsible_person.institutional_email || 'Contato nao informado' }}</span>
       </span>
     </div>
   </footer>

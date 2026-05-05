@@ -437,9 +437,51 @@
 
 .edital-card__actions {
   display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.edital-card__contact {
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
+  gap: 0.3rem;
+  max-width: 220px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #565c64;
+
+  i {
+    flex-shrink: 0;
+    font-size: 0.72rem;
+  }
+}
+
+.edital-card__contact-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:host-context(.my-app-dark) .edital-card__contact {
+  color: #c2c7d1;
+}
+
+@media (max-width: 560px) {
+  .edital-card__footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .edital-card__actions {
+    align-items: flex-start;
+  }
+
+  .edital-card__contact {
+    max-width: 100%;
+  }
 }
 
 .edital-card__btn {
