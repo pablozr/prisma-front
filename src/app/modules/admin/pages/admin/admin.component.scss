@@ -267,6 +267,54 @@
   background: rgba(0, 75, 130, 0.03);
 }
 
+.admin-import__uploader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+
+  input[type='file'] {
+    max-width: 100%;
+  }
+
+  small {
+    width: 100%;
+    color: var(--on-surface-variant);
+  }
+}
+
+.admin-import__errors {
+  margin-top: 1rem;
+  padding: 0.9rem;
+  border: 1px solid var(--outline-variant);
+  border-radius: 8px;
+  background: rgba(0, 75, 130, 0.02);
+
+  h4 {
+    margin: 0 0 0.6rem;
+    font-size: 0.95rem;
+    color: var(--on-surface);
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  li {
+    font-size: 0.85rem;
+    color: var(--on-surface-variant);
+  }
+}
+
+:host-context(.my-app-dark) .admin-import__errors {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(137, 188, 250, 0.05);
+}
+
 :host-context(.my-app-dark) .admin-placeholder {
   border-color: rgba(255, 255, 255, 0.15);
   background: rgba(137, 188, 250, 0.05);

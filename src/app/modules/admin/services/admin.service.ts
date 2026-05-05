@@ -4,7 +4,14 @@ import { firstValueFrom } from 'rxjs'
 
 import { API_BASE_URL } from '../../global/constants/apiConfig'
 import { AppToastService } from '../../global/services/toast/app-toast.service'
-import { IAdminMetrics, IAdminProject, IAdminUser, IAdminUsersPagination } from '../interfaces/IAdmin'
+import {
+  IAdminImportBatch,
+  IAdminImportError,
+  IAdminMetrics,
+  IAdminProject,
+  IAdminUser,
+  IAdminUsersPagination
+} from '../interfaces/IAdmin'
 
 interface IApiResponse<T> {
   message: string
@@ -108,6 +115,54 @@ export class AdminService {
     } catch (err) {
       this.toast.error('Erro ao atualizar projeto', this.extractDetail(err, 'Tente novamente.'))
       return null
+    }
+  }
+
+  async uploadImport(file: File): Promise<IAdminImportBatch | null> {
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const res = await firstValueFrom(
+        this.http.post<IApiResponse<{ batch: IAdminImportBatch }>>(`${this.endpoint}/imports`, formData, this.withCreds)
+      )
+      this.toast.success('Importacao concluida', 'Arquivo processado com sucesso.')
+      return res?.data?.batch ?? null
+    } catch (err) {
+      this.toast.error('Erro na importacao', this.extractDetail(err, 'Tente novamente.'))
+      return null
+    }
+  }
+
+  async listImports(page: number, pageSize: number): Promise<{ batches: IAdminImportBatch[]; pagination: IAdminUsersPagination } | null> {
+    try {
+      const params = new HttpParams().set('page', page).set('page_size', pageSize)
+      const res = await firstValueFrom(
+        this.http.get<IApiResponse<{ batches: IAdminImportBatch[]; pagination: IAdminUsersPagination }>>(
+          `${this.endpoint}/imports`,
+          { ...this.withCreds, params }
+        )
+      )
+      return res?.data ?? null
+    } catch (err) {
+      this.toast.error('Erro ao carregar importacoes', this.extractDetail(err, 'Tente novamente.'))
+      return null
+    }
+  }
+
+  async listImportErrors(batchId: number, page = 1, pageSize = 20): Promise<IAdminImportError[]> {
+    try {
+      const params = new HttpParams().set('page', page).set('page_size', pageSize)
+      const res = await firstValueFrom(
+        this.http.get<IApiResponse<{ errors: IAdminImportError[] }>>(
+          `${this.endpoint}/imports/${batchId}/errors`,
+          { ...this.withCreds, params }
+        )
+      )
+      return res?.data?.errors ?? []
+    } catch (err) {
+      this.toast.error('Erro ao carregar erros da importacao', this.extractDetail(err, 'Tente novamente.'))
+      return []
     }
   }
 }

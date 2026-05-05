@@ -10,7 +10,14 @@ import { BreadcrumbsComponent, IBreadcrumbItem } from '../../../global/component
 import { ISigninData } from '../../../global/interfaces/ISignin'
 import { UsersService } from '../../../global/services/users/users.service'
 import { AdminService } from '../../services/admin.service'
-import { IAdminMetrics, IAdminProject, IAdminUser, IAdminUsersPagination } from '../../interfaces/IAdmin'
+import {
+  IAdminImportBatch,
+  IAdminImportError,
+  IAdminMetrics,
+  IAdminProject,
+  IAdminUser,
+  IAdminUsersPagination
+} from '../../interfaces/IAdmin'
 
 interface IMetric {
   label: string
@@ -42,12 +49,19 @@ export class AdminComponent implements OnInit {
   metricsLoading = false
   usersLoading = false
   projectsLoading = false
+  importsLoading = false
+  importUploading = false
+  importErrorsLoading = false
   savingUserById: Record<number, boolean> = {}
   savingProjectById: Record<number, boolean> = {}
 
   metrics: IMetric[] = []
   users: IAdminUser[] = []
   projects: IAdminProject[] = []
+  importBatches: IAdminImportBatch[] = []
+  importErrors: IAdminImportError[] = []
+  selectedImportBatchId: number | null = null
+  selectedImportFile: File | null = null
   userDraftById: Record<number, { role: 'admin' | 'professor' | 'tecnico'; is_active: boolean }> = {}
   projectDraftById: Record<number, { status: 'draft' | 'published' | 'archived'; is_active: boolean }> = {}
 
@@ -60,6 +74,9 @@ export class AdminComponent implements OnInit {
   projectsPage = 1
   projectsPageSize = 10
   projectsPagination: IAdminUsersPagination = { page: 1, page_size: 10, total: 0, total_pages: 0 }
+  importsPage = 1
+  importsPageSize = 10
+  importsPagination: IAdminUsersPagination = { page: 1, page_size: 10, total: 0, total_pages: 0 }
 
   readonly roleOptions = [
     { label: 'Admin', value: 'admin' },
@@ -86,6 +103,7 @@ export class AdminComponent implements OnInit {
     await this.loadMetrics()
     await this.loadUsers()
     await this.loadProjects()
+    await this.loadImports()
   }
 
   get firstName(): string {
@@ -182,6 +200,22 @@ export class AdminComponent implements OnInit {
     this.buildProjectDraftMap(result.projects)
   }
 
+  async loadImports() {
+    this.importsLoading = true
+    const result = await this.adminService.listImports(this.importsPage, this.importsPageSize)
+    this.importsLoading = false
+
+    if (!result) {
+      this.importBatches = []
+      this.importErrors = []
+      this.selectedImportBatchId = null
+      return
+    }
+
+    this.importBatches = result.batches
+    this.importsPagination = result.pagination
+  }
+
   async onSearchUsers() {
     this.usersPage = 1
     await this.loadUsers()
@@ -208,6 +242,41 @@ export class AdminComponent implements OnInit {
 
     this.projectsPage = nextPage
     await this.loadProjects()
+  }
+
+  async onImportsPageChange(nextPage: number) {
+    if (nextPage < 1 || nextPage > this.importsPagination.total_pages || nextPage === this.importsPage) {
+      return
+    }
+
+    this.importsPage = nextPage
+    await this.loadImports()
+  }
+
+  onImportFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement
+    const file = input.files?.[0] ?? null
+    this.selectedImportFile = file
+  }
+
+  async submitImport() {
+    if (!this.selectedImportFile) return
+
+    this.importUploading = true
+    const created = await this.adminService.uploadImport(this.selectedImportFile)
+    this.importUploading = false
+
+    if (!created) return
+
+    this.selectedImportFile = null
+    await this.loadImports()
+  }
+
+  async openImportErrors(batchId: number) {
+    this.selectedImportBatchId = batchId
+    this.importErrorsLoading = true
+    this.importErrors = await this.adminService.listImportErrors(batchId)
+    this.importErrorsLoading = false
   }
 
   hasUserChanges(user: IAdminUser): boolean {

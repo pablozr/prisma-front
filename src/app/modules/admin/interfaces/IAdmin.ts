@@ -36,3 +36,29 @@ export interface IAdminProject {
   responsible_email: string | null
   responsible_type: 'docente' | 'tecnico' | string
 }
+
+export interface IAdminImportBatch {
+  id: number
+  reference_year: number
+  reference_term: number
+  source_filename: string
+  source_hash: string
+  status: string
+  total_rows: number
+  imported_rows: number
+  rejected_rows: number
+  created_at: string
+  finished_at: string | null
+  uploaded_by_user_id: number | null
+  uploaded_by_name: string | null
+  uploaded_by_email: string | null
+}
+
+export interface IAdminImportError {
+  id: number
+  import_batch_id: number
+  row_number: number
+  raw_payload: unknown
+  error_reason: string
+  created_at: string
+}

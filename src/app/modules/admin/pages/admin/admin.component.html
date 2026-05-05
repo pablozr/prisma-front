@@ -198,9 +198,81 @@
           </p-tabpanel>
 
           <p-tabpanel value="import">
-            <p class="admin-placeholder">
-              Proximo bloco: importacao de arquivos .xlsx/.csv com historico de lotes e erros.
-            </p>
+            <div class="admin-import__uploader">
+              <input type="file" accept=".csv,.xlsx" (change)="onImportFileSelected($event)" />
+              <button
+                pButton
+                type="button"
+                label="Importar arquivo"
+                [disabled]="!selectedImportFile || importUploading"
+                (click)="submitImport()"
+              ></button>
+              @if (selectedImportFile) {
+                <small>Arquivo selecionado: {{ selectedImportFile.name }}</small>
+              }
+            </div>
+
+            @if (importsLoading) {
+              <p class="admin-loading">Carregando historico de importacoes...</p>
+            } @else if (!importBatches.length) {
+              <p class="admin-loading">Nenhuma importacao encontrada.</p>
+            } @else {
+              <div class="admin-users__table-wrap">
+                <table class="admin-users__table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Arquivo</th>
+                      <th>Status</th>
+                      <th>Linhas</th>
+                      <th>Importado por</th>
+                      <th>Criado em</th>
+                      <th>Erros</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (batch of importBatches; track batch.id) {
+                      <tr>
+                        <td>#{{ batch.id }}</td>
+                        <td>{{ batch.source_filename }}</td>
+                        <td>{{ batch.status }}</td>
+                        <td>{{ batch.imported_rows }}/{{ batch.total_rows }}</td>
+                        <td>{{ batch.uploaded_by_name || 'Nao informado' }}</td>
+                        <td>{{ batch.created_at | date: 'dd/MM/yyyy HH:mm' }}</td>
+                        <td>
+                          <button pButton type="button" label="Ver" severity="secondary" (click)="openImportErrors(batch.id)"></button>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+
+              @if (importsPagination.total_pages > 1) {
+                <nav class="admin-pagination" aria-label="Paginacao de importacoes">
+                  <button pButton type="button" severity="secondary" label="Anterior" (click)="onImportsPageChange(importsPage - 1)"></button>
+                  <span>Pagina {{ importsPagination.page }} de {{ importsPagination.total_pages }}</span>
+                  <button pButton type="button" severity="secondary" label="Proxima" (click)="onImportsPageChange(importsPage + 1)"></button>
+                </nav>
+              }
+            }
+
+            @if (selectedImportBatchId !== null) {
+              <section class="admin-import__errors">
+                <h4>Erros do lote #{{ selectedImportBatchId }}</h4>
+                @if (importErrorsLoading) {
+                  <p class="admin-loading">Carregando erros...</p>
+                } @else if (!importErrors.length) {
+                  <p class="admin-loading">Esse lote nao possui erros registrados.</p>
+                } @else {
+                  <ul>
+                    @for (error of importErrors; track error.id) {
+                      <li>Linha {{ error.row_number }}: {{ error.error_reason }}</li>
+                    }
+                  </ul>
+                }
+              </section>
+            }
           </p-tabpanel>
         </p-tabpanels>
       </p-tabs>
