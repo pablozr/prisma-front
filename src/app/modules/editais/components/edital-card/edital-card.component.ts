@@ -15,13 +15,7 @@ type DeadlineState = 'open' | 'closing_soon' | 'closed' | 'upcoming'
 export class EditalCardComponent {
   @Input({ required: true }) project!: IProject
   @Input() prioritizeCover = false
-  @Output() contact = new EventEmitter<IProject>()
   @Output() details = new EventEmitter<IProject>()
-
-  get canContact(): boolean {
-    const hasContact = !!this.project.contact_email?.trim()
-    return hasContact
-  }
 
   get professorInitials(): string {
     const name = this.project.responsible_person.full_name
@@ -114,11 +108,6 @@ export class EditalCardComponent {
       day: '2-digit',
       month: 'short'
     })
-  }
-
-  onContact(event: Event) {
-    event.stopPropagation()
-    this.contact.emit(this.project)
   }
 
   onDetails() {

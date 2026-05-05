@@ -173,19 +173,6 @@ export class EditaisComponent implements OnInit, OnDestroy {
     this.refreshProjects()
   }
 
-  openContact(project: IProject) {
-    const contactEmail =
-      project.contact_email?.trim() ||
-      project.responsible_person.institutional_email?.trim()
-    if (!contactEmail) return
-
-    const subject = encodeURIComponent(`[SIEPA] Interesse no projeto ${project.process_code || ''}`.trim())
-    const body = encodeURIComponent(
-      `Ola, tenho interesse no projeto \"${project.title}\" e gostaria de mais informacoes.`
-    )
-    window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`
-  }
-
   onDetails(project: IProject) {
     this.detailsProject = project
     this.detailsDialogVisible = true
@@ -201,10 +188,6 @@ export class EditaisComponent implements OnInit, OnDestroy {
         this.detailsProject = detailedProject
         this.replaceProject(detailedProject)
       })
-  }
-
-  onDetailsContact(project: IProject) {
-    this.openContact(project)
   }
 
   onDetailsDialogVisibleChange(visible: boolean) {

@@ -123,17 +123,10 @@
         <i class="pi pi-arrow-up-right" aria-hidden="true"></i>
         <span>Detalhes</span>
       </button>
-      @if (canContact) {
-        <button
-          type="button"
-          class="edital-card__btn edital-card__btn--primary"
-          (click)="onContact($event)"
-          [attr.aria-label]="'Enviar email para ' + project.responsible_person.full_name"
-        >
-          <i class="pi pi-envelope" aria-hidden="true"></i>
-          <span>Contatar</span>
-        </button>
-      }
+      <span class="edital-card__prof-role">
+        <i class="pi pi-at" aria-hidden="true"></i>
+        {{ project.contact_email || project.responsible_person.institutional_email || 'Contato nao informado' }}
+      </span>
     </div>
   </footer>
 </article>

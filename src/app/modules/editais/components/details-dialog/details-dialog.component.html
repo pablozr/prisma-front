@@ -180,17 +180,6 @@
       <button type="button" class="details-dialog__btn details-dialog__btn--ghost" (click)="close()">
         Fechar
       </button>
-      @if (canContact) {
-        <button type="button" class="details-dialog__btn details-dialog__btn--primary" (click)="onContact()">
-          <i class="pi pi-envelope" aria-hidden="true"></i>
-          <span>Abrir email de contato</span>
-        </button>
-      } @else {
-        <span class="details-dialog__hint">
-          <i class="pi pi-info-circle" aria-hidden="true"></i>
-          {{ contactHint }}
-        </span>
-      }
     </div>
   </ng-template>
 </p-dialog>

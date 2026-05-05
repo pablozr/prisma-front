@@ -66,7 +66,6 @@
               <app-edital-card
                 [project]="project"
                 [prioritizeCover]="index === 0"
-                (contact)="openContact($event)"
                 (details)="onDetails($event)"
               ></app-edital-card>
             </li>
@@ -147,7 +146,6 @@
       [visible]="detailsDialogVisible"
       (visibleChange)="onDetailsDialogVisibleChange($event)"
       [project]="detailsProject"
-      (contact)="onDetailsContact($event)"
     ></app-details-dialog>
   }
 </div>

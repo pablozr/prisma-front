@@ -18,23 +18,6 @@ export class DetailsDialogComponent {
   @Input() project: IProject | null = null
 
   @Output() visibleChange = new EventEmitter<boolean>()
-  @Output() contact = new EventEmitter<IProject>()
-
-  private get hasContactEmail(): boolean {
-    return !!this.project?.contact_email?.trim()
-  }
-
-  get canContact(): boolean {
-    return this.hasContactEmail
-  }
-
-  get contactHint(): string {
-    if (!this.hasContactEmail) {
-      return 'Este projeto ainda nao possui email de contato cadastrado.'
-    }
-
-    return 'Use o botao para abrir seu aplicativo de email e contatar o responsavel.'
-  }
 
   get professorInitials(): string {
     const fullName = (this.project?.responsible_person.full_name || '').trim()
@@ -147,11 +130,5 @@ export class DetailsDialogComponent {
   close() {
     this.visible = false
     this.visibleChange.emit(false)
-  }
-
-  onContact() {
-    if (!this.project || !this.canContact) return
-    this.contact.emit(this.project)
-    this.close()
   }
 }
