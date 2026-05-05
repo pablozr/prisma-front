@@ -545,3 +545,23 @@ html.my-app-dark .p-datatable .p-datatable-tbody > tr > td {
   padding-left: var(--gutter);
   padding-right: var(--gutter);
 }
+
+/* PrimeNG Select overlays in dark mode */
+html.my-app-dark .p-select-overlay {
+  background: #1f262f !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: #edf3ff !important;
+}
+
+html.my-app-dark .p-select-option {
+  color: #edf3ff !important;
+}
+
+html.my-app-dark .p-select-option.p-focus {
+  background: rgba(137, 188, 250, 0.16) !important;
+}
+
+html.my-app-dark .p-select-option.p-select-option-selected {
+  background: rgba(137, 188, 250, 0.24) !important;
+  color: #f6f9ff !important;
+}
