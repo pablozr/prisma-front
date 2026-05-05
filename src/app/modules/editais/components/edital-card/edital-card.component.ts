@@ -16,6 +16,7 @@ export class EditalCardComponent {
   @Input({ required: true }) project!: IProject
   @Input() prioritizeCover = false
   @Output() details = new EventEmitter<IProject>()
+  copiedContact = false
 
   get professorInitials(): string {
     const name = this.project.responsible_person.full_name
@@ -112,5 +113,22 @@ export class EditalCardComponent {
 
   onDetails() {
     this.details.emit(this.project)
+  }
+
+  async copyContact(event: MouseEvent) {
+    event.stopPropagation()
+
+    const email = this.project.contact_email || this.project.responsible_person.institutional_email
+    if (!email) return
+
+    try {
+      await navigator.clipboard.writeText(email)
+      this.copiedContact = true
+      setTimeout(() => {
+        this.copiedContact = false
+      }, 1600)
+    } catch {
+      this.copiedContact = false
+    }
   }
 }

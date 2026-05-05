@@ -464,6 +464,38 @@
   white-space: nowrap;
 }
 
+.edital-card__copy-btn {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: inherit;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+
+  i {
+    font-size: 0.72rem;
+  }
+
+  &:hover {
+    background: rgba(15, 23, 32, 0.08);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #004b82;
+    outline-offset: 1px;
+  }
+}
+
+:host-context(.my-app-dark) .edital-card__copy-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
 :host-context(.my-app-dark) .edital-card__contact {
   color: #c2c7d1;
 }

@@ -126,6 +126,17 @@
       <span class="edital-card__contact" [title]="project.contact_email || project.responsible_person.institutional_email || 'Contato nao informado'">
         <i class="pi pi-at" aria-hidden="true"></i>
         <span class="edital-card__contact-text">{{ project.contact_email || project.responsible_person.institutional_email || 'Contato nao informado' }}</span>
+        @if (project.contact_email || project.responsible_person.institutional_email) {
+          <button
+            type="button"
+            class="edital-card__copy-btn"
+            (click)="copyContact($event)"
+            [attr.aria-label]="copiedContact ? 'Email copiado' : 'Copiar email de contato'"
+            [title]="copiedContact ? 'Copiado' : 'Copiar email'"
+          >
+            <i class="pi" [class.pi-copy]="!copiedContact" [class.pi-check]="copiedContact" aria-hidden="true"></i>
+          </button>
+        }
       </span>
     </div>
   </footer>
