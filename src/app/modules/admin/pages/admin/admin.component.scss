@@ -177,6 +177,18 @@
   border-bottom: 1px solid var(--outline-variant);
 }
 
+:host ::ng-deep .admin-panel--tabs .p-tabpanels {
+  background: transparent;
+}
+
+:host-context(.my-app-dark) ::ng-deep .admin-panel--tabs .p-tablist-tab-list {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+:host-context(.my-app-dark) ::ng-deep .admin-panel--tabs .p-tabpanels {
+  background: transparent;
+}
+
 .admin-users__toolbar {
   display: flex;
   gap: 0.75rem;
@@ -200,6 +212,7 @@
   width: 100%;
   border-collapse: collapse;
   min-width: 860px;
+  color: var(--on-surface);
 
   th,
   td {
@@ -211,10 +224,15 @@
   }
 
   th {
+    background: rgba(0, 75, 130, 0.04);
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--on-surface-variant);
+  }
+
+  td {
+    color: var(--on-surface);
   }
 }
 
@@ -231,6 +249,15 @@
   th,
   td {
     border-bottom-color: rgba(255, 255, 255, 0.08);
+  }
+
+  th {
+    background: rgba(137, 188, 250, 0.1);
+    color: #dce7f5;
+  }
+
+  td {
+    color: #f1f5fb;
   }
 }
 
