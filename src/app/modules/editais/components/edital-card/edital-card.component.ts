@@ -118,7 +118,7 @@ export class EditalCardComponent {
   async copyContact(event: MouseEvent) {
     event.stopPropagation()
 
-    const email = this.project.contact_email || this.project.responsible_person.institutional_email
+    const email = this.project.responsible_person.institutional_email || this.project.contact_email
     if (!email) return
 
     try {

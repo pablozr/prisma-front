@@ -123,11 +123,11 @@
         <i class="pi pi-arrow-up-right" aria-hidden="true"></i>
         <span>Detalhes</span>
       </button>
-      <span class="edital-card__contact" [title]="project.contact_email || project.responsible_person.institutional_email || 'Contato nao informado'">
+      <span class="edital-card__contact" [title]="project.responsible_person.institutional_email || project.contact_email || 'Contato nao informado'">
         <span class="edital-card__contact-label">Contato</span>
         <i class="pi pi-at" aria-hidden="true"></i>
-        <span class="edital-card__contact-text">{{ project.contact_email || project.responsible_person.institutional_email || 'Contato nao informado' }}</span>
-        @if (project.contact_email || project.responsible_person.institutional_email) {
+        <span class="edital-card__contact-text">{{ project.responsible_person.institutional_email || project.contact_email || 'Contato nao informado' }}</span>
+        @if (project.responsible_person.institutional_email || project.contact_email) {
           <button
             type="button"
             class="edital-card__copy-btn"

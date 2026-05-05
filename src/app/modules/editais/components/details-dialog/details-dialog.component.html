@@ -166,7 +166,7 @@
             <span class="details-dialog__prof-name">{{ project.responsible_person.full_name }}</span>
             <span class="details-dialog__prof-email">
               <i class="pi pi-at" aria-hidden="true"></i>
-              {{ project.contact_email || project.responsible_person.institutional_email || 'Nao informado' }}
+              {{ project.responsible_person.institutional_email || project.contact_email || 'Nao informado' }}
             </span>
             <span class="details-dialog__prof-meta">Perfil · {{ project.responsible_person.type }}</span>
           </div>
