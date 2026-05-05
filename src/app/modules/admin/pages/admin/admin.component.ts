@@ -259,6 +259,35 @@ export class AdminComponent implements OnInit {
     this.selectedImportFile = file
   }
 
+  onImportDragOver(event: DragEvent) {
+    event.preventDefault()
+  }
+
+  onImportDrop(event: DragEvent) {
+    event.preventDefault()
+    const file = event.dataTransfer?.files?.[0] ?? null
+    if (!file) return
+    this.selectedImportFile = file
+  }
+
+  clearImportSelection() {
+    this.selectedImportFile = null
+  }
+
+  formatFileSize(sizeInBytes: number): string {
+    if (!sizeInBytes || sizeInBytes < 1024) {
+      return `${sizeInBytes || 0} B`
+    }
+
+    const kb = sizeInBytes / 1024
+    if (kb < 1024) {
+      return `${kb.toFixed(1)} KB`
+    }
+
+    const mb = kb / 1024
+    return `${mb.toFixed(2)} MB`
+  }
+
   async submitImport() {
     if (!this.selectedImportFile) return
 

@@ -77,6 +77,7 @@
                         <td>{{ user.institutional_email }}</td>
                         <td>
                           <p-select
+                            styleClass="admin-select"
                             [options]="roleOptions"
                             optionLabel="label"
                             optionValue="value"
@@ -85,9 +86,10 @@
                           />
                         </td>
                         <td>
-                          <label class="admin-users__switch">
+                          <label class="admin-toggle">
                             <input type="checkbox" [(ngModel)]="userDraftById[user.id].is_active" />
-                            <span>{{ userDraftById[user.id].is_active ? 'Ativo' : 'Inativo' }}</span>
+                            <span class="admin-toggle__track" aria-hidden="true"></span>
+                            <span class="admin-toggle__label">{{ userDraftById[user.id].is_active ? 'Ativo' : 'Inativo' }}</span>
                           </label>
                         </td>
                         <td>{{ user.last_login_at ? (user.last_login_at | date: 'dd/MM/yyyy HH:mm') : 'Sem acesso' }}</td>
@@ -158,6 +160,7 @@
                         </td>
                         <td>
                           <p-select
+                            styleClass="admin-select admin-select--status"
                             [options]="projectStatusOptions"
                             optionLabel="label"
                             optionValue="value"
@@ -166,9 +169,10 @@
                           />
                         </td>
                         <td>
-                          <label class="admin-users__switch">
+                          <label class="admin-toggle">
                             <input type="checkbox" [(ngModel)]="projectDraftById[project.id].is_active" />
-                            <span>{{ projectDraftById[project.id].is_active ? 'Sim' : 'Nao' }}</span>
+                            <span class="admin-toggle__track" aria-hidden="true"></span>
+                            <span class="admin-toggle__label">{{ projectDraftById[project.id].is_active ? 'Ativo' : 'Inativo' }}</span>
                           </label>
                         </td>
                         <td>{{ project.updated_at | date: 'dd/MM/yyyy HH:mm' }}</td>
@@ -198,8 +202,31 @@
           </p-tabpanel>
 
           <p-tabpanel value="import">
-            <div class="admin-import__uploader">
-              <input type="file" accept=".csv,.xlsx" (change)="onImportFileSelected($event)" />
+            <section class="admin-import__dropzone" (dragover)="onImportDragOver($event)" (drop)="onImportDrop($event)">
+              <div class="admin-import__dropzone-icon" aria-hidden="true">
+                <i class="pi pi-file-import"></i>
+              </div>
+              <div class="admin-import__dropzone-body">
+                <p>Arraste um arquivo <strong>.csv</strong> ou <strong>.xlsx</strong> aqui</p>
+                <small>Ou selecione manualmente para iniciar a importacao.</small>
+              </div>
+              <label class="admin-import__pick">
+                <input type="file" accept=".csv,.xlsx" (change)="onImportFileSelected($event)" />
+                <span>Escolher arquivo</span>
+              </label>
+            </section>
+
+            @if (selectedImportFile) {
+              <div class="admin-import__file-card">
+                <div>
+                  <p class="admin-import__file-name">{{ selectedImportFile.name }}</p>
+                  <small>{{ formatFileSize(selectedImportFile.size) }}</small>
+                </div>
+                <button pButton type="button" severity="secondary" label="Trocar" (click)="clearImportSelection()"></button>
+              </div>
+            }
+
+            <div class="admin-import__actions">
               <button
                 pButton
                 type="button"
@@ -207,8 +234,8 @@
                 [disabled]="!selectedImportFile || importUploading"
                 (click)="submitImport()"
               ></button>
-              @if (selectedImportFile) {
-                <small>Arquivo selecionado: {{ selectedImportFile.name }}</small>
+              @if (importUploading) {
+                <span class="admin-import__loading"><i class="pi pi-spin pi-spinner"></i> Processando arquivo...</span>
               }
             </div>
 

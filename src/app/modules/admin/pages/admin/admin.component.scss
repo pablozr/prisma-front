@@ -224,11 +224,12 @@
   }
 
   th {
-    background: rgba(0, 75, 130, 0.04);
+    background: var(--surface-2);
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--on-surface-variant);
+    font-weight: 700;
   }
 
   td {
@@ -252,8 +253,8 @@
   }
 
   th {
-    background: rgba(137, 188, 250, 0.1);
-    color: #dce7f5;
+    background: rgba(137, 188, 250, 0.16);
+    color: #ecf3ff;
   }
 
   td {
@@ -261,10 +262,60 @@
   }
 }
 
-.admin-users__switch {
+.admin-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.admin-toggle__track {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  border-radius: 999px;
+  background: #c6c9cf;
+  transition: background-color 0.2s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s ease;
+  }
+}
+
+.admin-toggle input:checked + .admin-toggle__track {
+  background: var(--primary-color);
+}
+
+.admin-toggle input:checked + .admin-toggle__track::after {
+  transform: translateX(16px);
+}
+
+.admin-toggle__label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+}
+
+:host-context(.my-app-dark) .admin-toggle__track {
+  background: #5c6470;
+}
+
+:host-context(.my-app-dark) .admin-toggle__label {
+  color: #e6edf8;
 }
 
 .admin-pagination {
@@ -285,6 +336,22 @@
   }
 }
 
+:host ::ng-deep .admin-select .p-select {
+  min-width: 140px;
+  border-radius: 8px;
+}
+
+:host-context(.my-app-dark) ::ng-deep .admin-select .p-select {
+  background: #1f262f;
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #edf3ff;
+}
+
+:host-context(.my-app-dark) ::ng-deep .admin-select .p-select-label,
+:host-context(.my-app-dark) ::ng-deep .admin-select .p-select-dropdown {
+  color: #edf3ff;
+}
+
 .admin-placeholder {
   margin: 0.25rem 0 0;
   padding: 0.9rem;
@@ -295,20 +362,103 @@
 }
 
 .admin-import__uploader {
+  display: none;
+}
+
+.admin-import__dropzone {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border: 1px dashed rgba(0, 75, 130, 0.35);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(0, 75, 130, 0.03), rgba(0, 75, 130, 0.015));
+  margin-bottom: 0.9rem;
+
+  @media (max-width: 640px) {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+.admin-import__dropzone-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: var(--primary-strong);
+  background: rgba(0, 75, 130, 0.1);
+}
+
+.admin-import__dropzone-body {
+  flex: 1;
+
+  p {
+    margin: 0;
+    font-size: 0.92rem;
+    color: var(--on-surface);
+  }
+
+  small {
+    color: var(--on-surface-variant);
+  }
+}
+
+.admin-import__pick {
+  input {
+    display: none;
+  }
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.2rem;
+    padding: 0 0.9rem;
+    border-radius: 8px;
+    border: 1px solid var(--outline-variant);
+    background: #fff;
+    color: var(--on-surface);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+}
+
+.admin-import__file-card {
+  margin-bottom: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--outline-variant);
+  border-radius: 10px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.admin-import__file-name {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--on-surface);
+}
+
+.admin-import__actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 1rem;
+}
 
-  input[type='file'] {
-    max-width: 100%;
-  }
-
-  small {
-    width: 100%;
-    color: var(--on-surface-variant);
-  }
+.admin-import__loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.84rem;
+  color: var(--on-surface-variant);
 }
 
 .admin-import__errors {
@@ -340,6 +490,33 @@
 :host-context(.my-app-dark) .admin-import__errors {
   border-color: rgba(255, 255, 255, 0.1);
   background: rgba(137, 188, 250, 0.05);
+}
+
+:host-context(.my-app-dark) .admin-import__dropzone {
+  border-color: rgba(137, 188, 250, 0.32);
+  background: linear-gradient(180deg, rgba(137, 188, 250, 0.08), rgba(137, 188, 250, 0.04));
+}
+
+:host-context(.my-app-dark) .admin-import__dropzone-icon {
+  color: #dce9fb;
+  background: rgba(137, 188, 250, 0.2);
+}
+
+:host-context(.my-app-dark) .admin-import__pick span,
+:host-context(.my-app-dark) .admin-import__file-card {
+  background: #1f262f;
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #eef3fc;
+}
+
+:host-context(.my-app-dark) .admin-import__file-name,
+:host-context(.my-app-dark) .admin-import__dropzone-body p {
+  color: #eef3fc;
+}
+
+:host-context(.my-app-dark) .admin-import__dropzone-body small,
+:host-context(.my-app-dark) .admin-import__loading {
+  color: #c8d1df;
 }
 
 :host-context(.my-app-dark) .admin-placeholder {
