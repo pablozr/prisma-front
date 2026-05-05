@@ -129,6 +129,12 @@
   gap: 12px;
 }
 
+.admin-loading {
+  margin: 0;
+  padding: 1rem;
+  color: var(--on-surface-variant);
+}
+
 .admin-metric {
   position: relative;
   padding: 1.1rem 1.25rem 1rem;
@@ -161,6 +167,100 @@
 :host-context(.my-app-dark) .admin-metric {
   background: #1f262f;
   border-color: rgba(255, 255, 255, 0.08);
+}
+
+.admin-panel--tabs {
+  padding: 1rem;
+}
+
+:host ::ng-deep .admin-panel--tabs .p-tablist-tab-list {
+  border-bottom: 1px solid var(--outline-variant);
+}
+
+.admin-users__toolbar {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+
+  input {
+    flex: 1;
+  }
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+  }
+}
+
+.admin-users__table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin-users__table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 860px;
+
+  th,
+  td {
+    text-align: left;
+    padding: 0.65rem;
+    border-bottom: 1px solid var(--outline-variant);
+    vertical-align: middle;
+    font-size: 0.85rem;
+  }
+
+  th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--on-surface-variant);
+  }
+}
+
+:host-context(.my-app-dark) .admin-users__table {
+  th,
+  td {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+  }
+}
+
+.admin-users__switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.admin-pagination {
+  margin-top: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+
+  span {
+    font-size: 0.85rem;
+    color: var(--on-surface-variant);
+  }
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.admin-placeholder {
+  margin: 0.25rem 0 0;
+  padding: 0.9rem;
+  border: 1px dashed var(--outline-variant);
+  border-radius: 8px;
+  color: var(--on-surface-variant);
+  background: rgba(0, 75, 130, 0.03);
+}
+
+:host-context(.my-app-dark) .admin-placeholder {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(137, 188, 250, 0.05);
 }
 
 .admin-metric--down::before {

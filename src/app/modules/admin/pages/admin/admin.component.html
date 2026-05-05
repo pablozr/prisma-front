@@ -17,75 +17,118 @@
     </header>
 
     <section class="admin-metrics" aria-label="Indicadores">
-      @for (metric of metrics; track metric.label) {
-        <article class="admin-metric" [class]="'admin-metric--' + metric.trend">
-          <header>
-            <p class="admin-metric__label">{{ metric.label }}</p>
-            <span class="admin-metric__delta">
-              <i [class]="trendIcon(metric.trend)" aria-hidden="true"></i>
-              {{ metric.delta }}
-            </span>
-          </header>
-          <p class="admin-metric__value">{{ metric.value }}</p>
-          <p class="admin-metric__hint">{{ metric.hint }}</p>
-        </article>
+      @if (metricsLoading) {
+        <p class="admin-loading">Carregando metricas...</p>
+      } @else {
+        @for (metric of metrics; track metric.label) {
+          <article class="admin-metric">
+            <header>
+              <p class="admin-metric__label">{{ metric.label }}</p>
+            </header>
+            <p class="admin-metric__value">{{ formatNumber(metric.value) }}</p>
+            <p class="admin-metric__hint">{{ metric.hint }}</p>
+          </article>
+        }
       }
     </section>
 
-    <section class="admin-panels">
-      <article class="admin-panel admin-panel--activity" aria-label="Atividade recente">
-        <header class="admin-panel__header">
-          <h2 class="admin-panel__title">Atividade recente</h2>
-          <button type="button" class="admin-panel__action">Ver tudo</button>
-        </header>
-        <ul class="admin-activity">
-          @for (item of activities; track item.when + item.target) {
-            <li class="admin-activity__item">
-              <span class="admin-activity__bullet" aria-hidden="true"></span>
-              <div class="admin-activity__content">
-                <p class="admin-activity__line">
-                  <strong>{{ item.actor }}</strong>
-                  <span>{{ item.action }}</span>
-                  <em>{{ item.target }}</em>
-                </p>
-                <span class="admin-activity__when">{{ item.when }}</span>
-              </div>
-            </li>
-          }
-        </ul>
-      </article>
+    <section class="admin-panel admin-panel--tabs" aria-label="Gestao administrativa">
+      <p-tabs value="users">
+        <p-tablist>
+          <p-tab value="users">Usuarios</p-tab>
+          <p-tab value="projects">Projetos</p-tab>
+          <p-tab value="import">Importacao</p-tab>
+        </p-tablist>
 
-      <article class="admin-panel admin-panel--tools" aria-label="Ações rápidas">
-        <header class="admin-panel__header">
-          <h2 class="admin-panel__title">Ações rápidas</h2>
-        </header>
-        <ul class="admin-tools">
-          <li>
-            <button type="button" class="admin-tool">
-              <i class="pi pi-user-plus"></i>
-              <span>Novo utilizador</span>
-            </button>
-          </li>
-          <li>
-            <button type="button" class="admin-tool">
-              <i class="pi pi-file-edit"></i>
-              <span>Abrir edital</span>
-            </button>
-          </li>
-          <li>
-            <button type="button" class="admin-tool">
-              <i class="pi pi-check-square"></i>
-              <span>Revisar pendentes</span>
-            </button>
-          </li>
-          <li>
-            <button type="button" class="admin-tool">
-              <i class="pi pi-chart-bar"></i>
-              <span>Relatórios</span>
-            </button>
-          </li>
-        </ul>
-      </article>
+        <p-tabpanels>
+          <p-tabpanel value="users">
+            <div class="admin-users__toolbar">
+              <input
+                pInputText
+                type="text"
+                placeholder="Buscar por nome ou email"
+                [(ngModel)]="userSearch"
+                (keydown.enter)="onSearchUsers()"
+              />
+              <button pButton type="button" label="Buscar" (click)="onSearchUsers()" [disabled]="usersLoading"></button>
+            </div>
+
+            @if (usersLoading) {
+              <p class="admin-loading">Carregando usuarios...</p>
+            } @else if (!users.length) {
+              <p class="admin-loading">Nenhum usuario encontrado.</p>
+            } @else {
+              <div class="admin-users__table-wrap">
+                <table class="admin-users__table">
+                  <thead>
+                    <tr>
+                      <th>Nome</th>
+                      <th>Email</th>
+                      <th>Perfil</th>
+                      <th>Status</th>
+                      <th>Acesso recente</th>
+                      <th>Acoes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (user of users; track user.id) {
+                      <tr>
+                        <td>{{ user.full_name }}</td>
+                        <td>{{ user.institutional_email }}</td>
+                        <td>
+                          <p-select
+                            [options]="roleOptions"
+                            optionLabel="label"
+                            optionValue="value"
+                            appendTo="body"
+                            [(ngModel)]="userDraftById[user.id].role"
+                          />
+                        </td>
+                        <td>
+                          <label class="admin-users__switch">
+                            <input type="checkbox" [(ngModel)]="userDraftById[user.id].is_active" />
+                            <span>{{ userDraftById[user.id].is_active ? 'Ativo' : 'Inativo' }}</span>
+                          </label>
+                        </td>
+                        <td>{{ user.last_login_at ? (user.last_login_at | date: 'dd/MM/yyyy HH:mm') : 'Sem acesso' }}</td>
+                        <td>
+                          <button
+                            pButton
+                            type="button"
+                            label="Salvar"
+                            [disabled]="!hasUserChanges(user) || savingUserById[user.id]"
+                            (click)="saveUser(user)"
+                          ></button>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+
+              @if (usersPagination.total_pages > 1) {
+                <nav class="admin-pagination" aria-label="Paginacao de usuarios">
+                  <button pButton type="button" severity="secondary" label="Anterior" (click)="onUsersPageChange(usersPage - 1)"></button>
+                  <span>Pagina {{ usersPagination.page }} de {{ usersPagination.total_pages }}</span>
+                  <button pButton type="button" severity="secondary" label="Proxima" (click)="onUsersPageChange(usersPage + 1)"></button>
+                </nav>
+              }
+            }
+          </p-tabpanel>
+
+          <p-tabpanel value="projects">
+            <p class="admin-placeholder">
+              Proximo bloco: listar todos os projetos (inclusive inativos) e liberar gestao administrativa.
+            </p>
+          </p-tabpanel>
+
+          <p-tabpanel value="import">
+            <p class="admin-placeholder">
+              Proximo bloco: importacao de arquivos .xlsx/.csv com historico de lotes e erros.
+            </p>
+          </p-tabpanel>
+        </p-tabpanels>
+      </p-tabs>
     </section>
   </main>
 </div>
