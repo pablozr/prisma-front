@@ -78,6 +78,8 @@
                         <td>
                           <p-select
                             styleClass="admin-select"
+                            appendTo="body"
+                            panelStyleClass="admin-select-panel"
                             [options]="roleOptions"
                             optionLabel="label"
                             optionValue="value"
@@ -160,6 +162,8 @@
                         <td>
                           <p-select
                             styleClass="admin-select admin-select--status"
+                            appendTo="body"
+                            panelStyleClass="admin-select-panel"
                             [options]="projectStatusOptions"
                             optionLabel="label"
                             optionValue="value"
