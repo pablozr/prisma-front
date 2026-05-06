@@ -13,6 +13,7 @@ import {
 import { inject } from '@angular/core'
 import { API_BASE_URL } from '../../../global/constants/apiConfig'
 import { AppToastService } from '../../../global/services/toast/app-toast.service'
+import { extractHttpErrorDetail } from '../../../global/utils/http.utils'
 
 interface IApiResponse<TData> {
   message: string
@@ -925,13 +926,6 @@ export class ProjectsService {
   }
 
   private extractDetail(error: unknown, fallback: string): string {
-    if (error instanceof HttpErrorResponse) {
-      const detail = error.error?.detail
-      if (typeof detail === 'string') {
-        return detail
-      }
-    }
-
-    return fallback
+    return extractHttpErrorDetail(error, fallback)
   }
 }

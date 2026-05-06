@@ -1,8 +1,9 @@
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
+import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import { Observable, catchError, map, of, throwError } from 'rxjs'
 import { API_BASE_URL } from '../../../global/constants/apiConfig'
 import { AppToastService } from '../../../global/services/toast/app-toast.service'
+import { buildPaginationParams, extractHttpErrorDetail } from '../../../global/utils/http.utils'
 import {
   IProfessorCourse,
   IProfessorProject,
@@ -54,10 +55,7 @@ export class ProfessorProjectsService {
     projects: IProfessorProject[]
     pagination: IProfessorProjectsPagination
   }> {
-    let params = new HttpParams().set('page', page).set('page_size', pageSize)
-    if (search.trim()) {
-      params = params.set('q', search.trim())
-    }
+    const params = buildPaginationParams(page, pageSize, search)
 
     return this.http
       .get<IApiEnvelope<IProjectsPayload>>(`${API_BASE_URL}/me/projects`, {
@@ -78,7 +76,7 @@ export class ProfessorProjectsService {
           return { projects, pagination }
         }),
         catchError((err: unknown) => {
-          this.toast.error('Falha ao carregar projetos', this.extractDetail(err, 'Tente novamente.'))
+          this.toast.error('Falha ao carregar projetos', extractHttpErrorDetail(err, 'Tente novamente.'))
           return of({
             projects: [],
             pagination: { page, page_size: pageSize, total: 0, total_pages: 1 }
@@ -93,7 +91,7 @@ export class ProfessorProjectsService {
       .pipe(
         map(res => res?.data?.projeto || res?.data?.project || null),
         catchError((err: unknown) => {
-          this.toast.error('Falha ao atualizar projeto', this.extractDetail(err, 'Verifique os dados e tente novamente.'))
+          this.toast.error('Falha ao atualizar projeto', extractHttpErrorDetail(err, 'Verifique os dados e tente novamente.'))
           return throwError(() => err)
         })
       )
@@ -111,7 +109,7 @@ export class ProfessorProjectsService {
       .pipe(
         map(res => res?.data?.logo || null),
         catchError((err: unknown) => {
-          this.toast.error('Falha ao atualizar logo', this.extractDetail(err, 'Nao foi possivel salvar a imagem.'))
+          this.toast.error('Falha ao atualizar logo', extractHttpErrorDetail(err, 'Nao foi possivel salvar a imagem.'))
           return throwError(() => err)
         })
       )
@@ -123,7 +121,7 @@ export class ProfessorProjectsService {
       .pipe(
         map(res => res?.data?.atribuicoes || []),
         catchError((err: unknown) => {
-          this.toast.error('Falha ao carregar atribuicoes', this.extractDetail(err, 'Tente novamente.'))
+          this.toast.error('Falha ao carregar atribuicoes', extractHttpErrorDetail(err, 'Tente novamente.'))
           return of([])
         })
       )
@@ -135,7 +133,7 @@ export class ProfessorProjectsService {
       .pipe(
         map(() => true),
         catchError((err: unknown) => {
-          this.toast.error('Falha ao criar atribuicao', this.extractDetail(err, 'Verifique os campos e tente novamente.'))
+          this.toast.error('Falha ao criar atribuicao', extractHttpErrorDetail(err, 'Verifique os campos e tente novamente.'))
           return throwError(() => err)
         })
       )
@@ -151,7 +149,7 @@ export class ProfessorProjectsService {
           return [...courses].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
         }),
         catchError((err: unknown) => {
-          this.toast.error('Falha ao carregar cursos', this.extractDetail(err, 'Tente novamente.'))
+          this.toast.error('Falha ao carregar cursos', extractHttpErrorDetail(err, 'Tente novamente.'))
           return of([])
         })
       )
@@ -163,17 +161,9 @@ export class ProfessorProjectsService {
       .pipe(
         map(() => true),
         catchError((err: unknown) => {
-          this.toast.error('Falha ao remover atribuicao', this.extractDetail(err, 'Tente novamente.'))
+          this.toast.error('Falha ao remover atribuicao', extractHttpErrorDetail(err, 'Tente novamente.'))
           return throwError(() => err)
         })
       )
-  }
-
-  private extractDetail(err: unknown, fallback: string): string {
-    if (err instanceof HttpErrorResponse) {
-      const detail = err.error?.detail
-      if (typeof detail === 'string') return detail
-    }
-    return fallback
   }
 }

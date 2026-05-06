@@ -1,9 +1,10 @@
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
+import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import { firstValueFrom } from 'rxjs'
 
 import { API_BASE_URL } from '../../global/constants/apiConfig'
 import { AppToastService } from '../../global/services/toast/app-toast.service'
+import { buildPaginationParams, extractHttpErrorDetail } from '../../global/utils/http.utils'
 import {
   IAdminImportBatch,
   IAdminImportError,
@@ -28,14 +29,6 @@ export class AdminService {
   private withCreds = { withCredentials: true } as const
   private endpoint = `${API_BASE_URL}/admin`
 
-  private extractDetail(err: unknown, fallback: string): string {
-    if (err instanceof HttpErrorResponse) {
-      const detail = err.error?.detail
-      if (typeof detail === 'string') return detail
-    }
-    return fallback
-  }
-
   async getMetrics(): Promise<IAdminMetrics | null> {
     try {
       const res = await firstValueFrom(
@@ -43,17 +36,14 @@ export class AdminService {
       )
       return res?.data?.metrics ?? null
     } catch (err) {
-      this.toast.error('Erro ao carregar metricas', this.extractDetail(err, 'Tente novamente.'))
+      this.toast.error('Erro ao carregar metricas', extractHttpErrorDetail(err, 'Tente novamente.'))
       return null
     }
   }
 
   async listUsers(page: number, pageSize: number, q?: string): Promise<{ users: IAdminUser[]; pagination: IAdminUsersPagination } | null> {
     try {
-      let params = new HttpParams().set('page', page).set('page_size', pageSize)
-      if (q?.trim()) {
-        params = params.set('q', q.trim())
-      }
+      const params = buildPaginationParams(page, pageSize, q)
 
       const res = await firstValueFrom(
         this.http.get<IApiResponse<{ users: IAdminUser[]; pagination: IAdminUsersPagination }>>(
@@ -63,7 +53,7 @@ export class AdminService {
       )
       return res?.data ?? null
     } catch (err) {
-      this.toast.error('Erro ao carregar usuarios', this.extractDetail(err, 'Tente novamente.'))
+      this.toast.error('Erro ao carregar usuarios', extractHttpErrorDetail(err, 'Tente novamente.'))
       return null
     }
   }
@@ -76,17 +66,14 @@ export class AdminService {
       this.toast.success('Usuario atualizado', 'As alteracoes foram salvas com sucesso.')
       return res?.data?.user ?? null
     } catch (err) {
-      this.toast.error('Erro ao atualizar usuario', this.extractDetail(err, 'Tente novamente.'))
+      this.toast.error('Erro ao atualizar usuario', extractHttpErrorDetail(err, 'Tente novamente.'))
       return null
     }
   }
 
   async listProjects(page: number, pageSize: number, q?: string): Promise<{ projects: IAdminProject[]; pagination: IAdminUsersPagination } | null> {
     try {
-      let params = new HttpParams().set('page', page).set('page_size', pageSize)
-      if (q?.trim()) {
-        params = params.set('q', q.trim())
-      }
+      const params = buildPaginationParams(page, pageSize, q)
 
       const res = await firstValueFrom(
         this.http.get<IApiResponse<{ projects: IAdminProject[]; pagination: IAdminUsersPagination }>>(
@@ -96,7 +83,7 @@ export class AdminService {
       )
       return res?.data ?? null
     } catch (err) {
-      this.toast.error('Erro ao carregar projetos', this.extractDetail(err, 'Tente novamente.'))
+      this.toast.error('Erro ao carregar projetos', extractHttpErrorDetail(err, 'Tente novamente.'))
       return null
     }
   }
@@ -113,7 +100,7 @@ export class AdminService {
       this.toast.success('Projeto atualizado', 'As alteracoes foram salvas com sucesso.')
       return res?.data?.project ?? null
     } catch (err) {
-      this.toast.error('Erro ao atualizar projeto', this.extractDetail(err, 'Tente novamente.'))
+      this.toast.error('Erro ao atualizar projeto', extractHttpErrorDetail(err, 'Tente novamente.'))
       return null
     }
   }
@@ -129,14 +116,14 @@ export class AdminService {
       this.toast.success('Importacao concluida', 'Arquivo processado com sucesso.')
       return res?.data?.batch ?? null
     } catch (err) {
-      this.toast.error('Erro na importacao', this.extractDetail(err, 'Tente novamente.'))
+      this.toast.error('Erro na importacao', extractHttpErrorDetail(err, 'Tente novamente.'))
       return null
     }
   }
 
   async listImports(page: number, pageSize: number): Promise<{ batches: IAdminImportBatch[]; pagination: IAdminUsersPagination } | null> {
     try {
-      const params = new HttpParams().set('page', page).set('page_size', pageSize)
+      const params = buildPaginationParams(page, pageSize)
       const res = await firstValueFrom(
         this.http.get<IApiResponse<{ batches: IAdminImportBatch[]; pagination: IAdminUsersPagination }>>(
           `${this.endpoint}/imports`,
@@ -145,14 +132,14 @@ export class AdminService {
       )
       return res?.data ?? null
     } catch (err) {
-      this.toast.error('Erro ao carregar importacoes', this.extractDetail(err, 'Tente novamente.'))
+      this.toast.error('Erro ao carregar importacoes', extractHttpErrorDetail(err, 'Tente novamente.'))
       return null
     }
   }
 
   async listImportErrors(batchId: number, page = 1, pageSize = 20): Promise<IAdminImportError[]> {
     try {
-      const params = new HttpParams().set('page', page).set('page_size', pageSize)
+      const params = buildPaginationParams(page, pageSize)
       const res = await firstValueFrom(
         this.http.get<IApiResponse<{ errors: IAdminImportError[] }>>(
           `${this.endpoint}/imports/${batchId}/errors`,
@@ -161,7 +148,7 @@ export class AdminService {
       )
       return res?.data?.errors ?? []
     } catch (err) {
-      this.toast.error('Erro ao carregar erros da importacao', this.extractDetail(err, 'Tente novamente.'))
+      this.toast.error('Erro ao carregar erros da importacao', extractHttpErrorDetail(err, 'Tente novamente.'))
       return []
     }
   }

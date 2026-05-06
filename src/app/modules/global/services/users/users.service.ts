@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core'
-import { HttpClient, HttpErrorResponse } from '@angular/common/http'
+import { HttpClient } from '@angular/common/http'
 import { AppToastService } from '../toast/app-toast.service'
 import { BehaviorSubject } from 'rxjs'
 import { Router } from '@angular/router'
@@ -19,6 +19,7 @@ import {
 } from '../../interfaces/IAuth'
 import { IUser } from '../../interfaces/IUser'
 import { API_BASE_URL, AUTH_ROUTES } from '../../constants/apiConfig'
+import { extractHttpErrorDetail } from '../../utils/http.utils'
 
 @Injectable({
   providedIn: 'root'
@@ -52,14 +53,6 @@ export class UsersService {
 
   private withCreds = { withCredentials: true } as const
 
-  private extractDetail(err: unknown, fallback: string): string {
-    if (err instanceof HttpErrorResponse) {
-      const detail = err.error?.detail
-      if (typeof detail === 'string') return detail
-    }
-    return fallback
-  }
-
   private setSession(session: ISigninData | null) {
     this.userSubject.next(session)
   }
@@ -78,8 +71,8 @@ export class UsersService {
           const hydrated = await this.me()
           resolve(hydrated)
         },
-        error: (err: HttpErrorResponse) => {
-          this.toast.error('Falha no login', this.extractDetail(err, 'Email ou senha incorretos'))
+        error: err => {
+          this.toast.error('Falha no login', extractHttpErrorDetail(err, 'Email ou senha incorretos'))
           resolve(false)
         }
       })
@@ -93,8 +86,8 @@ export class UsersService {
           const hydrated = await this.me()
           resolve(hydrated)
         },
-        error: (err: HttpErrorResponse) => {
-          this.toast.error('Falha no login', this.extractDetail(err, 'Nao foi possivel autenticar com o Google.'))
+        error: err => {
+          this.toast.error('Falha no login', extractHttpErrorDetail(err, 'Nao foi possivel autenticar com o Google.'))
           resolve(false)
         }
       })
@@ -129,11 +122,11 @@ export class UsersService {
           this.router.navigate(['/signin'])
           resolve(true)
         },
-        error: (err: HttpErrorResponse) => {
+        error: err => {
           this.clearSession()
           this.router.navigate(['/signin'])
-          if (err.status !== 401) {
-            this.toast.error('Falha no logout', this.extractDetail(err, 'Nao foi possivel encerrar a sessao.'))
+          if ((err as { status?: number }).status !== 401) {
+            this.toast.error('Falha no logout', extractHttpErrorDetail(err, 'Nao foi possivel encerrar a sessao.'))
           }
           resolve(false)
         }
@@ -178,8 +171,8 @@ export class UsersService {
           }
           resolve(true)
         },
-        error: (err: HttpErrorResponse) => {
-          this.toast.error('Erro ao enviar e-mail', this.extractDetail(err, 'Tente novamente.'))
+        error: err => {
+          this.toast.error('Erro ao enviar e-mail', extractHttpErrorDetail(err, 'Tente novamente.'))
           resolve(false)
         }
       })
@@ -193,8 +186,8 @@ export class UsersService {
           this.toast.success('Codigo validado', 'Codigo de confirmacao validado.')
           resolve(true)
         },
-        error: (err: HttpErrorResponse) => {
-          this.toast.error('Codigo invalido', this.extractDetail(err, 'O codigo informado e invalido ou expirou.'))
+        error: err => {
+          this.toast.error('Codigo invalido', extractHttpErrorDetail(err, 'O codigo informado e invalido ou expirou.'))
           resolve(false)
         }
       })
@@ -211,8 +204,8 @@ export class UsersService {
           this.toast.success('Senha alterada', 'A senha foi redefinida com sucesso.')
           resolve(true)
         },
-        error: (err: HttpErrorResponse) => {
-          this.toast.error('Erro ao alterar senha', this.extractDetail(err, 'Tente novamente.'))
+        error: err => {
+          this.toast.error('Erro ao alterar senha', extractHttpErrorDetail(err, 'Tente novamente.'))
           resolve(false)
         }
       })
@@ -225,8 +218,8 @@ export class UsersService {
     return new Promise<IUser[]>((resolve) => {
       this.http.get<IUser[]>(`${this.endpoint}/users`, this.withCreds).subscribe({
         next: (data) => resolve(data || []),
-        error: (err: HttpErrorResponse) => {
-          this.toast.error('Erro ao buscar usuarios', this.extractDetail(err, 'Tente novamente.'))
+        error: err => {
+          this.toast.error('Erro ao buscar usuarios', extractHttpErrorDetail(err, 'Tente novamente.'))
           resolve([])
         }
       })
@@ -237,8 +230,8 @@ export class UsersService {
     return new Promise<IUser | null>((resolve) => {
       this.http.get<IUser>(`${this.endpoint}/users/${userId}`, this.withCreds).subscribe({
         next: (data) => resolve(data || null),
-        error: (err: HttpErrorResponse) => {
-          this.toast.error('Erro ao buscar usuario', this.extractDetail(err, 'Tente novamente.'))
+        error: err => {
+          this.toast.error('Erro ao buscar usuario', extractHttpErrorDetail(err, 'Tente novamente.'))
           resolve(null)
         }
       })
@@ -254,8 +247,8 @@ export class UsersService {
           }
           resolve(!!res)
         },
-        error: (err: HttpErrorResponse) => {
-          this.toast.error('Erro ao criar usuario', this.extractDetail(err, 'Tente novamente.'))
+        error: err => {
+          this.toast.error('Erro ao criar usuario', extractHttpErrorDetail(err, 'Tente novamente.'))
           resolve(false)
         }
       })
@@ -271,8 +264,8 @@ export class UsersService {
           }
           resolve(!!res)
         },
-        error: (err: HttpErrorResponse) => {
-          this.toast.error('Erro ao alterar dados', this.extractDetail(err, 'Tente novamente.'))
+        error: err => {
+          this.toast.error('Erro ao alterar dados', extractHttpErrorDetail(err, 'Tente novamente.'))
           resolve(false)
         }
       })
@@ -288,8 +281,8 @@ export class UsersService {
           }
           resolve(!!res)
         },
-        error: (err: HttpErrorResponse) => {
-          this.toast.error('Erro ao excluir usuario', this.extractDetail(err, 'Tente novamente.'))
+        error: err => {
+          this.toast.error('Erro ao excluir usuario', extractHttpErrorDetail(err, 'Tente novamente.'))
           resolve(false)
         }
       })
@@ -305,8 +298,8 @@ export class UsersService {
           }
           resolve(!!res?.message)
         },
-        error: (err: HttpErrorResponse) => {
-          this.toast.error('Erro ao alterar senha', this.extractDetail(err, 'Tente novamente.'))
+        error: err => {
+          this.toast.error('Erro ao alterar senha', extractHttpErrorDetail(err, 'Tente novamente.'))
           resolve(false)
         }
       })
