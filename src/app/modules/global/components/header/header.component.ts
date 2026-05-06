@@ -1,4 +1,5 @@
-import { Component, ElementRef, HostListener, inject } from '@angular/core'
+import { Component, DestroyRef, ElementRef, HostListener, inject } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { CommonModule } from '@angular/common'
 import { Router, RouterLink } from '@angular/router'
 import { SidebarComponent } from '../sidebar/sidebar.component'
@@ -18,6 +19,7 @@ export class HeaderComponent {
   private router = inject(Router)
   private host = inject(ElementRef<HTMLElement>)
   private themeService = inject(ThemeService)
+  private destroyRef = inject(DestroyRef)
 
   userData: ISigninData | null = null
   menuOpen = false
@@ -55,15 +57,15 @@ export class HeaderComponent {
   }
 
   ngOnInit() {
-    this.usersService.user$.subscribe((data) => {
+    this.usersService.user$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data) => {
       this.userData = data
     })
 
-    this.usersService.initialized$.subscribe((ready) => {
+    this.usersService.initialized$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((ready) => {
       this.sessionReady = ready
     })
 
-    this.themeService.themeInformation.subscribe((t) => {
+    this.themeService.themeInformation.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((t) => {
       this.isDark = t === 'dark'
     })
   }

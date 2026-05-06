@@ -1,4 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { CommonModule } from '@angular/common'
 import { Router, RouterLink } from '@angular/router'
 import { ISigninData } from '../../interfaces/ISignin'
@@ -30,6 +31,7 @@ interface IAnnouncement {
 export class HomeComponent implements OnInit {
   private usersService = inject(UsersService)
   private router = inject(Router)
+  private destroyRef = inject(DestroyRef)
 
   userData: ISigninData | null = null
 
@@ -75,7 +77,7 @@ export class HomeComponent implements OnInit {
   ]
 
   ngOnInit() {
-    this.usersService.user$.subscribe((data) => {
+    this.usersService.user$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data) => {
       this.userData = data
     })
   }

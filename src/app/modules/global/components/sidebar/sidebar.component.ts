@@ -1,4 +1,5 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, ViewChild, ViewEncapsulation, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DrawerModule, Drawer } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
@@ -22,6 +23,7 @@ import { ISigninData } from '../../interfaces/ISignin';
 export class SidebarComponent implements OnInit {
   private usersService = inject(UsersService);
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
   userData!: ISigninData | null;
   sidebarVisible: boolean = false;
@@ -38,13 +40,13 @@ export class SidebarComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.usersService.user$.subscribe((data) => {
+    this.usersService.user$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data) => {
       this.userData = data;
     });
 
     this.currentUrl = this.router.url;
     this.router.events
-      .pipe(filter(ev => ev instanceof NavigationEnd))
+      .pipe(filter(ev => ev instanceof NavigationEnd), takeUntilDestroyed(this.destroyRef))
       .subscribe((ev) => {
         this.currentUrl = (ev as NavigationEnd).urlAfterRedirects || (ev as NavigationEnd).url;
       });

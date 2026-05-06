@@ -1,4 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { TabsModule } from 'primeng/tabs'
@@ -44,6 +45,7 @@ interface IMetric {
 export class AdminComponent implements OnInit {
   private usersService = inject(UsersService)
   private adminService = inject(AdminService)
+  private destroyRef = inject(DestroyRef)
 
   userData: ISigninData | null = null
   metricsLoading = false
@@ -96,7 +98,7 @@ export class AdminComponent implements OnInit {
   ]
 
   async ngOnInit() {
-    this.usersService.user$.subscribe((data) => {
+    this.usersService.user$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data) => {
       this.userData = data
     })
 
