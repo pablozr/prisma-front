@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { TextareaModule } from 'primeng/textarea';
 import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { AppToastService } from '../../services/toast/app-toast.service';
 import { LoadingComponent } from '../loading/loading.component';
 
@@ -42,21 +43,17 @@ export class ButtonSupportComponent {
 
   openInputArea(value: string){
     this.isClicked = true;
-    if (value == 'problem'){
+    if (value === 'problem'){
       this.isSugestion = false;
       this.isProblem = true;
     }
-    if (value == 'sugestion'){
+    if (value === 'sugestion'){
       this.isProblem = false;
       this.isSugestion = true;
     }
   }
 
-  submitEmail(){
-    console.log(this.userEmail)
-    console.log(this.userProblem)
-    console.log(this.userSugestion)
-
+  async submitEmail(){
     if (this.userEmail){
       let htmlContent: string = '';
       if (this.userProblem){
@@ -67,36 +64,33 @@ export class ButtonSupportComponent {
         this.toast.error('Problema ou sugestao vazios', 'O campo de problema ou descricao deve ser preenchido.');
         return
       }
+
       this.isLoading = true;
-      return new Promise((resolve, _) => {this.http.post('', {
-        to: "",
-        from: "",
-        html: htmlContent,
-        subject: "Problema/Sugestão",
-        base64Attachment: '',
-        base64AttachmentName: "documentation",
-        message: "Segue a documento em anexo"
-      }).subscribe({
-        next: (data: any) => {
-          // console.log(data);
-          this.isOpen = false;
-          this.isClicked = false;
-          this.isProblem = false;
-          this.isSugestion = false;
-          this.isLoading = false;
+      try {
+        await firstValueFrom(this.http.post('', {
+          to: "",
+          from: "",
+          html: htmlContent,
+          subject: "Problema/Sugestão",
+          base64Attachment: '',
+          base64AttachmentName: "documentation",
+          message: "Segue a documento em anexo"
+        }));
 
-          this.userEmail = '';
-          this.userProblem = '';
-          this.userSugestion = '';
+        this.isOpen = false;
+        this.isClicked = false;
+        this.isProblem = false;
+        this.isSugestion = false;
+        this.userEmail = '';
+        this.userProblem = '';
+        this.userSugestion = '';
 
-          this.toast.success('Problema/sugestao enviada', 'Seu problema ou sugestao foi enviado com sucesso.');
-        },
-        error: (error: any) => {
-          // console.log(error);
-          this.isLoading = false;
-          this.toast.error('Falha ao enviar', 'Tivemos um erro interno e nao foi possivel enviar as informacoes.', 6000);
-        }
-      })})
+        this.toast.success('Problema/sugestao enviada', 'Seu problema ou sugestao foi enviado com sucesso.');
+      } catch {
+        this.toast.error('Falha ao enviar', 'Tivemos um erro interno e nao foi possivel enviar as informacoes.', 6000);
+      } finally {
+        this.isLoading = false;
+      }
     } else{
       this.toast.error('Email vazio', 'O campo de email deve ser preenchido.');
       return
