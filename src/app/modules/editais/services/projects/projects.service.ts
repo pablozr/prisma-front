@@ -368,7 +368,7 @@ export class ProjectsService {
       catchError((err: unknown) => {
         this.toast.error(
           'Falha ao carregar detalhes',
-          this.extractDetail(err, 'Nao foi possivel carregar os detalhes do edital.')
+          this.extractDetail(err, 'Nao foi possivel carregar os detalhes do projeto.')
         )
         return of(project)
       })
@@ -385,7 +385,7 @@ export class ProjectsService {
         map(response => {
           const project = this.extractProjectDetails(response?.data)
           if (!project) {
-            throw new Error('Project details payload is empty')
+            throw new Error('Payload de detalhes do projeto vazio')
           }
           return project
         }),
