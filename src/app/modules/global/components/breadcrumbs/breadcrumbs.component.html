@@ -1,26 +1,26 @@
 @if (items.length > 0) {
-  <nav class="siepa-breadcrumbs" [attr.aria-label]="ariaLabel">
-    <ol class="siepa-breadcrumbs__list" role="list">
+  <nav class="prisma-breadcrumbs" [attr.aria-label]="ariaLabel">
+    <ol class="prisma-breadcrumbs__list" role="list">
       @for (item of items; track item.label; let last = $last) {
-        <li class="siepa-breadcrumbs__item" [class.siepa-breadcrumbs__item--current]="last">
+        <li class="prisma-breadcrumbs__item" [class.prisma-breadcrumbs__item--current]="last">
           @if (!last && item.route) {
-            <a class="siepa-breadcrumbs__link" [routerLink]="item.route">
+            <a class="prisma-breadcrumbs__link" [routerLink]="item.route">
               @if (item.icon) {
-                <i [class]="item.icon" class="siepa-breadcrumbs__icon" aria-hidden="true"></i>
+                <i [class]="item.icon" class="prisma-breadcrumbs__icon" aria-hidden="true"></i>
               }
               <span>{{ item.label }}</span>
             </a>
           } @else {
-            <span class="siepa-breadcrumbs__current" [attr.aria-current]="last ? 'page' : null">
+            <span class="prisma-breadcrumbs__current" [attr.aria-current]="last ? 'page' : null">
               @if (item.icon) {
-                <i [class]="item.icon" class="siepa-breadcrumbs__icon" aria-hidden="true"></i>
+                <i [class]="item.icon" class="prisma-breadcrumbs__icon" aria-hidden="true"></i>
               }
               <span>{{ item.label }}</span>
             </span>
           }
 
           @if (!last) {
-            <i class="pi pi-angle-right siepa-breadcrumbs__sep" aria-hidden="true"></i>
+            <i class="pi pi-angle-right prisma-breadcrumbs__sep" aria-hidden="true"></i>
           }
         </li>
       }

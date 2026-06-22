@@ -1,12 +1,12 @@
 /* =========================================================================
-   SIEPA Breadcrumbs — trilha de navegação sóbria
+   PRISMA Breadcrumbs — trilha de navegação sóbria
    ========================================================================= */
 
-.siepa-breadcrumbs {
+.prisma-breadcrumbs {
   width: 100%;
 }
 
-.siepa-breadcrumbs__list {
+.prisma-breadcrumbs__list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -19,7 +19,7 @@
   color: var(--on-surface-variant);
 }
 
-.siepa-breadcrumbs__item {
+.prisma-breadcrumbs__item {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -35,7 +35,7 @@
   }
 }
 
-.siepa-breadcrumbs__link {
+.prisma-breadcrumbs__link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -58,12 +58,12 @@
   }
 }
 
-:host-context(.my-app-dark) .siepa-breadcrumbs__link:hover {
+:host-context(.my-app-dark) .prisma-breadcrumbs__link:hover {
   background: rgba(137, 188, 250, 0.1);
   color: var(--primary-color);
 }
 
-.siepa-breadcrumbs__current {
+.prisma-breadcrumbs__current {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -72,19 +72,19 @@
   color: var(--on-surface);
 }
 
-.siepa-breadcrumbs__icon {
+.prisma-breadcrumbs__icon {
   font-size: 0.8rem;
   opacity: 0.8;
 }
 
-.siepa-breadcrumbs__sep {
+.prisma-breadcrumbs__sep {
   font-size: 0.65rem;
   color: var(--on-surface-variant);
   opacity: 0.45;
   margin: 0 2px;
 }
 
-.siepa-breadcrumbs__item--current .siepa-breadcrumbs__icon {
+.prisma-breadcrumbs__item--current .prisma-breadcrumbs__icon {
   color: var(--primary-color);
   opacity: 1;
 }

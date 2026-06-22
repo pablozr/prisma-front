@@ -1,22 +1,22 @@
 /* =========================================================================
-   SIEPA Sidebar — navegação institucional
-   ViewEncapsulation: None (todos os seletores prefixados .siepa-*)
+   PRISMA Sidebar — navegação institucional
+   ViewEncapsulation: None (todos os seletores prefixados .prisma-*)
    ========================================================================= */
 
 /* ----- Mask do drawer (overlay escuro atrás) — sobrepõe o header ----- */
-.p-drawer-mask.siepa-drawer-mask {
+.p-drawer-mask.prisma-drawer-mask {
   background: rgba(15, 23, 32, 0.45);
   z-index: 10050;
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
 }
 
-html.my-app-dark .p-drawer-mask.siepa-drawer-mask {
+html.my-app-dark .p-drawer-mask.prisma-drawer-mask {
   background: rgba(0, 0, 0, 0.65);
 }
 
 /* ----- Drawer em si ----- */
-.p-drawer.siepa-drawer {
+.p-drawer.prisma-drawer {
   background: #ffffff;
   color: var(--on-surface);
   border: none;
@@ -36,14 +36,14 @@ html.my-app-dark .p-drawer-mask.siepa-drawer-mask {
   }
 }
 
-html.my-app-dark .p-drawer.siepa-drawer {
+html.my-app-dark .p-drawer.prisma-drawer {
   background: #141a22;
   color: var(--on-surface);
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.6);
 }
 
 /* ----- Trigger (botão hamburger/fechar) — alinhado ao header ----- */
-.siepa-menu-trigger {
+.prisma-menu-trigger {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -76,7 +76,7 @@ html.my-app-dark .p-drawer.siepa-drawer {
   }
 }
 
-.siepa-menu-trigger--active {
+.prisma-menu-trigger--active {
   background: rgba(255, 255, 255, 0.18);
   color: #ffffff;
 
@@ -89,7 +89,7 @@ html.my-app-dark .p-drawer.siepa-drawer {
    Layout interno do drawer
    ========================================================================= */
 
-.siepa-sidebar {
+.prisma-sidebar {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -101,7 +101,7 @@ html.my-app-dark .p-drawer.siepa-drawer {
 
 /* ----- Brand (header institucional com logo UNIRIO) ----- */
 
-.siepa-sidebar__brand {
+.prisma-sidebar__brand {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -111,11 +111,11 @@ html.my-app-dark .p-drawer.siepa-drawer {
   position: relative;
 }
 
-html.my-app-dark .siepa-sidebar__brand {
+html.my-app-dark .prisma-sidebar__brand {
   background: #0c1722;
 }
 
-.siepa-sidebar__brand-logo {
+.prisma-sidebar__brand-logo {
   height: 40px;
   width: auto;
   flex-shrink: 0;
@@ -123,7 +123,7 @@ html.my-app-dark .siepa-sidebar__brand {
   display: block;
 }
 
-.siepa-sidebar__brand-copy {
+.prisma-sidebar__brand-copy {
   flex: 1;
   min-width: 0;
   display: flex;
@@ -132,14 +132,14 @@ html.my-app-dark .siepa-sidebar__brand {
   line-height: 1.15;
 }
 
-.siepa-sidebar__brand-title {
+.prisma-sidebar__brand-title {
   font-size: 1.1rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   color: #ffffff;
 }
 
-.siepa-sidebar__brand-sub {
+.prisma-sidebar__brand-sub {
   font-size: 0.6875rem;
   font-weight: 400;
   letter-spacing: 0.04em;
@@ -149,7 +149,7 @@ html.my-app-dark .siepa-sidebar__brand {
   text-overflow: ellipsis;
 }
 
-.siepa-sidebar__close {
+.prisma-sidebar__close {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -184,11 +184,11 @@ html.my-app-dark .siepa-sidebar__brand {
 
 /* ----- Perfil (card do usuário no topo) ----- */
 
-.siepa-sidebar__profile {
+.prisma-sidebar__profile {
   padding: 0.85rem 0.85rem 0;
 }
 
-.siepa-profile {
+.prisma-profile {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -210,7 +210,7 @@ html.my-app-dark .siepa-sidebar__brand {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(15, 23, 32, 0.05);
 
-    .siepa-profile__chev {
+    .prisma-profile__chev {
       opacity: 1;
       transform: translateX(2px);
     }
@@ -226,7 +226,7 @@ html.my-app-dark .siepa-sidebar__brand {
   }
 }
 
-html.my-app-dark .siepa-profile {
+html.my-app-dark .prisma-profile {
   background: rgba(255, 255, 255, 0.03);
   border-color: rgba(255, 255, 255, 0.08);
 
@@ -237,7 +237,7 @@ html.my-app-dark .siepa-profile {
   }
 }
 
-.siepa-profile__avatar {
+.prisma-profile__avatar {
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -246,11 +246,11 @@ html.my-app-dark .siepa-profile {
   box-shadow: 0 0 0 2px rgba(0, 75, 130, 0.15);
 }
 
-html.my-app-dark .siepa-profile__avatar {
+html.my-app-dark .prisma-profile__avatar {
   box-shadow: 0 0 0 2px rgba(137, 188, 250, 0.25);
 }
 
-.siepa-profile__body {
+.prisma-profile__body {
   flex: 1;
   min-width: 0;
   display: flex;
@@ -258,7 +258,7 @@ html.my-app-dark .siepa-profile__avatar {
   gap: 1px;
 }
 
-.siepa-profile__name {
+.prisma-profile__name {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--on-surface);
@@ -268,11 +268,11 @@ html.my-app-dark .siepa-profile__avatar {
   line-height: 1.3;
 }
 
-html.my-app-dark .siepa-profile__name {
+html.my-app-dark .prisma-profile__name {
   color: rgba(255, 255, 255, 0.92);
 }
 
-.siepa-profile__email {
+.prisma-profile__email {
   font-size: 0.75rem;
   font-weight: 400;
   color: var(--on-surface-variant);
@@ -283,7 +283,7 @@ html.my-app-dark .siepa-profile__name {
   line-height: 1.3;
 }
 
-.siepa-profile__role {
+.prisma-profile__role {
   display: inline-flex;
   align-self: flex-start;
   margin-top: 4px;
@@ -297,12 +297,12 @@ html.my-app-dark .siepa-profile__name {
   text-transform: uppercase;
 }
 
-html.my-app-dark .siepa-profile__role {
+html.my-app-dark .prisma-profile__role {
   background: rgba(137, 188, 250, 0.14);
   color: var(--primary-color);
 }
 
-.siepa-profile__chev {
+.prisma-profile__chev {
   font-size: 0.85rem;
   color: var(--on-surface-variant);
   opacity: 0.5;
@@ -312,7 +312,7 @@ html.my-app-dark .siepa-profile__role {
 
 /* ----- Navegação ----- */
 
-.siepa-sidebar__nav {
+.prisma-sidebar__nav {
   flex: 1;
   overflow-y: auto;
   padding: 1.1rem 0.75rem 0.5rem;
@@ -321,7 +321,7 @@ html.my-app-dark .siepa-profile__role {
   gap: 0.25rem;
 }
 
-.siepa-nav-group {
+.prisma-nav-group {
   padding: 0.35rem 0;
 
   & + & {
@@ -341,11 +341,11 @@ html.my-app-dark .siepa-profile__role {
   }
 }
 
-html.my-app-dark .siepa-nav-group + .siepa-nav-group::before {
+html.my-app-dark .prisma-nav-group + .prisma-nav-group::before {
   background: rgba(255, 255, 255, 0.07);
 }
 
-.siepa-nav-group__label {
+.prisma-nav-group__label {
   padding: 0 0.85rem 0.55rem;
   font-size: 0.6875rem;
   font-weight: 700;
@@ -355,7 +355,7 @@ html.my-app-dark .siepa-nav-group + .siepa-nav-group::before {
   opacity: 0.55;
 }
 
-.siepa-nav-list {
+.prisma-nav-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -364,7 +364,7 @@ html.my-app-dark .siepa-nav-group + .siepa-nav-group::before {
   gap: 3px;
 }
 
-.siepa-nav-sublist {
+.prisma-nav-sublist {
   list-style: none;
   margin: 4px 0 4px 1.25rem;
   padding: 0;
@@ -373,7 +373,7 @@ html.my-app-dark .siepa-nav-group + .siepa-nav-group::before {
   gap: 3px;
 }
 
-.siepa-nav-link {
+.prisma-nav-link {
   position: relative;
   display: flex;
   align-items: center;
@@ -397,7 +397,7 @@ html.my-app-dark .siepa-nav-group + .siepa-nav-group::before {
     background: rgba(0, 75, 130, 0.06);
     color: var(--primary-strong);
 
-    .siepa-nav-link__icon {
+    .prisma-nav-link__icon {
       transform: scale(1.08);
     }
   }
@@ -412,7 +412,7 @@ html.my-app-dark .siepa-nav-group + .siepa-nav-group::before {
   }
 }
 
-html.my-app-dark .siepa-nav-link {
+html.my-app-dark .prisma-nav-link {
   color: rgba(255, 255, 255, 0.88);
 
   &:hover {
@@ -421,7 +421,7 @@ html.my-app-dark .siepa-nav-link {
   }
 }
 
-.siepa-nav-link__icon {
+.prisma-nav-link__icon {
   font-size: 1.1rem;
   color: var(--on-surface-variant);
   opacity: 0.85;
@@ -431,11 +431,11 @@ html.my-app-dark .siepa-nav-link {
   transition: color 0.18s ease, opacity 0.18s ease, transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
 }
 
-html.my-app-dark .siepa-nav-link__icon {
+html.my-app-dark .prisma-nav-link__icon {
   color: rgba(255, 255, 255, 0.6);
 }
 
-.siepa-nav-link__label {
+.prisma-nav-link__label {
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -443,20 +443,20 @@ html.my-app-dark .siepa-nav-link__icon {
   white-space: nowrap;
 }
 
-.siepa-nav-link__chev {
+.prisma-nav-link__chev {
   font-size: 0.7rem;
   color: var(--on-surface-variant);
   opacity: 0.55;
   transition: transform 0.25s ease, opacity 0.15s ease;
 }
 
-.siepa-nav-link:hover .siepa-nav-link__icon,
-.siepa-nav-link:hover .siepa-nav-link__chev {
+.prisma-nav-link:hover .prisma-nav-link__icon,
+.prisma-nav-link:hover .prisma-nav-link__chev {
   opacity: 1;
   color: var(--primary-color);
 }
 
-.siepa-nav-link--active {
+.prisma-nav-link--active {
   background: linear-gradient(90deg, rgba(0, 75, 130, 0.13) 0%, rgba(0, 75, 130, 0.06) 100%);
   color: var(--primary-strong);
   font-weight: 600;
@@ -473,7 +473,7 @@ html.my-app-dark .siepa-nav-link__icon {
     background: var(--primary-color);
   }
 
-  .siepa-nav-link__icon {
+  .prisma-nav-link__icon {
     color: var(--primary-color);
     opacity: 1;
   }
@@ -481,17 +481,17 @@ html.my-app-dark .siepa-nav-link__icon {
   &:hover {
     background: linear-gradient(90deg, rgba(0, 75, 130, 0.18) 0%, rgba(0, 75, 130, 0.08) 100%);
 
-    .siepa-nav-link__icon {
+    .prisma-nav-link__icon {
       transform: none;
     }
   }
 }
 
-html.my-app-dark .siepa-nav-link--active {
+html.my-app-dark .prisma-nav-link--active {
   background: linear-gradient(90deg, rgba(137, 188, 250, 0.16) 0%, rgba(137, 188, 250, 0.06) 100%);
   color: var(--primary-color);
 
-  .siepa-nav-link__icon {
+  .prisma-nav-link__icon {
     color: var(--primary-color);
   }
 
@@ -504,24 +504,24 @@ html.my-app-dark .siepa-nav-link--active {
   }
 }
 
-.siepa-nav-link--sub {
+.prisma-nav-link--sub {
   padding: 0.6rem 0.85rem;
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--on-surface-variant);
 
-  .siepa-nav-link__icon {
+  .prisma-nav-link__icon {
     font-size: 0.9rem;
   }
 
-  &.siepa-nav-link--active::after {
+  &.prisma-nav-link--active::after {
     display: none;
   }
 }
 
 /* ----- Footer ----- */
 
-.siepa-sidebar__footer {
+.prisma-sidebar__footer {
   padding: 0.9rem 0.85rem 1rem;
   display: flex;
   flex-direction: column;
@@ -529,18 +529,18 @@ html.my-app-dark .siepa-nav-link--active {
   background: rgba(15, 23, 32, 0.02);
 }
 
-html.my-app-dark .siepa-sidebar__footer {
+html.my-app-dark .prisma-sidebar__footer {
   background: rgba(0, 0, 0, 0.22);
 }
 
-.siepa-sidebar__footer-actions {
+.prisma-sidebar__footer-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
 
-.siepa-sidebar__ghost,
-.siepa-sidebar__logout {
+.prisma-sidebar__ghost,
+.prisma-sidebar__logout {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -572,37 +572,37 @@ html.my-app-dark .siepa-sidebar__footer {
   }
 }
 
-.siepa-sidebar__ghost:hover {
+.prisma-sidebar__ghost:hover {
   background: rgba(0, 75, 130, 0.06);
   border-color: rgba(0, 75, 130, 0.25);
   color: var(--primary-strong);
 }
 
-.siepa-sidebar__logout:hover {
+.prisma-sidebar__logout:hover {
   background: rgba(186, 26, 26, 0.06);
   border-color: rgba(186, 26, 26, 0.28);
   color: #ba1a1a;
 }
 
-html.my-app-dark .siepa-sidebar__ghost,
-html.my-app-dark .siepa-sidebar__logout {
+html.my-app-dark .prisma-sidebar__ghost,
+html.my-app-dark .prisma-sidebar__logout {
   border-color: rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.75);
 }
 
-html.my-app-dark .siepa-sidebar__ghost:hover {
+html.my-app-dark .prisma-sidebar__ghost:hover {
   background: rgba(137, 188, 250, 0.08);
   border-color: rgba(137, 188, 250, 0.28);
   color: var(--primary-color);
 }
 
-html.my-app-dark .siepa-sidebar__logout:hover {
+html.my-app-dark .prisma-sidebar__logout:hover {
   background: rgba(255, 180, 171, 0.1);
   border-color: rgba(255, 180, 171, 0.35);
   color: #ffb4ab;
 }
 
-.siepa-sidebar__meta {
+.prisma-sidebar__meta {
   margin: 0;
   display: flex;
   align-items: center;
@@ -616,25 +616,25 @@ html.my-app-dark .siepa-sidebar__logout:hover {
   opacity: 0.55;
 }
 
-.siepa-sidebar__meta-sep {
+.prisma-sidebar__meta-sep {
   opacity: 0.55;
 }
 
 /* ----- Scrollbar fino ----- */
 
-.siepa-sidebar__nav::-webkit-scrollbar {
+.prisma-sidebar__nav::-webkit-scrollbar {
   width: 4px;
 }
 
-.siepa-sidebar__nav::-webkit-scrollbar-track {
+.prisma-sidebar__nav::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.siepa-sidebar__nav::-webkit-scrollbar-thumb {
+.prisma-sidebar__nav::-webkit-scrollbar-thumb {
   background: rgba(15, 23, 32, 0.15);
   border-radius: 4px;
 }
 
-html.my-app-dark .siepa-sidebar__nav::-webkit-scrollbar-thumb {
+html.my-app-dark .prisma-sidebar__nav::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.1);
 }

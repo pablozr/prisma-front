@@ -1,58 +1,58 @@
-<div class="siepa-sidebar-root">
+<div class="prisma-sidebar-root">
   <p-drawer
     #sidebarRef
     [(visible)]="sidebarVisible"
     [modal]="true"
-    styleClass="siepa-drawer"
-    maskStyleClass="siepa-drawer-mask"
+    styleClass="prisma-drawer"
+    maskStyleClass="prisma-drawer-mask"
   >
     <ng-template pTemplate="headless">
-      <div class="siepa-sidebar">
-        <header class="siepa-sidebar__brand">
+      <div class="prisma-sidebar">
+        <header class="prisma-sidebar__brand">
           <img
             src="assets/images/novo-logo.png"
             alt=""
-            class="siepa-sidebar__brand-logo"
+            class="prisma-sidebar__brand-logo"
             width="88"
             height="44"
             decoding="async"
           />
-          <div class="siepa-sidebar__brand-copy">
-            <span class="siepa-sidebar__brand-title">SIEPA</span>
-            <span class="siepa-sidebar__brand-sub">Iniciação · Extensão · Projetos</span>
+          <div class="prisma-sidebar__brand-copy" aria-label="PRISMA — Plataforma de Referência e Integração de Saberes e Mediação Acadêmica da UNIRIO">
+            <span class="prisma-sidebar__brand-title">PRISMA</span>
+            <span class="prisma-sidebar__brand-sub">Projetos acadêmicos da UNIRIO</span>
           </div>
-          <button type="button" class="siepa-sidebar__close" (click)="customClose()" aria-label="Fechar menu">
+          <button type="button" class="prisma-sidebar__close" (click)="customClose()" aria-label="Fechar menu">
             <i class="pi pi-times"></i>
           </button>
         </header>
 
-        <section class="siepa-sidebar__profile" aria-label="Conta">
-          <button type="button" class="siepa-profile" (click)="navigateTo('settings')">
+        <section class="prisma-sidebar__profile" aria-label="Conta">
+          <button type="button" class="prisma-profile" (click)="navigateTo('settings')">
             <img
-              class="siepa-profile__avatar"
+              class="prisma-profile__avatar"
               [src]="'https://ui-avatars.com/api/?name=' + (userData?.user?.full_name || 'U') + '&background=004b82&color=FFF&size=128&bold=true'"
               alt=""
             />
-            <span class="siepa-profile__body">
-              <span class="siepa-profile__name">{{ userData?.user?.full_name || 'Utilizador' }}</span>
-              <span class="siepa-profile__email">{{ userData?.user?.institutional_email || '—' }}</span>
-              <span class="siepa-profile__role">{{ roleLabel(userData?.user?.role) }}</span>
+            <span class="prisma-profile__body">
+              <span class="prisma-profile__name">{{ userData?.user?.full_name || 'Utilizador' }}</span>
+              <span class="prisma-profile__email">{{ userData?.user?.institutional_email || '—' }}</span>
+              <span class="prisma-profile__role">{{ roleLabel(userData?.user?.role) }}</span>
             </span>
-            <i class="pi pi-angle-right siepa-profile__chev" aria-hidden="true"></i>
+            <i class="pi pi-angle-right prisma-profile__chev" aria-hidden="true"></i>
           </button>
         </section>
 
-        <nav class="siepa-sidebar__nav" aria-label="Navegação principal">
+        <nav class="prisma-sidebar__nav" aria-label="Navegação principal">
           @for (route of availableRoutes; track route.label) {
             @if (canAccessRoute(route.rolesCanAccess)) {
-              <section class="siepa-nav-group">
-                <div class="siepa-nav-group__label">{{ route.label }}</div>
+              <section class="prisma-nav-group">
+                <div class="prisma-nav-group__label">{{ route.label }}</div>
 
-                <ul class="siepa-nav-list">
+                <ul class="prisma-nav-list">
                   @for (childrenRoute of route.routes; track childrenRoute.label) {
                     @if (canAccess(childrenRoute.rolesCanAccess)) {
                       @if (childrenRoute.routes.length > 0) {
-                        <li class="siepa-nav-item siepa-nav-item--parent">
+                        <li class="prisma-nav-item prisma-nav-item--parent">
                           <button
                             type="button"
                             pRipple
@@ -61,37 +61,37 @@
                             enterActiveClass="slidedown"
                             leaveToClass="hidden"
                             leaveActiveClass="slideup"
-                            class="siepa-nav-link"
+                            class="prisma-nav-link"
                           >
-                            <i class="siepa-nav-link__icon" [class]="childrenRoute.class"></i>
-                            <span class="siepa-nav-link__label">{{ childrenRoute.label }}</span>
-                            <i class="siepa-nav-link__chev pi pi-chevron-down"></i>
+                            <i class="prisma-nav-link__icon" [class]="childrenRoute.class"></i>
+                            <span class="prisma-nav-link__label">{{ childrenRoute.label }}</span>
+                            <i class="prisma-nav-link__chev pi pi-chevron-down"></i>
                           </button>
 
-                          <ul class="siepa-nav-sublist hidden overflow-hidden">
+                          <ul class="prisma-nav-sublist hidden overflow-hidden">
                             @for (grandchildRoute of childrenRoute.routes; track grandchildRoute.label) {
                               <li>
                                 @if (grandchildRoute.routeQuery.length > 0) {
                                   <button
                                     type="button"
                                     pRipple
-                                    class="siepa-nav-link siepa-nav-link--sub"
-                                    [class.siepa-nav-link--active]="isActive(grandchildRoute.routeQuery[0], grandchildRoute.routeQuery[1])"
+                                    class="prisma-nav-link prisma-nav-link--sub"
+                                    [class.prisma-nav-link--active]="isActive(grandchildRoute.routeQuery[0], grandchildRoute.routeQuery[1])"
                                     (click)="navigateToWithQuery(grandchildRoute.routeQuery[0], grandchildRoute.routeQuery[1])"
                                   >
-                                    <i class="siepa-nav-link__icon" [class]="grandchildRoute.class"></i>
-                                    <span class="siepa-nav-link__label">{{ grandchildRoute.label }}</span>
+                                    <i class="prisma-nav-link__icon" [class]="grandchildRoute.class"></i>
+                                    <span class="prisma-nav-link__label">{{ grandchildRoute.label }}</span>
                                   </button>
                                 } @else {
                                   <button
                                     type="button"
                                     pRipple
-                                    class="siepa-nav-link siepa-nav-link--sub"
-                                    [class.siepa-nav-link--active]="isActive(childrenRoute.route)"
+                                    class="prisma-nav-link prisma-nav-link--sub"
+                                    [class.prisma-nav-link--active]="isActive(childrenRoute.route)"
                                     (click)="navigateTo(childrenRoute.route)"
                                   >
-                                    <i class="siepa-nav-link__icon" [class]="grandchildRoute.class"></i>
-                                    <span class="siepa-nav-link__label">{{ grandchildRoute.label }}</span>
+                                    <i class="prisma-nav-link__icon" [class]="grandchildRoute.class"></i>
+                                    <span class="prisma-nav-link__label">{{ grandchildRoute.label }}</span>
                                   </button>
                                 }
                               </li>
@@ -99,16 +99,16 @@
                           </ul>
                         </li>
                       } @else {
-                        <li class="siepa-nav-item">
+                        <li class="prisma-nav-item">
                           <button
                             type="button"
                             pRipple
-                            class="siepa-nav-link"
-                            [class.siepa-nav-link--active]="isActive(childrenRoute.route, childrenRoute.routeQuery[1])"
+                            class="prisma-nav-link"
+                            [class.prisma-nav-link--active]="isActive(childrenRoute.route, childrenRoute.routeQuery[1])"
                             (click)="childrenRoute.route ? navigateTo(childrenRoute.route) : navigateToWithQuery(childrenRoute.routeQuery[0], childrenRoute.routeQuery[1])"
                           >
-                            <i class="siepa-nav-link__icon" [class]="childrenRoute.class"></i>
-                            <span class="siepa-nav-link__label">{{ childrenRoute.label }}</span>
+                            <i class="prisma-nav-link__icon" [class]="childrenRoute.class"></i>
+                            <span class="prisma-nav-link__label">{{ childrenRoute.label }}</span>
                           </button>
                         </li>
                       }
@@ -120,11 +120,11 @@
           }
         </nav>
 
-        <footer class="siepa-sidebar__footer">
-          <div class="siepa-sidebar__footer-actions">
+        <footer class="prisma-sidebar__footer">
+          <div class="prisma-sidebar__footer-actions">
             <button
               type="button"
-              class="siepa-sidebar__ghost"
+              class="prisma-sidebar__ghost"
               (click)="navigateTo('settings')"
               aria-label="Configurações"
             >
@@ -133,7 +133,7 @@
             </button>
             <button
               type="button"
-              class="siepa-sidebar__logout"
+              class="prisma-sidebar__logout"
               (click)="logout()"
               aria-label="Terminar sessão"
             >
@@ -141,9 +141,9 @@
               <span>Sair</span>
             </button>
           </div>
-          <p class="siepa-sidebar__meta">
-            <span>SIEPA · UNIRIO</span>
-            <span class="siepa-sidebar__meta-sep" aria-hidden="true">·</span>
+          <p class="prisma-sidebar__meta">
+            <span>PRISMA · UNIRIO</span>
+            <span class="prisma-sidebar__meta-sep" aria-hidden="true">·</span>
             <span>v1.0</span>
           </p>
         </footer>
@@ -153,11 +153,11 @@
 
   <button
     type="button"
-    class="siepa-menu-trigger"
+    class="prisma-menu-trigger"
     (click)="toggleSidebar()"
     [attr.aria-label]="sidebarVisible ? 'Fechar menu' : 'Abrir menu'"
     [attr.aria-expanded]="sidebarVisible"
-    [class.siepa-menu-trigger--active]="sidebarVisible"
+    [class.prisma-menu-trigger--active]="sidebarVisible"
   >
     <i class="pi" [class.pi-bars]="!sidebarVisible" [class.pi-times]="sidebarVisible"></i>
   </button>

@@ -1,5 +1,5 @@
 /* =========================================================================
-   SIEPA Header — faixa institucional sóbria com logo UNIRIO
+   PRISMA Header — faixa institucional sóbria com logo UNIRIO
    ========================================================================= */
 
 :host {
@@ -9,18 +9,18 @@
   z-index: 10000;
 }
 
-.siepa-header {
+.prisma-header {
   background: var(--primary-color);
   color: var(--header-text);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-:host-context(.my-app-dark) .siepa-header {
+:host-context(.my-app-dark) .prisma-header {
   background: var(--header-bg);
   border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
-.siepa-header__inner {
+.prisma-header__inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -32,14 +32,14 @@
 
 /* ----- Esquerda: menu + logo UNIRIO + marca ----- */
 
-.siepa-header__left {
+.prisma-header__left {
   display: flex;
   align-items: center;
   gap: 14px;
   min-width: 0;
 }
 
-.siepa-header__brand {
+.prisma-header__brand {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -62,7 +62,7 @@
   }
 }
 
-.siepa-header__logo {
+.prisma-header__logo {
   height: 54px;
   width: auto;
   flex-shrink: 0;
@@ -74,7 +74,7 @@
   }
 }
 
-.siepa-header__brand-copy {
+.prisma-header__brand-copy {
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -86,7 +86,7 @@
   }
 }
 
-.siepa-header__title {
+.prisma-header__title {
   font-size: 1.2rem;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -94,7 +94,7 @@
   line-height: 1.1;
 }
 
-.siepa-header__subtitle {
+.prisma-header__subtitle {
   font-size: 0.75rem;
   font-weight: 400;
   letter-spacing: 0.01em;
@@ -112,7 +112,7 @@
 
 /* ----- Direita: ações ----- */
 
-.siepa-header__right {
+.prisma-header__right {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -120,7 +120,7 @@
 
 /* ----- Toggle de tema (sol/lua) ----- */
 
-.siepa-header__theme {
+.prisma-header__theme {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -159,7 +159,7 @@
 
 /* ----- Skeleton (enquanto a sessão ainda não foi resolvida) ----- */
 
-.siepa-header__skeleton {
+.prisma-header__skeleton {
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -168,7 +168,7 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
-.siepa-header__skeleton-avatar {
+.prisma-header__skeleton-avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -177,10 +177,10 @@
     rgba(255, 255, 255, 0.22) 50%,
     rgba(255, 255, 255, 0.14) 100%);
   background-size: 200% 100%;
-  animation: siepa-header-pulse 1.3s ease-in-out infinite;
+  animation: prisma-header-pulse 1.3s ease-in-out infinite;
 }
 
-.siepa-header__skeleton-line {
+.prisma-header__skeleton-line {
   width: 72px;
   height: 10px;
   border-radius: 6px;
@@ -189,21 +189,21 @@
     rgba(255, 255, 255, 0.22) 50%,
     rgba(255, 255, 255, 0.14) 100%);
   background-size: 200% 100%;
-  animation: siepa-header-pulse 1.3s ease-in-out infinite;
+  animation: prisma-header-pulse 1.3s ease-in-out infinite;
 
   @media (max-width: 560px) {
     display: none;
   }
 }
 
-@keyframes siepa-header-pulse {
+@keyframes prisma-header-pulse {
   0% { background-position: 0% 0; }
   100% { background-position: -200% 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .siepa-header__skeleton-avatar,
-  .siepa-header__skeleton-line {
+  .prisma-header__skeleton-avatar,
+  .prisma-header__skeleton-line {
     animation: none !important;
   }
 }
@@ -212,11 +212,11 @@
    Conta / Avatar — padrão Google (trigger redondo + popup com card)
    ========================================================================= */
 
-.siepa-account {
+.prisma-account {
   position: relative;
 }
 
-.siepa-account__trigger {
+.prisma-account__trigger {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -247,12 +247,12 @@
   }
 }
 
-.siepa-account--open .siepa-account__trigger {
+.prisma-account--open .prisma-account__trigger {
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.3);
 }
 
-.siepa-account__trigger-img {
+.prisma-account__trigger-img {
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -262,7 +262,7 @@
   flex-shrink: 0;
 }
 
-.siepa-account__trigger-name {
+.prisma-account__trigger-name {
   font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: 0.01em;
@@ -277,7 +277,7 @@
   }
 }
 
-.siepa-account__trigger-chev {
+.prisma-account__trigger-chev {
   font-size: 0.65rem;
   color: rgba(255, 255, 255, 0.75);
   transition: transform 0.2s ease, color 0.15s ease;
@@ -287,14 +287,14 @@
   }
 }
 
-.siepa-account--open .siepa-account__trigger-chev {
+.prisma-account--open .prisma-account__trigger-chev {
   transform: rotate(180deg);
   color: #ffffff;
 }
 
 /* ----- Popup (menu) — estilo Google Account ----- */
 
-.siepa-account__menu {
+.prisma-account__menu {
   position: absolute;
   top: calc(100% + 10px);
   right: -4px;
@@ -305,19 +305,19 @@
   border-radius: 20px;
   box-shadow: 0 12px 32px rgba(60, 64, 67, 0.18), 0 4px 12px rgba(60, 64, 67, 0.08);
   z-index: 10050;
-  animation: siepa-account-in 0.18s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  animation: prisma-account-in 0.18s cubic-bezier(0.2, 0.9, 0.3, 1) both;
   color: var(--on-surface);
   overflow: hidden;
 }
 
-:host-context(.my-app-dark) .siepa-account__menu {
+:host-context(.my-app-dark) .prisma-account__menu {
   background: #1a1d21;
   border-color: rgba(255, 255, 255, 0.08);
   color: #e8eaed;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65), 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
-@keyframes siepa-account-in {
+@keyframes prisma-account-in {
   from {
     opacity: 0;
     transform: translateY(-6px) scale(0.96);
@@ -330,7 +330,7 @@
 
 /* ----- Top bar com email + X ----- */
 
-.siepa-account__top {
+.prisma-account__top {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -339,7 +339,7 @@
   background: transparent;
 }
 
-.siepa-account__top-email {
+.prisma-account__top-email {
   font-size: 0.8125rem;
   font-weight: 500;
   color: #5f6368;
@@ -350,11 +350,11 @@
   flex: 1;
 }
 
-:host-context(.my-app-dark) .siepa-account__top-email {
+:host-context(.my-app-dark) .prisma-account__top-email {
   color: #9aa0a6;
 }
 
-.siepa-account__close {
+.prisma-account__close {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -383,7 +383,7 @@
   }
 }
 
-:host-context(.my-app-dark) .siepa-account__close {
+:host-context(.my-app-dark) .prisma-account__close {
   color: #9aa0a6;
 
   &:hover {
@@ -394,7 +394,7 @@
 
 /* ----- Hero (avatar + saudação + papel) ----- */
 
-.siepa-account__hero {
+.prisma-account__hero {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -402,12 +402,12 @@
   padding: 4px 16px 16px;
 }
 
-.siepa-account__avatar-wrap {
+.prisma-account__avatar-wrap {
   position: relative;
   margin-bottom: 12px;
 }
 
-.siepa-account__avatar-lg {
+.prisma-account__avatar-lg {
   width: 80px;
   height: 80px;
   border-radius: 50%;
@@ -422,7 +422,7 @@
   }
 }
 
-.siepa-account__avatar-edit {
+.prisma-account__avatar-edit {
   position: absolute;
   bottom: -2px;
   right: -2px;
@@ -455,7 +455,7 @@
   }
 }
 
-:host-context(.my-app-dark) .siepa-account__avatar-edit {
+:host-context(.my-app-dark) .prisma-account__avatar-edit {
   background: #3c4043;
   border-color: #1a1d21;
   color: #e8eaed;
@@ -465,7 +465,7 @@
   }
 }
 
-.siepa-account__hi {
+.prisma-account__hi {
   margin: 0 0 6px;
   font-size: 1.25rem;
   font-weight: 400;
@@ -478,11 +478,11 @@
   text-overflow: ellipsis;
 }
 
-:host-context(.my-app-dark) .siepa-account__hi {
+:host-context(.my-app-dark) .prisma-account__hi {
   color: #e8eaed;
 }
 
-.siepa-account__role-pill {
+.prisma-account__role-pill {
   display: inline-flex;
   align-items: center;
   padding: 2px 10px;
@@ -495,14 +495,14 @@
   text-transform: uppercase;
 }
 
-:host-context(.my-app-dark) .siepa-account__role-pill {
+:host-context(.my-app-dark) .prisma-account__role-pill {
   background: rgba(137, 188, 250, 0.14);
   color: var(--primary-color);
 }
 
 /* ----- Botão primário "Gerenciar sua conta" (pílula) ----- */
 
-.siepa-account__primary {
+.prisma-account__primary {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -535,7 +535,7 @@
   }
 }
 
-:host-context(.my-app-dark) .siepa-account__primary {
+:host-context(.my-app-dark) .prisma-account__primary {
   background: #1a1d21;
   border-color: rgba(255, 255, 255, 0.14);
   color: #8ab4f8;
@@ -552,19 +552,19 @@
 
 /* ----- Divisor ----- */
 
-.siepa-account__divider {
+.prisma-account__divider {
   height: 1px;
   background: rgba(60, 64, 67, 0.12);
   margin: 0;
 }
 
-:host-context(.my-app-dark) .siepa-account__divider {
+:host-context(.my-app-dark) .prisma-account__divider {
   background: rgba(255, 255, 255, 0.08);
 }
 
 /* ----- Lista de ações ----- */
 
-.siepa-account__list {
+.prisma-account__list {
   list-style: none;
   margin: 0;
   padding: 8px 8px;
@@ -574,7 +574,7 @@
   background: transparent;
 }
 
-.siepa-account__item {
+.prisma-account__item {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -599,7 +599,7 @@
   }
 }
 
-:host-context(.my-app-dark) .siepa-account__item {
+:host-context(.my-app-dark) .prisma-account__item {
   color: #e8eaed;
 
   &:hover {
@@ -611,7 +611,7 @@
   }
 }
 
-.siepa-account__item-icon {
+.prisma-account__item-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -625,38 +625,38 @@
   }
 }
 
-:host-context(.my-app-dark) .siepa-account__item-icon {
+:host-context(.my-app-dark) .prisma-account__item-icon {
   color: #9aa0a6;
 }
 
-.siepa-account__item-label {
+.prisma-account__item-label {
   font-size: 0.875rem;
   font-weight: 400;
   color: inherit;
   letter-spacing: 0.01em;
 }
 
-.siepa-account__item--danger:hover {
+.prisma-account__item--danger:hover {
   background: rgba(217, 48, 37, 0.08);
   color: #d93025;
 
-  .siepa-account__item-icon {
+  .prisma-account__item-icon {
     color: #d93025;
   }
 }
 
-:host-context(.my-app-dark) .siepa-account__item--danger:hover {
+:host-context(.my-app-dark) .prisma-account__item--danger:hover {
   background: rgba(242, 139, 130, 0.1);
   color: #f28b82;
 
-  .siepa-account__item-icon {
+  .prisma-account__item-icon {
     color: #f28b82;
   }
 }
 
 /* ----- Footer (políticas) ----- */
 
-.siepa-account__footer {
+.prisma-account__footer {
   padding: 10px 16px 14px;
   display: flex;
   align-items: center;
@@ -680,11 +680,11 @@
   }
 }
 
-.siepa-account__footer-sep {
+.prisma-account__footer-sep {
   opacity: 0.5;
 }
 
-:host-context(.my-app-dark) .siepa-account__footer {
+:host-context(.my-app-dark) .prisma-account__footer {
   color: #9aa0a6;
 
   a:hover {
@@ -695,7 +695,7 @@
 
 /* ----- CTA Entrar (visitante) ----- */
 
-.siepa-header__guest {
+.prisma-header__guest {
   display: inline-flex;
   align-items: center;
   gap: 14px;
@@ -709,7 +709,7 @@
   }
 }
 
-.siepa-header__guest-copy {
+.prisma-header__guest-copy {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -721,7 +721,7 @@
   }
 }
 
-.siepa-header__guest-kicker {
+.prisma-header__guest-kicker {
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.1em;
@@ -730,7 +730,7 @@
   margin-bottom: 2px;
 }
 
-.siepa-header__guest-text {
+.prisma-header__guest-text {
   font-size: 0.8125rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.88);
@@ -741,7 +741,7 @@
   text-overflow: ellipsis;
 }
 
-.siepa-header__signin {
+.prisma-header__signin {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -778,7 +778,7 @@
   }
 }
 
-:host-context(.my-app-dark) .siepa-header__signin {
+:host-context(.my-app-dark) .prisma-header__signin {
   background: var(--primary-color);
   color: #ffffff;
 
