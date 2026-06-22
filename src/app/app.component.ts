@@ -16,7 +16,7 @@ import { HelpFabComponent } from './modules/global/components/help-fab/help-fab.
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'Siepa Front'
+  title = 'PRISMA — UNIRIO'
 
   private readonly fabHiddenPrefixes = ['/signin', '/forget-password']
 

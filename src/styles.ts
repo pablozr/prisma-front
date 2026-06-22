@@ -1,7 +1,7 @@
 import { definePreset } from '@primeng/themes'
 import Aura from '@primeng/themes/aura'
 
-/** Institutional Portal — paleta federal / académica (Siepa). Base: Aura. */
+/** Institutional Portal — paleta federal / académica (PRISMA). Base: Aura. */
 export const InstitutionalPortal = definePreset(Aura, {
   primitive: {
     borderRadius: {

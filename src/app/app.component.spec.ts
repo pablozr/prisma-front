@@ -14,10 +14,10 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'Siepa Front' title`, () => {
+  it(`should have the 'PRISMA — UNIRIO' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('Siepa Front');
+    expect(app.title).toEqual('PRISMA — UNIRIO');
   });
 
   it('should render router outlet', () => {

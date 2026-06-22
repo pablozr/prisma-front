@@ -1,19 +1,19 @@
-# SIEPA Front-end
+# PRISMA Front-end
 
-Front-end web do **SIEPA** (Sistema de Iniciação, Extensão e Projetos Acadêmicos), plataforma institucional proposta para apoiar a **divulgação**, a **consulta** e a **gestão** de projetos acadêmicos da **UNIRIO**. Este repositório concentra a camada de interface responsável por apresentar informações ao usuário, controlar a navegação por perfil e intermediar a comunicação com o backend.
+Front-end web do **PRISMA** (Plataforma de Referência e Integração de Saberes e Mediação Acadêmica), plataforma institucional proposta para apoiar a **divulgação**, a **consulta** e a **gestão** de projetos acadêmicos da **UNIRIO**. Este repositório concentra a camada de interface responsável por apresentar informações ao usuário, controlar a navegação por perfil e intermediar a comunicação com o backend.
 
 Este README foi escrito com dois objetivos complementares:
 
 - explicar, de forma acessível, o papel das principais tecnologias adotadas no front-end;
 - registrar, de forma tecnicamente honesta, o que já está implementado e o que ainda está em desenvolvimento ou previsto.
 
-O documento deve ser lido em conjunto com `REQUISITOS.md`, que descreve o escopo funcional e institucional do sistema.
+O documento deve ser lido em conjunto com o levantamento de requisitos do sistema, quando disponível, que descreve o escopo funcional e institucional do PRISMA.
 
 ---
 
 ## 1. Contexto do sistema
 
-O SIEPA nasce da necessidade de concentrar, em um ambiente único, informações sobre projetos acadêmicos da universidade, especialmente projetos de **extensão** e de **iniciação científica**. Em cenários institucionais, esses dados costumam ficar distribuídos em planilhas, arquivos isolados e processos administrativos pouco integrados. Como consequência, a consulta pública se torna difícil, a atualização de informações exige esforço manual e a visibilidade das oportunidades acadêmicas fica reduzida.
+O PRISMA nasce da necessidade de concentrar, em um ambiente único, informações sobre projetos acadêmicos da universidade, especialmente projetos de **extensão** e de **iniciação científica**. Em cenários institucionais, esses dados costumam ficar distribuídos em planilhas, arquivos isolados e processos administrativos pouco integrados. Como consequência, a consulta pública se torna difícil, a atualização de informações exige esforço manual e a visibilidade das oportunidades acadêmicas fica reduzida.
 
 Dentro desse contexto, o front-end tem papel estratégico. Ele não apenas exibe telas, mas organiza a experiência de uso para diferentes perfis de usuário, como visitantes, estudantes, professores e administradores. Em outras palavras, é a camada que transforma regras de negócio e dados institucionais em uma navegação compreensível, segura e adequada ao público acadêmico.
 
@@ -21,7 +21,7 @@ Dentro desse contexto, o front-end tem papel estratégico. Ele não apenas exibe
 
 ## 2. Objetivo deste front-end
 
-O front-end do SIEPA foi concebido para:
+O front-end do PRISMA foi concebido para:
 
 - disponibilizar um catálogo público de projetos acadêmicos;
 - oferecer autenticação e navegação diferenciadas por perfil;
@@ -33,7 +33,7 @@ O front-end do SIEPA foi concebido para:
 
 ## 3. Leitura rápida do estado do projeto
 
-Atualmente, este repositório já deixou de ser apenas um template visual. Ele contém uma base arquitetural consistente para o SIEPA, mas ainda está em fase de transição entre **protótipo funcional**, **integração parcial** e **escopo projetado**.
+Atualmente, este repositório já deixou de ser apenas um template visual. Ele contém uma base arquitetural consistente para o PRISMA, mas ainda está em fase de transição entre **protótipo funcional**, **integração parcial** e **escopo projetado**.
 
 ### Legenda de status
 
@@ -55,7 +55,7 @@ Atualmente, este repositório já deixou de ser apenas um template visual. Ele c
 | Contato entre aluno e docente | **Parcial** | O diálogo de envio existe, porém o envio ainda é simulado no serviço local. |
 | Painel administrativo | **Parcial** | Existe página protegida e estrutura visual, mas os indicadores e ações ainda são demonstrativos. |
 | Login institucional com Google para aluno/professor | **Preparado** | O contrato de serviço existe, mas o fluxo de credencial ainda não está concluído na interface. |
-| Área de professor para gestão de seus projetos | **Projetado** | Prevista em `REQUISITOS.md`, ainda não implementada. |
+| Área de professor para gestão de seus projetos | **Projetado** | Prevista no levantamento de requisitos, ainda não implementada. |
 | Busca assistida por inteligência artificial | **Projetado** | Prevista no levantamento de requisitos, ainda sem implementação no front. |
 | Auditoria, importações e operação administrativa completa | **Projetado** | Requisito importante do sistema, ainda em evolução. |
 
@@ -63,9 +63,9 @@ Atualmente, este repositório já deixou de ser apenas um template visual. Ele c
 
 ## 4. Tecnologias adotadas e por que elas foram escolhidas
 
-As tecnologias usadas neste projeto não foram escolhidas apenas por popularidade. Elas respondem a necessidades concretas do SIEPA: manutenção contínua, clareza de estrutura, interface institucional consistente e integração segura com backend.
+As tecnologias usadas neste projeto não foram escolhidas apenas por popularidade. Elas respondem a necessidades concretas do PRISMA: manutenção contínua, clareza de estrutura, interface institucional consistente e integração segura com backend.
 
-| Tecnologia | Papel no projeto | Justificativa no contexto do SIEPA |
+| Tecnologia | Papel no projeto | Justificativa no contexto do PRISMA |
 |---|---|---|
 | **Angular 19** | Framework principal da aplicação | Favorece organização por componentes, padronização arquitetural e evolução incremental, o que é adequado para um sistema institucional com múltiplos módulos. |
 | **TypeScript** | Linguagem principal do front-end | Permite modelar contratos de dados com mais clareza, reduzir erros de integração e melhorar a legibilidade para manutenção acadêmica e profissional. |
@@ -77,7 +77,7 @@ As tecnologias usadas neste projeto não foram escolhidas apenas por popularidad
 | **PrimeFlex** | Utilitários de layout e responsividade | Simplifica composição visual e adaptação para diferentes tamanhos de tela. |
 | **PrimeIcons** | Ícones da interface | Padroniza a iconografia usada em navegação, ações e feedback visual. |
 | **SCSS** | Estilização global e por componente | Facilita organização de estilos, reaproveitamento de tokens e personalização visual da identidade institucional. |
-| **@primeng/themes** | Tema customizado do sistema | Permite definir uma linguagem visual própria para o SIEPA, com coerência entre cores, superfícies, contrastes e modo escuro. |
+| **@primeng/themes** | Tema customizado do sistema | Permite definir uma linguagem visual própria para o PRISMA, com coerência entre cores, superfícies, contrastes e modo escuro. |
 | **ngx-cookie-service** | Leitura e escrita de cookies de interface | Atualmente é usado em recursos auxiliares de UI, como estado de notificações. |
 | **Local Storage** | Persistência de preferências locais | É usado para preservar preferências como o tema visual da aplicação. |
 | **Angular CLI** | Build, execução local e estruturação | Oferece fluxo padrão de desenvolvimento, build e testes. |
@@ -142,7 +142,7 @@ Esta seção relaciona a tecnologia à forma concreta como ela aparece neste rep
 
 ### Angular 19
 
-O Angular organiza a aplicação em componentes, serviços e rotas. No SIEPA, isso aparece de forma clara em arquivos como:
+O Angular organiza a aplicação em componentes, serviços e rotas. No PRISMA, isso aparece de forma clara em arquivos como:
 
 - `src/app/app.config.ts`
 - `src/app/app.routes.ts`
@@ -199,7 +199,7 @@ Essa escolha reduz custo de implementação visual e ajuda a manter uniformidade
 
 O projeto não utiliza apenas o tema padrão da biblioteca. Há um preset institucional em `src/styles.ts` e um conjunto de variáveis semânticas em `src/styles.scss`.
 
-Isso é relevante porque o SIEPA precisa de identidade visual própria, incluindo:
+Isso é relevante porque o PRISMA precisa de identidade visual própria, incluindo:
 
 - paleta institucional;
 - superfícies claras e escuras;
@@ -275,7 +275,7 @@ Esse desenho é coerente com a necessidade de proteger áreas restritas sem exig
 
 ## 8. Funcionalidades por perfil de usuário
 
-O `REQUISITOS.md` define quatro perfis centrais: visitante, aluno, professor e administrador. O front-end atual já representa parte desses fluxos, mas em níveis diferentes de maturidade.
+O levantamento de requisitos define quatro perfis centrais: visitante, aluno, professor e administrador. O front-end atual já representa parte desses fluxos, mas em níveis diferentes de maturidade.
 
 | Perfil | Necessidade no sistema | Situação no front-end |
 |---|---|---|
@@ -407,7 +407,7 @@ Registrar essas limitações é importante não como fragilidade do projeto, mas
 
 ---
 
-## 14. Evoluções previstas a partir de `REQUISITOS.md`
+## 14. Evoluções previstas a partir dos requisitos
 
 Com base no levantamento de requisitos do sistema, as próximas etapas naturais de evolução do front-end incluem:
 
@@ -421,13 +421,13 @@ Com base no levantamento de requisitos do sistema, as próximas etapas naturais 
 - incorporar busca assistida por IA com limites de uso e validação coerentes com o domínio acadêmico;
 - ampliar mecanismos de monitoramento e observabilidade da aplicação.
 
-Essas evoluções estão alinhadas com a proposta original do SIEPA: não apenas exibir informações, mas estruturar uma plataforma institucional confiável para consulta, gestão e acompanhamento de projetos acadêmicos.
+Essas evoluções estão alinhadas com a proposta original do PRISMA: não apenas exibir informações, mas estruturar uma plataforma institucional confiável para consulta, gestão e acompanhamento de projetos acadêmicos.
 
 ---
 
 ## 15. Considerações finais
 
-O front-end do SIEPA já apresenta uma base tecnicamente consistente para um sistema institucional em evolução. Seu principal mérito, neste momento, está em combinar uma arquitetura moderna com uma proposta de interface coerente com o contexto universitário. Angular, TypeScript, PrimeNG, RxJS e SCSS não aparecem aqui como tecnologias isoladas, mas como partes de uma solução voltada à manutenção, à clareza estrutural e à futura integração com regras acadêmicas mais amplas.
+O front-end do PRISMA já apresenta uma base tecnicamente consistente para um sistema institucional em evolução. Seu principal mérito, neste momento, está em combinar uma arquitetura moderna com uma proposta de interface coerente com o contexto universitário. Angular, TypeScript, PrimeNG, RxJS e SCSS não aparecem aqui como tecnologias isoladas, mas como partes de uma solução voltada à manutenção, à clareza estrutural e à futura integração com regras acadêmicas mais amplas.
 
 Ao mesmo tempo, o projeto ainda está em construção. Por isso, este README assume uma postura deliberadamente transparente: mostra o que já funciona, o que está apenas representado e o que ainda depende de integração e desenvolvimento adicional. Para um trabalho acadêmico, essa distinção é essencial, pois demonstra domínio técnico sem confundir protótipo com produto concluído.
 
@@ -435,7 +435,6 @@ Ao mesmo tempo, o projeto ainda está em construção. Por isso, este README ass
 
 ## 16. Referências internas do repositório
 
-- `REQUISITOS.md` - levantamento de requisitos do sistema SIEPA
 - `src/app/app.config.ts` - configuração global da aplicação
 - `src/app/app.routes.ts` - rotas e proteção de páginas
 - `src/app/modules/global/services/users/users.service.ts` - autenticação, sessão, usuário e integração principal com backend
