@@ -28,22 +28,22 @@ export class HelpDialogComponent {
     {
       id: 'sobre',
       icon: 'pi-info-circle',
-      title: 'O que é o SIEPA?',
-      summary: 'Sistema de Iniciação, Extensão e Projetos Acadêmicos da UNIRIO.',
+      title: 'O que é o PRISMA?',
+      summary: 'Plataforma de Referência e Integração de Saberes e Mediação Acadêmica da UNIRIO.',
       body: [
-        'O SIEPA reúne, num único espaço, os projetos acadêmicos vigentes oferecidos pela UNIRIO.',
-        'Visitantes podem conhecer os projetos publicados. Docentes, tecnicos e administradores acessam recursos adicionais após entrar com a conta institucional.'
+        'O PRISMA reúne, num único espaço, os projetos acadêmicos vigentes oferecidos pela UNIRIO.',
+        'Visitantes podem conhecer os projetos publicados. Docentes, técnicos e administradores acessam recursos adicionais após entrar com a conta institucional.'
       ]
     },
     {
       id: 'perfis',
       icon: 'pi-users',
       title: 'Tipos de usuário',
-      summary: 'Visitante, docente, tecnico e administrador.',
+      summary: 'Visitante, docente, técnico e administrador.',
       body: [
         'Visitante: navega pela página inicial e lista de projetos vigentes, sem precisar entrar.',
-        'Docente: gerencia seus projetos e atribuicoes.',
-        'Tecnico: gerencia seus projetos e atribuicoes.',
+        'Docente: gerencia seus projetos e atribuições.',
+        'Técnico: gerencia seus projetos e atribuições.',
         'Administrador: gerencia usuários, configurações institucionais e dados mestres do sistema.'
       ]
     },
@@ -64,10 +64,10 @@ export class HelpDialogComponent {
       title: 'Status dos prazos',
       summary: 'O que significa cada badge colorido no card.',
       body: [
-        'Publicado: projeto visivel na listagem publica.',
-        'Rascunho: projeto ainda em preparacao.',
-        'Arquivado: projeto encerrado e sem novas atualizacoes publicas.',
-        'As datas de inicio e fim indicam o periodo de vigencia quando informadas.'
+        'Publicado: projeto visível na listagem pública.',
+        'Rascunho: projeto ainda em preparação.',
+        'Arquivado: projeto encerrado e sem novas atualizações públicas.',
+        'As datas de início e fim indicam o período de vigência quando informadas.'
       ]
     },
     {
@@ -78,7 +78,7 @@ export class HelpDialogComponent {
       body: [
         'Dentro dos detalhes de um projeto, o botão "Abrir email de contato" abre o seu aplicativo de email padrão.',
         'O assunto e o corpo inicial podem vir preenchidos para facilitar o envio.',
-        'O envio da mensagem acontece fora do sistema, no seu proprio email.'
+        'O envio da mensagem acontece fora do sistema, no seu próprio email.'
       ]
     },
     {
