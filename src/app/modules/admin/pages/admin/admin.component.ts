@@ -83,7 +83,7 @@ export class AdminComponent implements OnInit {
   readonly roleOptions = [
     { label: 'Admin', value: 'admin' },
     { label: 'Docente', value: 'professor' },
-    { label: 'Tecnico', value: 'tecnico' }
+    { label: 'Técnico', value: 'tecnico' }
   ]
 
   readonly projectStatusOptions = [
@@ -122,8 +122,8 @@ export class AdminComponent implements OnInit {
     return [
       { label: 'Total de projetos', value: data.total_projects, hint: 'Todos os status' },
       { label: 'Projetos inativos', value: data.inactive_projects, hint: 'Desativados' },
-      { label: 'Total de usuarios', value: data.total_users, hint: 'Docentes, tecnicos e admins' },
-      { label: 'Usuarios ativos', value: data.active_users, hint: 'Com acesso habilitado' }
+      { label: 'Total de usuários', value: data.total_users, hint: 'Docentes, técnicos e admins' },
+      { label: 'Usuários ativos', value: data.active_users, hint: 'Com acesso habilitado' }
     ]
   }
 

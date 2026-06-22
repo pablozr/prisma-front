@@ -121,7 +121,7 @@ export class ProfessorProjectsService {
       .pipe(
         map(res => res?.data?.atribuicoes || []),
         catchError((err: unknown) => {
-          this.toast.error('Falha ao carregar atribuicoes', extractHttpErrorDetail(err, 'Tente novamente.'))
+          this.toast.error('Falha ao carregar atribuições', extractHttpErrorDetail(err, 'Tente novamente.'))
           return of([])
         })
       )
@@ -133,7 +133,7 @@ export class ProfessorProjectsService {
       .pipe(
         map(() => true),
         catchError((err: unknown) => {
-          this.toast.error('Falha ao criar atribuicao', extractHttpErrorDetail(err, 'Verifique os campos e tente novamente.'))
+          this.toast.error('Falha ao criar atribuição', extractHttpErrorDetail(err, 'Verifique os campos e tente novamente.'))
           return throwError(() => err)
         })
       )
@@ -161,7 +161,7 @@ export class ProfessorProjectsService {
       .pipe(
         map(() => true),
         catchError((err: unknown) => {
-          this.toast.error('Falha ao remover atribuicao', extractHttpErrorDetail(err, 'Tente novamente.'))
+          this.toast.error('Falha ao remover atribuição', extractHttpErrorDetail(err, 'Tente novamente.'))
           return throwError(() => err)
         })
       )

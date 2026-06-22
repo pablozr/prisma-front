@@ -29,7 +29,7 @@ export class HeaderComponent {
   private readonly roleMap: Record<string, string> = {
     admin: 'Administrador',
     professor: 'Docente',
-    tecnico: 'Tecnico'
+    tecnico: 'Técnico'
   }
 
   get isAuthenticated(): boolean {

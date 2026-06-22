@@ -36,7 +36,7 @@ export class SidebarComponent implements OnInit {
   private readonly roleMap: Record<string, string> = {
     admin: 'Administrador',
     professor: 'Docente',
-    tecnico: 'Tecnico'
+    tecnico: 'Técnico'
   }
 
   ngOnInit() {
