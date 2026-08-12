@@ -26,16 +26,16 @@
 
 .editais-hero {
   display: flex;
-  align-items: flex-end;
+  align-items: baseline;
   justify-content: space-between;
   gap: 2rem;
-  padding: 1.75rem 0 1.5rem;
+  padding: 1.5rem 0;
   border-bottom: 1px solid rgba(15, 23, 32, 0.08);
 
   @media (max-width: 720px) {
-    flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 0.45rem;
   }
 }
 
@@ -46,26 +46,22 @@
 .editais-hero__body {
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
+  gap: 0.35rem;
   max-width: 720px;
   min-width: 0;
 }
 
 .editais-hero__eyebrow {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  color: #4d7187;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #00345d;
-}
-
-:host-context(.my-app-dark) .editais-hero__eyebrow {
-  color: #a0caff;
 }
 
 .editais-hero__title {
   margin: 0;
-  font-size: clamp(1.65rem, 2.8vw, 2.1rem);
+  font-size: clamp(1.7rem, 2.8vw, 2.2rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.2;
@@ -82,59 +78,34 @@
   font-weight: 400;
   line-height: 1.6;
   color: #424750;
-  max-width: 640px;
+  max-width: 580px;
 }
 
 :host-context(.my-app-dark) .editais-hero__lead {
   color: #c2c7d1;
 }
 
-.editais-hero__scope {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  padding: 0.9rem 1.35rem;
-  background: rgba(0, 75, 130, 0.06);
-  border: 1px solid rgba(0, 75, 130, 0.14);
-  border-radius: 12px;
-  line-height: 1.1;
+.editais-hero__count {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.55rem;
+  align-items: baseline;
+  min-width: 190px;
+  margin: 0;
+  padding-left: 1.15rem;
+  border-left: 2px solid #8eb5c9;
+  color: #66717a;
 
-  @media (max-width: 720px) {
-    flex-direction: row;
-    align-self: stretch;
-    align-items: baseline;
-    gap: 0.75rem;
-  }
+  strong { color: #00345d; font-size: 1.7rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1; }
+  span { color: #42525c; font-size: 0.78rem; font-weight: 700; }
+  small { grid-column: 2; color: #7a878e; font-size: 0.68rem; }
 }
 
-:host-context(.my-app-dark) .editais-hero__scope {
-  background: rgba(137, 188, 250, 0.1);
-  border-color: rgba(137, 188, 250, 0.22);
-}
-
-.editais-hero__scope-value {
-  font-size: 1.65rem;
-  font-weight: 700;
-  color: #00345d;
-  letter-spacing: -0.01em;
-}
-
-:host-context(.my-app-dark) .editais-hero__scope-value {
-  color: #89bcfa;
-}
-
-.editais-hero__scope-label {
-  margin-top: 2px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #424750;
-}
-
-:host-context(.my-app-dark) .editais-hero__scope-label {
-  color: #c2c7d1;
-}
+:host-context(.my-app-dark) .editais-hero__eyebrow { color: #9fc5db; }
+:host-context(.my-app-dark) .editais-hero__count { border-color: #638da4; }
+:host-context(.my-app-dark) .editais-hero__count strong { color: #a0caff; }
+:host-context(.my-app-dark) .editais-hero__count span { color: #d2dce2; }
+:host-context(.my-app-dark) .editais-hero__count small { color: #9eafb9; }
 
 /* ----- Resultados: grid ----- */
 
@@ -147,8 +118,20 @@
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.1rem;
+}
+
+@media (max-width: 1100px) {
+  .editais-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .editais-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .editais-grid__item {
@@ -157,105 +140,90 @@
   contain-intrinsic-size: 520px;
 }
 
-/* ----- Pagination ----- */
+/* ----- Paginação ----- */
 
-.editais-pagination {
+:host ::ng-deep .editais-data-view .p-paginator {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  margin-top: 1.1rem;
-  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 1.25rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(15, 23, 32, 0.1);
+  border-radius: 12px;
+  background: #ffffff;
 }
 
-.editais-pagination__btn,
-.editais-pagination__page {
+:host ::ng-deep .editais-data-view .p-paginator-page,
+:host ::ng-deep .editais-data-view .p-paginator-prev,
+:host ::ng-deep .editais-data-view .p-paginator-next,
+:host ::ng-deep .editais-data-view .p-paginator-first,
+:host ::ng-deep .editais-data-view .p-paginator-last {
   min-width: 36px;
   height: 36px;
-  padding: 0 0.65rem;
-  border-radius: 10px;
-  border: 1px solid rgba(15, 23, 32, 0.14);
-  background: #ffffff;
+  border-radius: 9px;
   color: #424750;
-  font-family: inherit;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease,
-    transform 0.15s ease;
 
-  &:hover:not(:disabled) {
+  &:hover:not(.p-disabled) {
     background: rgba(0, 75, 130, 0.08);
-    border-color: rgba(0, 75, 130, 0.28);
     color: #00345d;
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.45;
-  }
-
-  &:active:not(:disabled) {
-    transform: scale(0.96);
-  }
-
-  &:focus-visible {
-    outline: 2px solid #004b82;
-    outline-offset: 2px;
   }
 }
 
-.editais-pagination__page--active {
+:host ::ng-deep .editais-data-view .p-paginator-page-selected {
   background: #004b82;
-  border-color: #004b82;
   color: #ffffff;
 }
 
-.editais-pagination__ellipsis {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
+:host ::ng-deep .editais-data-view .p-paginator-current {
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
   color: #565c64;
-  font-size: 1rem;
-  user-select: none;
 }
 
-:host-context(.my-app-dark) .editais-pagination__btn,
-:host-context(.my-app-dark) .editais-pagination__page {
+:host ::ng-deep .editais-data-view .p-select {
+  min-width: 5rem;
+  border-color: rgba(15, 23, 32, 0.14);
+  border-radius: 9px;
+  font-size: 0.8125rem;
+}
+
+:host-context(.my-app-dark) ::ng-deep .editais-data-view .p-paginator {
   background: #1f262f;
-  border-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+:host-context(.my-app-dark) ::ng-deep .editais-data-view .p-paginator-page,
+:host-context(.my-app-dark) ::ng-deep .editais-data-view .p-paginator-prev,
+:host-context(.my-app-dark) ::ng-deep .editais-data-view .p-paginator-next,
+:host-context(.my-app-dark) ::ng-deep .editais-data-view .p-paginator-first,
+:host-context(.my-app-dark) ::ng-deep .editais-data-view .p-paginator-last {
   color: #c2c7d1;
 
-  &:hover:not(:disabled) {
+  &:hover:not(.p-disabled) {
     background: rgba(137, 188, 250, 0.14);
-    border-color: rgba(137, 188, 250, 0.3);
     color: #a0caff;
   }
 }
 
-:host-context(.my-app-dark) .editais-pagination__page--active {
+:host-context(.my-app-dark) ::ng-deep .editais-data-view .p-paginator-page-selected {
   background: #89bcfa;
-  border-color: #89bcfa;
   color: #0c1722;
 }
 
-:host-context(.my-app-dark) .editais-pagination__ellipsis {
+:host-context(.my-app-dark) ::ng-deep .editais-data-view .p-paginator-current {
   color: #c2c7d1;
 }
 
-@media (max-width: 560px) {
-  .editais-pagination {
+@media (max-width: 700px) {
+  :host ::ng-deep .editais-data-view .p-paginator {
     justify-content: flex-start;
     overflow-x: auto;
     flex-wrap: nowrap;
-    padding-bottom: 0.2rem;
-    scrollbar-width: thin;
   }
 
-  .editais-pagination__btn,
-  .editais-pagination__page {
-    flex: 0 0 auto;
+  :host ::ng-deep .editais-data-view .p-paginator-current {
+    display: none;
   }
 }
 
