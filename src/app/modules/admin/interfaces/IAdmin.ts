@@ -9,7 +9,7 @@ export interface IAdminUser {
   id: number
   institutional_email: string
   full_name: string
-  role: 'admin' | 'professor' | 'tecnico' | string
+  role: 'admin' | 'professor' | 'tecnico' | 'aluno' | string
   is_active: boolean
   created_at: string
   last_login_at: string | null
@@ -26,39 +26,52 @@ export interface IAdminProject {
   id: number
   process_code: string | null
   title: string
-  short_description: string | null
-  status: 'draft' | 'published' | 'archived' | string
-  is_active: boolean
+  sie_project_id: number | null
+  source_status: string | null
+  source_type: string | null
+  publication_status: 'draft' | 'published' | 'archived' | string
+  is_visible: boolean
   updated_at: string
   published_at: string | null
-  responsible_id: number | null
-  responsible_name: string | null
-  responsible_email: string | null
-  responsible_type: 'docente' | 'tecnico' | string
+  managers: IAdminProjectManager[]
 }
 
-export interface IAdminImportBatch {
+export interface IAdminProjectUpdate {
   id: number
-  reference_year: number
-  reference_term: number
-  source_filename: string
-  source_hash: string
+  process_code: string | null
+  title: string
+  source_status: string | null
+  source_type: string | null
+  publication_status: 'draft' | 'published' | 'archived' | string
+  is_visible: boolean
+  updated_at: string
+  published_at: string | null
+}
+
+export interface IAdminProjectManager {
+  person_id: number
+  user_id: number | null
+  profile: 'professor' | 'tecnico' | 'aluno' | string
+  permission_source: string
+}
+
+export interface IAdminSyncRun {
+  id: number
+  source: string
   status: string
-  total_rows: number
-  imported_rows: number
-  rejected_rows: number
-  created_at: string
+  is_complete: boolean
+  started_at: string
   finished_at: string | null
-  uploaded_by_user_id: number | null
-  uploaded_by_name: string | null
-  uploaded_by_email: string | null
+  page_size: number
+  pages_processed: number
+  rows_received: number
+  projects_upserted: number
+  participants_upserted: number
+  error_summary: string | null
 }
 
-export interface IAdminImportError {
-  id: number
-  import_batch_id: number
-  row_number: number
-  raw_payload: unknown
-  error_reason: string
-  created_at: string
+export interface IAdminSyncRunFailure {
+  sync_run_id: number
+  error_summary: string
+  finished_at: string | null
 }

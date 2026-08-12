@@ -260,8 +260,9 @@
   }
 }
 
-.admin-projects__table {
-  min-width: 940px;
+.admin-projects__table,
+.admin-sync-runs__table {
+  min-width: 1100px;
 }
 
 .admin-projects__title {
@@ -421,107 +422,18 @@
   background: rgba(0, 75, 130, 0.03);
 }
 
-.admin-import__uploader {
-  display: none;
-}
-
-.admin-import__dropzone {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.1rem;
-  border: 1px dashed rgba(0, 75, 130, 0.35);
-  border-radius: 10px;
-  background: linear-gradient(180deg, rgba(0, 75, 130, 0.03), rgba(0, 75, 130, 0.015));
-  margin-bottom: 0.9rem;
-
-  @media (max-width: 640px) {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-}
-
-.admin-import__dropzone-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  color: var(--primary-strong);
-  background: rgba(0, 75, 130, 0.1);
-}
-
-.admin-import__dropzone-body {
-  flex: 1;
-
-  p {
-    margin: 0;
-    font-size: 0.92rem;
-    color: var(--on-surface);
-  }
-
-  small {
-    color: var(--on-surface-variant);
-  }
-}
-
-.admin-import__pick {
-  input {
-    display: none;
-  }
-
-  span {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 2.2rem;
-    padding: 0 0.9rem;
-    border-radius: 8px;
-    border: 1px solid var(--outline-variant);
-    background: #fff;
-    color: var(--on-surface);
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-  }
-}
-
-.admin-import__file-card {
-  margin-bottom: 0.75rem;
-  padding: 0.75rem 0.9rem;
-  border: 1px solid var(--outline-variant);
-  border-radius: 10px;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.admin-import__file-name {
-  margin: 0;
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--on-surface);
-}
-
-.admin-import__actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-
-.admin-import__loading {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.84rem;
+.admin-sync-runs__intro {
+  margin: 0 0 0.9rem;
   color: var(--on-surface-variant);
 }
 
-.admin-import__errors {
+.admin-sync-runs__failure {
+  margin: 0 0 0.5rem;
+  max-width: 26rem;
+  color: var(--on-surface-variant);
+}
+
+.admin-sync-runs__failures {
   margin-top: 1rem;
   padding: 0.9rem;
   border: 1px solid var(--outline-variant);
@@ -547,36 +459,9 @@
   }
 }
 
-:host-context(.my-app-dark) .admin-import__errors {
+:host-context(.my-app-dark) .admin-sync-runs__failures {
   border-color: rgba(255, 255, 255, 0.1);
   background: rgba(137, 188, 250, 0.05);
-}
-
-:host-context(.my-app-dark) .admin-import__dropzone {
-  border-color: rgba(137, 188, 250, 0.32);
-  background: linear-gradient(180deg, rgba(137, 188, 250, 0.08), rgba(137, 188, 250, 0.04));
-}
-
-:host-context(.my-app-dark) .admin-import__dropzone-icon {
-  color: #dce9fb;
-  background: rgba(137, 188, 250, 0.2);
-}
-
-:host-context(.my-app-dark) .admin-import__pick span,
-:host-context(.my-app-dark) .admin-import__file-card {
-  background: #1f262f;
-  border-color: rgba(255, 255, 255, 0.14);
-  color: #eef3fc;
-}
-
-:host-context(.my-app-dark) .admin-import__file-name,
-:host-context(.my-app-dark) .admin-import__dropzone-body p {
-  color: #eef3fc;
-}
-
-:host-context(.my-app-dark) .admin-import__dropzone-body small,
-:host-context(.my-app-dark) .admin-import__loading {
-  color: #c8d1df;
 }
 
 :host-context(.my-app-dark) .admin-placeholder {

@@ -6,10 +6,11 @@ import { API_BASE_URL } from '../../global/constants/apiConfig'
 import { AppToastService } from '../../global/services/toast/app-toast.service'
 import { buildPaginationParams, extractHttpErrorDetail } from '../../global/utils/http.utils'
 import {
-  IAdminImportBatch,
-  IAdminImportError,
   IAdminMetrics,
   IAdminProject,
+  IAdminProjectUpdate,
+  IAdminSyncRun,
+  IAdminSyncRunFailure,
   IAdminUser,
   IAdminUsersPagination
 } from '../interfaces/IAdmin'
@@ -58,7 +59,7 @@ export class AdminService {
     }
   }
 
-  async updateUser(userId: number, payload: { role?: 'admin' | 'professor' | 'tecnico'; is_active?: boolean }): Promise<IAdminUser | null> {
+  async updateUser(userId: number, payload: { role?: 'admin' | 'professor' | 'tecnico' | 'aluno'; is_active?: boolean }): Promise<IAdminUser | null> {
     try {
       const res = await firstValueFrom(
         this.http.patch<IApiResponse<{ user: IAdminUser }>>(`${this.endpoint}/users/${userId}`, payload, this.withCreds)
@@ -88,10 +89,10 @@ export class AdminService {
     }
   }
 
-  async updateProject(projectId: number, payload: { status?: 'draft' | 'published' | 'archived'; is_active?: boolean }): Promise<IAdminProject | null> {
+  async updateProject(projectId: number, payload: { publication_status?: 'draft' | 'published' | 'archived'; is_visible?: boolean }): Promise<IAdminProjectUpdate | null> {
     try {
       const res = await firstValueFrom(
-        this.http.patch<IApiResponse<{ project: IAdminProject }>>(
+        this.http.patch<IApiResponse<{ project: IAdminProjectUpdate }>>(
           `${this.endpoint}/projects/${projectId}`,
           payload,
           this.withCreds
@@ -105,51 +106,35 @@ export class AdminService {
     }
   }
 
-  async uploadImport(file: File): Promise<IAdminImportBatch | null> {
-    try {
-      const formData = new FormData()
-      formData.append('file', file)
-
-      const res = await firstValueFrom(
-        this.http.post<IApiResponse<{ batch: IAdminImportBatch }>>(`${this.endpoint}/imports`, formData, this.withCreds)
-      )
-      this.toast.success('Importacao concluida', 'Arquivo processado com sucesso.')
-      return res?.data?.batch ?? null
-    } catch (err) {
-      this.toast.error('Erro na importacao', extractHttpErrorDetail(err, 'Tente novamente.'))
-      return null
-    }
-  }
-
-  async listImports(page: number, pageSize: number): Promise<{ batches: IAdminImportBatch[]; pagination: IAdminUsersPagination } | null> {
+  async listSyncRuns(page: number, pageSize: number): Promise<{ sync_runs: IAdminSyncRun[]; pagination: IAdminUsersPagination } | null> {
     try {
       const params = buildPaginationParams(page, pageSize)
       const res = await firstValueFrom(
-        this.http.get<IApiResponse<{ batches: IAdminImportBatch[]; pagination: IAdminUsersPagination }>>(
-          `${this.endpoint}/imports`,
+        this.http.get<IApiResponse<{ sync_runs: IAdminSyncRun[]; pagination: IAdminUsersPagination }>>(
+          `${this.endpoint}/sync-runs`,
           { ...this.withCreds, params }
         )
       )
       return res?.data ?? null
     } catch (err) {
-      this.toast.error('Erro ao carregar importacoes', extractHttpErrorDetail(err, 'Tente novamente.'))
+      this.toast.error('Erro ao carregar sincronizacoes', extractHttpErrorDetail(err, 'Tente novamente.'))
       return null
     }
   }
 
-  async listImportErrors(batchId: number, page = 1, pageSize = 20): Promise<IAdminImportError[]> {
+  async listSyncRunFailures(syncRunId: number, page = 1, pageSize = 20): Promise<{ failures: IAdminSyncRunFailure[]; pagination: IAdminUsersPagination } | null> {
     try {
       const params = buildPaginationParams(page, pageSize)
       const res = await firstValueFrom(
-        this.http.get<IApiResponse<{ errors: IAdminImportError[] }>>(
-          `${this.endpoint}/imports/${batchId}/errors`,
+        this.http.get<IApiResponse<{ failures: IAdminSyncRunFailure[]; pagination: IAdminUsersPagination }>>(
+          `${this.endpoint}/sync-runs/${syncRunId}/failures`,
           { ...this.withCreds, params }
         )
       )
-      return res?.data?.errors ?? []
+      return res?.data ?? null
     } catch (err) {
-      this.toast.error('Erro ao carregar erros da importacao', extractHttpErrorDetail(err, 'Tente novamente.'))
-      return []
+      this.toast.error('Erro ao carregar falhas da sincronizacao', extractHttpErrorDetail(err, 'Tente novamente.'))
+      return null
     }
   }
 }

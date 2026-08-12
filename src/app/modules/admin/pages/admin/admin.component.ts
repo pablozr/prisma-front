@@ -12,10 +12,10 @@ import { ISigninData } from '../../../global/interfaces/ISignin'
 import { UsersService } from '../../../global/services/users/users.service'
 import { AdminService } from '../../services/admin.service'
 import {
-  IAdminImportBatch,
-  IAdminImportError,
   IAdminMetrics,
   IAdminProject,
+  IAdminSyncRun,
+  IAdminSyncRunFailure,
   IAdminUser,
   IAdminUsersPagination
 } from '../../interfaces/IAdmin'
@@ -51,21 +51,19 @@ export class AdminComponent implements OnInit {
   metricsLoading = false
   usersLoading = false
   projectsLoading = false
-  importsLoading = false
-  importUploading = false
-  importErrorsLoading = false
+  syncRunsLoading = false
+  syncRunFailuresLoading = false
   savingUserById: Record<number, boolean> = {}
   savingProjectById: Record<number, boolean> = {}
 
   metrics: IMetric[] = []
   users: IAdminUser[] = []
   projects: IAdminProject[] = []
-  importBatches: IAdminImportBatch[] = []
-  importErrors: IAdminImportError[] = []
-  selectedImportBatchId: number | null = null
-  selectedImportFile: File | null = null
-  userDraftById: Record<number, { role: 'admin' | 'professor' | 'tecnico'; is_active: boolean }> = {}
-  projectDraftById: Record<number, { status: 'draft' | 'published' | 'archived'; is_active: boolean }> = {}
+  syncRuns: IAdminSyncRun[] = []
+  syncRunFailures: IAdminSyncRunFailure[] = []
+  selectedSyncRunId: number | null = null
+  userDraftById: Record<number, { role: 'admin' | 'professor' | 'tecnico' | 'aluno'; is_active: boolean }> = {}
+  projectDraftById: Record<number, { publication_status: 'draft' | 'published' | 'archived'; is_visible: boolean }> = {}
 
   userSearch = ''
   usersPage = 1
@@ -76,14 +74,15 @@ export class AdminComponent implements OnInit {
   projectsPage = 1
   projectsPageSize = 10
   projectsPagination: IAdminUsersPagination = { page: 1, page_size: 10, total: 0, total_pages: 0 }
-  importsPage = 1
-  importsPageSize = 10
-  importsPagination: IAdminUsersPagination = { page: 1, page_size: 10, total: 0, total_pages: 0 }
+  syncRunsPage = 1
+  syncRunsPageSize = 10
+  syncRunsPagination: IAdminUsersPagination = { page: 1, page_size: 10, total: 0, total_pages: 0 }
 
   readonly roleOptions = [
     { label: 'Admin', value: 'admin' },
     { label: 'Docente', value: 'professor' },
-    { label: 'Técnico', value: 'tecnico' }
+    { label: 'Técnico', value: 'tecnico' },
+    { label: 'Aluno', value: 'aluno' }
   ]
 
   readonly projectStatusOptions = [
@@ -105,7 +104,7 @@ export class AdminComponent implements OnInit {
     await this.loadMetrics()
     await this.loadUsers()
     await this.loadProjects()
-    await this.loadImports()
+    await this.loadSyncRuns()
   }
 
   get firstName(): string {
@@ -121,7 +120,7 @@ export class AdminComponent implements OnInit {
   private buildMetricsCards(data: IAdminMetrics): IMetric[] {
     return [
       { label: 'Total de projetos', value: data.total_projects, hint: 'Todos os status' },
-      { label: 'Projetos inativos', value: data.inactive_projects, hint: 'Desativados' },
+      { label: 'Projetos ocultos', value: data.inactive_projects, hint: 'Não visíveis no catálogo' },
       { label: 'Total de usuários', value: data.total_users, hint: 'Docentes, técnicos e admins' },
       { label: 'Usuários ativos', value: data.active_users, hint: 'Com acesso habilitado' }
     ]
@@ -139,11 +138,11 @@ export class AdminComponent implements OnInit {
     this.userDraftById = Object.fromEntries(entries)
   }
 
-  private normalizeRole(role: string): 'admin' | 'professor' | 'tecnico' {
-    if (role === 'admin' || role === 'tecnico' || role === 'professor') {
+  private normalizeRole(role: string): 'admin' | 'professor' | 'tecnico' | 'aluno' {
+    if (role === 'admin' || role === 'tecnico' || role === 'professor' || role === 'aluno') {
       return role
     }
-    return 'professor'
+    return 'aluno'
   }
 
   private normalizeProjectStatus(status: string): 'draft' | 'published' | 'archived' {
@@ -157,8 +156,8 @@ export class AdminComponent implements OnInit {
     const entries = projects.map((project) => [
       project.id,
       {
-        status: this.normalizeProjectStatus(project.status),
-        is_active: project.is_active
+        publication_status: this.normalizeProjectStatus(project.publication_status),
+        is_visible: project.is_visible
       }
     ])
 
@@ -202,20 +201,20 @@ export class AdminComponent implements OnInit {
     this.buildProjectDraftMap(result.projects)
   }
 
-  async loadImports() {
-    this.importsLoading = true
-    const result = await this.adminService.listImports(this.importsPage, this.importsPageSize)
-    this.importsLoading = false
+  async loadSyncRuns() {
+    this.syncRunsLoading = true
+    const result = await this.adminService.listSyncRuns(this.syncRunsPage, this.syncRunsPageSize)
+    this.syncRunsLoading = false
 
     if (!result) {
-      this.importBatches = []
-      this.importErrors = []
-      this.selectedImportBatchId = null
+      this.syncRuns = []
+      this.syncRunFailures = []
+      this.selectedSyncRunId = null
       return
     }
 
-    this.importBatches = result.batches
-    this.importsPagination = result.pagination
+    this.syncRuns = result.sync_runs
+    this.syncRunsPagination = result.pagination
   }
 
   async onSearchUsers() {
@@ -246,68 +245,21 @@ export class AdminComponent implements OnInit {
     await this.loadProjects()
   }
 
-  async onImportsPageChange(nextPage: number) {
-    if (nextPage < 1 || nextPage > this.importsPagination.total_pages || nextPage === this.importsPage) {
+  async onSyncRunsPageChange(nextPage: number) {
+    if (nextPage < 1 || nextPage > this.syncRunsPagination.total_pages || nextPage === this.syncRunsPage) {
       return
     }
 
-    this.importsPage = nextPage
-    await this.loadImports()
+    this.syncRunsPage = nextPage
+    await this.loadSyncRuns()
   }
 
-  onImportFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement
-    const file = input.files?.[0] ?? null
-    this.selectedImportFile = file
-  }
-
-  onImportDragOver(event: DragEvent) {
-    event.preventDefault()
-  }
-
-  onImportDrop(event: DragEvent) {
-    event.preventDefault()
-    const file = event.dataTransfer?.files?.[0] ?? null
-    if (!file) return
-    this.selectedImportFile = file
-  }
-
-  clearImportSelection() {
-    this.selectedImportFile = null
-  }
-
-  formatFileSize(sizeInBytes: number): string {
-    if (!sizeInBytes || sizeInBytes < 1024) {
-      return `${sizeInBytes || 0} B`
-    }
-
-    const kb = sizeInBytes / 1024
-    if (kb < 1024) {
-      return `${kb.toFixed(1)} KB`
-    }
-
-    const mb = kb / 1024
-    return `${mb.toFixed(2)} MB`
-  }
-
-  async submitImport() {
-    if (!this.selectedImportFile) return
-
-    this.importUploading = true
-    const created = await this.adminService.uploadImport(this.selectedImportFile)
-    this.importUploading = false
-
-    if (!created) return
-
-    this.selectedImportFile = null
-    await this.loadImports()
-  }
-
-  async openImportErrors(batchId: number) {
-    this.selectedImportBatchId = batchId
-    this.importErrorsLoading = true
-    this.importErrors = await this.adminService.listImportErrors(batchId)
-    this.importErrorsLoading = false
+  async openSyncRunFailures(syncRunId: number) {
+    this.selectedSyncRunId = syncRunId
+    this.syncRunFailuresLoading = true
+    const result = await this.adminService.listSyncRunFailures(syncRunId)
+    this.syncRunFailures = result?.failures ?? []
+    this.syncRunFailuresLoading = false
   }
 
   hasUserChanges(user: IAdminUser): boolean {
@@ -321,7 +273,7 @@ export class AdminComponent implements OnInit {
     const draft = this.projectDraftById[project.id]
     if (!draft) return false
 
-    return draft.status !== this.normalizeProjectStatus(project.status) || draft.is_active !== project.is_active
+    return draft.publication_status !== this.normalizeProjectStatus(project.publication_status) || draft.is_visible !== project.is_visible
   }
 
   async saveUser(user: IAdminUser) {
@@ -350,8 +302,8 @@ export class AdminComponent implements OnInit {
 
     this.savingProjectById[project.id] = true
     const updated = await this.adminService.updateProject(project.id, {
-      status: draft.status,
-      is_active: draft.is_active
+      publication_status: draft.publication_status,
+      is_visible: draft.is_visible
     })
     this.savingProjectById[project.id] = false
 
@@ -359,8 +311,29 @@ export class AdminComponent implements OnInit {
 
     this.projects = this.projects.map((item) => (item.id === project.id ? { ...item, ...updated } : item))
     this.projectDraftById[project.id] = {
-      status: this.normalizeProjectStatus(updated.status),
-      is_active: updated.is_active
+      publication_status: this.normalizeProjectStatus(updated.publication_status),
+      is_visible: updated.is_visible
     }
+  }
+
+  syncRunStatusLabel(status: string): string {
+    return ({ running: 'Em andamento', success: 'Concluída', partial: 'Concluída com pendências', failed: 'Falhou' }[status] ?? status)
+  }
+
+  syncSourceLabel(source: string): string {
+    return ['sie', 'sie_api'].includes(source.toLowerCase()) ? 'SIE' : source
+  }
+
+  formatFailureSummary(summary: string | null): string {
+    if (!summary) return 'Sem falha registrada.'
+
+    const sanitized = summary
+      .replace(/[\u0000-\u001F\u007F]/g, ' ')
+      .replace(/\b\d{3}[.\s-]?\d{3}[.\s-]?\d{3}-?\d{2}\b/g, '[CPF removido]')
+      .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, '[e-mail removido]')
+      .replace(/\s+/g, ' ')
+      .trim()
+
+    return sanitized ? sanitized.slice(0, 500) : 'Sem falha registrada.'
   }
 }
