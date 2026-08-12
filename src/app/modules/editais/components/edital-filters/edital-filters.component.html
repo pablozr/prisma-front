@@ -5,10 +5,10 @@
       type="search"
       pInputText
       class="edital-filters__input"
-      placeholder="Buscar por título, professor ou código do processo..."
+        placeholder="Busque por tema, projeto, unidade ou palavra-chave"
       [(ngModel)]="filters.search"
       (ngModelChange)="onChange()"
-      [attr.aria-label]="'Buscar editais'"
+      [attr.aria-label]="'Buscar projetos'"
     />
     @if (filters.search.trim()) {
       <button
@@ -22,9 +22,9 @@
     }
   </div>
 
-  <div class="edital-filters__grid">
+  <div class="edital-filters__controls">
     <label class="edital-filters__field">
-      <span class="edital-filters__label">Áreas de conhecimento</span>
+      <span class="edital-filters__label">Área</span>
       <p-multiSelect
         styleClass="edital-filters__select"
         [options]="areaOptions"
@@ -51,7 +51,7 @@
         styleClass="edital-filters__select"
         [options]="centerOptions"
         [(ngModel)]="filters.centerIds"
-        (onChange)="onChange()"
+        (onChange)="onCenterChange()"
         optionLabel="label"
         optionValue="value"
         placeholder="Todos os centros"
@@ -66,92 +66,46 @@
       />
     </label>
 
-    <label class="edital-filters__field">
-      <span class="edital-filters__label">Instituto / Escola</span>
-      <p-multiSelect
-        styleClass="edital-filters__select"
-        [options]="academicUnitOptions"
-        [(ngModel)]="filters.academicUnitIds"
-        (onChange)="onChange()"
-        optionLabel="label"
-        optionValue="value"
-        placeholder="Todos os institutos e escolas"
-        display="chip"
-        [showClear]="true"
-        [maxSelectedLabels]="1"
-        selectedItemsLabel="{0} selecionadas"
-        appendTo="body"
-        [filter]="true"
-        emptyMessage="Nenhuma unidade encontrada"
-        emptyFilterMessage="Nenhuma unidade corresponde"
-      />
-    </label>
+    @if (courseOptions.length) {
+      <label class="edital-filters__field">
+        <span class="edital-filters__label">Cursos</span>
+        <p-multiSelect
+          styleClass="edital-filters__select"
+          [options]="courseOptions"
+          [(ngModel)]="filters.courseIds"
+          (onChange)="onChange()"
+          optionLabel="label"
+          optionValue="value"
+          [placeholder]="coursePlaceholder"
+          display="chip"
+          [showClear]="true"
+          [maxSelectedLabels]="1"
+          selectedItemsLabel="{0} selecionados"
+          appendTo="body"
+          [filter]="true"
+          emptyMessage="Nenhum curso encontrado"
+          emptyFilterMessage="Nenhum curso corresponde"
+        />
+      </label>
+    }
 
-    <label class="edital-filters__field">
-      <span class="edital-filters__label">Cursos</span>
-      <p-multiSelect
-        styleClass="edital-filters__select"
-        [options]="courseOptions"
-        [(ngModel)]="filters.courseIds"
-        (onChange)="onChange()"
-        optionLabel="label"
-        optionValue="value"
-        [placeholder]="coursePlaceholder"
-        display="chip"
-        [showClear]="true"
-        [maxSelectedLabels]="1"
-        selectedItemsLabel="{0} selecionados"
-        appendTo="body"
-        [filter]="true"
-        emptyMessage="Nenhum curso encontrado"
-        emptyFilterMessage="Nenhum curso corresponde"
-      />
-    </label>
-
-    <label class="edital-filters__field edital-filters__field--short">
-      <span class="edital-filters__label">Nível</span>
-      <p-select
-        styleClass="edital-filters__select"
-        [options]="levelOptions"
-        [(ngModel)]="filters.level"
-        (onChange)="onChange()"
-        optionLabel="label"
-        optionValue="value"
-        placeholder="Todos"
-        appendTo="body"
-        [showClear]="true"
-      />
-    </label>
-
-    <label class="edital-filters__field edital-filters__field--short">
-      <span class="edital-filters__label">Modalidade</span>
-      <p-select
-        styleClass="edital-filters__select"
-        [options]="modalityOptions"
-        [(ngModel)]="filters.modality"
-        (onChange)="onChange()"
-        optionLabel="label"
-        optionValue="value"
-        placeholder="Qualquer"
-        appendTo="body"
-        [showClear]="true"
-      />
-    </label>
-
-    <label class="edital-filters__field edital-filters__field--short">
-      <span class="edital-filters__label">Ordenar por</span>
-      <p-select
-        styleClass="edital-filters__select"
-        [options]="sortOptions"
-        [(ngModel)]="filters.sort"
-        (onChange)="onChange()"
-        optionLabel="label"
-        optionValue="value"
-        placeholder="Selecionar"
-        appendTo="body"
-      />
-    </label>
+    <div class="edital-filters__actions">
+      <div class="edital-filters__sort" aria-label="Ordenar projetos">
+        <button type="button" [class.edital-filters__sort-btn--active]="filters.sort === 'recent'" (click)="setSort('recent')">Recentes</button>
+        <button type="button" [class.edital-filters__sort-btn--active]="filters.sort === 'alphabetical'" (click)="setSort('alphabetical')">A-Z</button>
+      </div>
+      <button type="button" class="edital-filters__more" [attr.aria-expanded]="showMoreFilters" (click)="showMoreFilters = !showMoreFilters"><i class="pi" [class.pi-sliders-h]="!showMoreFilters" [class.pi-angle-up]="showMoreFilters" aria-hidden="true"></i>{{ showMoreFilters ? 'Menos filtros' : 'Mais filtros' }}</button>
+    </div>
   </div>
+
+  @if (showMoreFilters) {
+    <div class="edital-filters__more-panel">
+      <label class="edital-filters__field">
+        <span class="edital-filters__label">Unidade executora</span>
+        <p-multiSelect styleClass="edital-filters__select" [options]="academicUnitOptions" [(ngModel)]="filters.academicUnitIds" (onChange)="onChange()" optionLabel="label" optionValue="value" placeholder="Todas as unidades" display="chip" [showClear]="true" [maxSelectedLabels]="1" selectedItemsLabel="{0} selecionadas" appendTo="body" [filter]="true" emptyMessage="Nenhuma unidade encontrada" emptyFilterMessage="Nenhuma unidade corresponde" />
+      </label>
+    </div>
+  }
 
   @if (activeFilters.length) {
     <div class="edital-filters__active" aria-label="Filtros ativos selecionados">
@@ -170,37 +124,10 @@
   }
 
   <div class="edital-filters__footer">
-    <div class="edital-filters__chips" role="tablist" aria-label="Filtro de prazo">
-      <button
-        type="button"
-        class="edital-filters__chip"
-        [class.edital-filters__chip--active]="!filters.deadline"
-        (click)="filters.deadline = null; onChange()"
-        role="tab"
-        [attr.aria-selected]="!filters.deadline"
-      >
-        <i class="pi pi-list" aria-hidden="true"></i>
-        Todos
-      </button>
-      @for (opt of deadlineOptions; track opt.value) {
-        <button
-          type="button"
-          class="edital-filters__chip"
-          [class.edital-filters__chip--active]="filters.deadline === opt.value"
-          (click)="filters.deadline = opt.value; onChange()"
-          role="tab"
-          [attr.aria-selected]="filters.deadline === opt.value"
-        >
-          <i [class]="opt.icon" aria-hidden="true"></i>
-          {{ opt.label }}
-        </button>
-      }
-    </div>
-
     <div class="edital-filters__summary">
       <span class="edital-filters__count" aria-live="polite">
         <strong>{{ resultCount }}</strong>
-        {{ resultCount === 1 ? 'edital' : 'editais' }}
+        {{ resultCount === 1 ? 'projeto encontrado' : 'projetos encontrados' }}
         @if (activeCount > 0) {
           <span>· {{ activeCount }} {{ activeCount === 1 ? 'filtro ativo' : 'filtros ativos' }}</span>
         }
@@ -214,7 +141,7 @@
           aria-label="Limpar todos os filtros"
         >
           <i class="pi pi-refresh" aria-hidden="true"></i>
-          Limpar filtros
+          Limpar tudo
         </button>
       }
     </div>

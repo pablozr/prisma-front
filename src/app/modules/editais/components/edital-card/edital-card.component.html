@@ -1,146 +1,28 @@
-<article
-  class="edital-card"
-  [class.edital-card--closing]="deadlineState === 'closing_soon'"
-  [class.edital-card--closed]="deadlineState === 'closed'"
-  [class.edital-card--upcoming]="deadlineState === 'upcoming'"
-  (click)="onDetails()"
-  (keydown.enter)="onDetails()"
-  tabindex="0"
-  [attr.aria-label]="'Abrir detalhes do projeto ' + project.title"
->
-  @if (project.cover?.image_url) {
+<article class="edital-card" (click)="onDetails()" (keydown.enter)="onDetails()" tabindex="0" [attr.aria-label]="'Abrir detalhes do projeto ' + project.title">
+  @if (project.editorial.cover?.image_url) {
     <figure class="edital-card__cover">
-      <img
-        class="edital-card__cover-img"
-        [src]="project.cover!.image_url"
-        [alt]="project.cover!.alt_text || project.title"
-        [attr.loading]="prioritizeCover ? 'eager' : 'lazy'"
-        [attr.fetchpriority]="prioritizeCover ? 'high' : 'auto'"
-        decoding="async"
-      />
+      <img class="edital-card__cover-img" [src]="project.editorial.cover!.image_url" [alt]="project.editorial.cover!.alt_text || project.title" [attr.loading]="prioritizeCover ? 'eager' : 'lazy'" [attr.fetchpriority]="prioritizeCover ? 'high' : 'auto'" decoding="async" />
       <span class="edital-card__cover-shade" aria-hidden="true"></span>
     </figure>
   }
-
   <header class="edital-card__top">
-    <div class="edital-card__meta">
-      <span class="edital-card__process" [title]="project.process_code">
-        <i class="pi pi-hashtag" aria-hidden="true"></i>
-        {{ project.process_code || '—' }}
-      </span>
-      <span class="edital-card__unit">
-        <i class="pi pi-sitemap" aria-hidden="true"></i>
-        {{ unitShort }}
-      </span>
-    </div>
-
-    <span
-      class="edital-card__deadline"
-      [class.edital-card__deadline--closing]="deadlineState === 'closing_soon'"
-      [class.edital-card__deadline--closed]="deadlineState === 'closed'"
-      [class.edital-card__deadline--upcoming]="deadlineState === 'upcoming'"
-      [attr.aria-label]="'Prazo: ' + deadlineLabel"
-    >
-      <i
-        class="pi"
-        [class.pi-clock]="deadlineState === 'open' || deadlineState === 'upcoming'"
-        [class.pi-exclamation-triangle]="deadlineState === 'closing_soon'"
-        [class.pi-times-circle]="deadlineState === 'closed'"
-        aria-hidden="true"
-      ></i>
-      {{ deadlineLabel }}
-    </span>
+    <span class="edital-card__type">{{ project.institutional.type || 'Projeto institucional' }}</span>
+    @if (project.opportunities.length) {
+      <span class="edital-card__opportunities"><i class="pi pi-briefcase" aria-hidden="true"></i>{{ project.opportunities.length }} oportunidade{{ project.opportunities.length === 1 ? '' : 's' }}</span>
+    }
   </header>
-
   <h3 class="edital-card__title">{{ project.title }}</h3>
-
-  @if (project.short_description) {
-    <p class="edital-card__desc">{{ project.short_description }}</p>
-  }
-
-  @if (project.areas.length) {
+  <p class="edital-card__organization"><i class="pi pi-sitemap" aria-hidden="true"></i><span>{{ organizationLabel }}</span></p>
+  @if (project.editorial.short_description) { <p class="edital-card__desc" [title]="project.editorial.short_description">{{ project.editorial.short_description }}</p> }
+  @else if (project.institutional.summary) { <p class="edital-card__desc" [title]="project.institutional.summary">{{ project.institutional.summary }}</p> }
+  @if (project.editorial.areas.length) {
     <ul class="edital-card__areas" role="list">
-      @for (area of project.areas; track area.id) {
-        <li class="edital-card__area">{{ area.name }}</li>
-      }
+      @for (area of project.editorial.areas.slice(0, 2); track area.id) { <li class="edital-card__area">{{ area.name }}</li> }
+      @if (project.editorial.areas.length > 2) { <li class="edital-card__area edital-card__area--more">+{{ project.editorial.areas.length - 2 }}</li> }
     </ul>
   }
-
-  <dl class="edital-card__facts">
-    <div class="edital-card__fact">
-      <dt>
-        <i [class]="modalityIcon" aria-hidden="true"></i>
-        Modalidade
-      </dt>
-      <dd>{{ modalityLabel }}</dd>
-    </div>
-
-    @if (project.vacancies != null) {
-      <div class="edital-card__fact">
-        <dt>
-          <i class="pi pi-users" aria-hidden="true"></i>
-          Vagas
-        </dt>
-        <dd>{{ project.vacancies }}</dd>
-      </div>
-    }
-
-    @if (project.weekly_hours != null) {
-      <div class="edital-card__fact">
-        <dt>
-          <i class="pi pi-stopwatch" aria-hidden="true"></i>
-          Carga
-        </dt>
-        <dd>{{ project.weekly_hours }}h / sem.</dd>
-      </div>
-    }
-
-    <div class="edital-card__fact edital-card__fact--courses">
-      <dt>
-        <i class="pi pi-graduation-cap" aria-hidden="true"></i>
-        Cursos
-      </dt>
-      <dd>{{ coursesShort }}</dd>
-    </div>
-  </dl>
-
   <footer class="edital-card__footer">
-    <div class="edital-card__prof">
-      <span class="edital-card__prof-avatar" aria-hidden="true">{{ professorInitials }}</span>
-      <div class="edital-card__prof-body">
-        <span class="edital-card__prof-name">{{ project.responsible_person.full_name }}</span>
-        <span class="edital-card__prof-role">Responsável pelo projeto</span>
-      </div>
-    </div>
-
-    <div class="edital-card__actions">
-      <button
-        type="button"
-        class="edital-card__btn edital-card__btn--ghost"
-        (click)="onDetails(); $event.stopPropagation()"
-        [attr.aria-label]="'Ver detalhes de ' + project.title"
-      >
-        <i class="pi pi-arrow-up-right" aria-hidden="true"></i>
-        <span>Detalhes</span>
-      </button>
-      <div class="edital-card__contact" [title]="project.responsible_person.institutional_email || project.contact_email || 'Contato nao informado'">
-        <span class="edital-card__contact-label">Contato</span>
-        <div class="edital-card__contact-row">
-          <i class="pi pi-at" aria-hidden="true"></i>
-          <span class="edital-card__contact-text">{{ project.responsible_person.institutional_email || project.contact_email || 'Contato nao informado' }}</span>
-          @if (project.responsible_person.institutional_email || project.contact_email) {
-            <button
-              type="button"
-              class="edital-card__copy-btn"
-              (click)="copyContact($event)"
-              [attr.aria-label]="copiedContact ? 'Email copiado' : 'Copiar email de contato'"
-              [title]="copiedContact ? 'Copiado' : 'Copiar email'"
-            >
-              <i class="pi" [class.pi-copy]="!copiedContact" [class.pi-check]="copiedContact" aria-hidden="true"></i>
-            </button>
-          }
-        </div>
-      </div>
-    </div>
+    <span class="edital-card__period"><i class="pi pi-calendar" aria-hidden="true"></i>{{ periodLabel }}</span>
+    <button type="button" class="edital-card__btn" (click)="onDetails(); $event.stopPropagation()" [attr.aria-label]="'Ver projeto ' + project.title"><span>Ver projeto</span><i class="pi pi-arrow-up-right" aria-hidden="true"></i></button>
   </footer>
 </article>

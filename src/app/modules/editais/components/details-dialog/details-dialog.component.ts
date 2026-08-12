@@ -2,133 +2,31 @@ import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angu
 import { CommonModule } from '@angular/common'
 import { DialogModule } from 'primeng/dialog'
 import { IProject } from '../../interfaces/IProject'
-
-type DeadlineState = 'open' | 'closing_soon' | 'closed' | 'upcoming'
+import { parseProjectDate } from '../../utils/project-date.utils'
 
 @Component({
-  selector: 'app-details-dialog',
-  standalone: true,
-  imports: [CommonModule, DialogModule],
-  templateUrl: './details-dialog.component.html',
-  styleUrl: './details-dialog.component.scss',
-  encapsulation: ViewEncapsulation.None
+  selector: 'app-details-dialog', standalone: true, imports: [CommonModule, DialogModule],
+  templateUrl: './details-dialog.component.html', styleUrl: './details-dialog.component.scss', encapsulation: ViewEncapsulation.None
 })
 export class DetailsDialogComponent {
   @Input() visible = false
   @Input() project: IProject | null = null
-
   @Output() visibleChange = new EventEmitter<boolean>()
 
-  get professorInitials(): string {
-    const fullName = (this.project?.responsible_person.full_name || '').trim()
-    if (!fullName) {
-      return 'PR'
-    }
-
-    const parts = fullName.split(/\s+/).filter(Boolean)
-    if (parts.length === 1) {
-      return parts[0].slice(0, 2).toUpperCase()
-    }
-
-    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
+  formatDate(iso: string): string { return parseProjectDate(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }) }
+  get organizationLabel(): string {
+    if (!this.project) return 'Unidade não informada'
+    const names = [this.project.institutional.executing_unit?.name, this.project.institutional.center?.name]
+      .filter((name): name is string => Boolean(name))
+    return [...new Set(names)].join(' · ') || 'Unidade não informada'
   }
-
-  get deadlineState(): DeadlineState {
-    if (!this.project) return 'open'
-    const { starts_at, ends_at } = this.project
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-
-    if (starts_at) {
-      const start = new Date(starts_at)
-      if (start > today) return 'upcoming'
-    }
-    if (!ends_at) return 'open'
-
-    const end = new Date(ends_at)
-    if (end < today) return 'closed'
-
-    const diffDays = Math.ceil((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-    if (diffDays <= 7) return 'closing_soon'
-    return 'open'
-  }
-
-  get deadlineLabel(): string {
-    if (!this.project) return ''
-    const state = this.deadlineState
-    const { starts_at, ends_at } = this.project
-
-    if (state === 'upcoming' && starts_at) {
-      return `Inicia em ${this.formatDate(starts_at)}`
-    }
-    if (state === 'closed' && ends_at) {
-      return `Encerrado em ${this.formatDate(ends_at)}`
-    }
-    if (state === 'closing_soon' && ends_at) {
-      const end = new Date(ends_at)
-      const days = Math.max(
-        1,
-        Math.ceil((end.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-      )
-      return `Encerra em ${days} ${days === 1 ? 'dia' : 'dias'}`
-    }
+  get periodLabel(): string {
+    if (!this.project) return 'Período não informado'
+    const { starts_at, ends_at } = this.project.institutional
+    if (starts_at && ends_at) return `${this.formatDate(starts_at)} a ${this.formatDate(ends_at)}`
+    if (starts_at) return `A partir de ${this.formatDate(starts_at)}`
     if (ends_at) return `Até ${this.formatDate(ends_at)}`
-    return 'Fluxo contínuo'
+    return 'Período não informado'
   }
-
-  get deadlineIcon(): string {
-    const state = this.deadlineState
-    if (state === 'closing_soon') return 'pi pi-exclamation-triangle'
-    if (state === 'closed') return 'pi pi-times-circle'
-    return 'pi pi-clock'
-  }
-
-  get modalityLabel(): string {
-    switch (this.project?.modality) {
-      case 'presencial':
-        return 'Presencial'
-      case 'remoto':
-        return 'Remoto'
-      case 'hibrido':
-        return 'Híbrido'
-      default:
-        return 'A definir'
-    }
-  }
-
-  get modalityIcon(): string {
-    switch (this.project?.modality) {
-      case 'presencial':
-        return 'pi pi-building'
-      case 'remoto':
-        return 'pi pi-globe'
-      case 'hibrido':
-        return 'pi pi-sync'
-      default:
-        return 'pi pi-map-marker'
-    }
-  }
-
-  formatDate(iso: string): string {
-    return new Date(iso).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric'
-    })
-  }
-
-  getAssignmentCourses(courseIds: number[]): string {
-    if (!this.project || !courseIds.length) return 'Nao informado'
-
-    const names = courseIds
-      .map(courseId => this.project?.courses.find(course => course.id === courseId)?.name || `Curso #${courseId}`)
-      .filter(Boolean)
-
-    return names.length ? names.join(', ') : 'Nao informado'
-  }
-
-  close() {
-    this.visible = false
-    this.visibleChange.emit(false)
-  }
+  close() { this.visible = false; this.visibleChange.emit(false) }
 }
