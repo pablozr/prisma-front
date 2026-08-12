@@ -27,7 +27,7 @@
         </header>
 
         <section class="prisma-sidebar__profile" aria-label="Conta">
-          <button type="button" class="prisma-profile" (click)="navigateTo('settings')">
+          <div class="prisma-profile">
             <img
               class="prisma-profile__avatar"
               [src]="'https://ui-avatars.com/api/?name=' + (userData?.user?.full_name || 'U') + '&background=004b82&color=FFF&size=128&bold=true'"
@@ -38,8 +38,7 @@
               <span class="prisma-profile__email">{{ userData?.user?.institutional_email || '—' }}</span>
               <span class="prisma-profile__role">{{ roleLabel(userData?.user?.role) }}</span>
             </span>
-            <i class="pi pi-angle-right prisma-profile__chev" aria-hidden="true"></i>
-          </button>
+          </div>
         </section>
 
         <nav class="prisma-sidebar__nav" aria-label="Navegação principal">
@@ -122,15 +121,6 @@
 
         <footer class="prisma-sidebar__footer">
           <div class="prisma-sidebar__footer-actions">
-            <button
-              type="button"
-              class="prisma-sidebar__ghost"
-              (click)="navigateTo('settings')"
-              aria-label="Configurações"
-            >
-              <i class="pi pi-cog" aria-hidden="true"></i>
-              <span>Configurações</span>
-            </button>
             <button
               type="button"
               class="prisma-sidebar__logout"

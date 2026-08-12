@@ -12,13 +12,7 @@ interface IQuickAccessCard {
   description: string
   icon: string
   route: string
-  requiresAuth?: boolean
-}
-
-interface IAnnouncement {
-  tag: string
-  title: string
-  body: string
+  roles?: string[]
 }
 
 @Component({
@@ -38,41 +32,16 @@ export class HomeComponent implements OnInit {
   readonly quickAccess: IQuickAccessCard[] = [
     {
       label: 'Meus projetos',
-      description: 'Acompanhe projetos em andamento, relatórios e prazos.',
+      description: 'Gerencie o conteúdo local dos projetos em que você tem permissão.',
       icon: 'pi pi-book',
-      route: '/page1',
-      requiresAuth: true
+      route: '/my-projects',
+      roles: ['professor', 'tecnico', 'admin']
     },
     {
-      label: 'Editais abertos',
-      description: 'Veja editais de iniciação científica e extensão disponíveis.',
+      label: 'Catálogo de projetos',
+      description: 'Consulte projetos acadêmicos publicados pela UNIRIO.',
       icon: 'pi pi-file',
-      route: '/editais'
-    },
-    {
-      label: 'Calendário acadêmico',
-      description: 'Datas importantes, submissões e eventos da universidade.',
-      icon: 'pi pi-calendar',
-      route: '/home'
-    },
-    {
-      label: 'Central de ajuda',
-      description: 'Tire dúvidas e consulte tutoriais da plataforma.',
-      icon: 'pi pi-question-circle',
-      route: '/home'
-    }
-  ]
-
-  readonly announcements: IAnnouncement[] = [
-    {
-      tag: 'Aviso',
-      title: 'Submissões PIBIC 2026.1 até 30/04',
-      body: 'O formulário de submissão está disponível no módulo Editais.'
-    },
-    {
-      tag: 'Manutenção',
-      title: 'Janela programada no sábado, 26/04',
-      body: 'O sistema ficará indisponível entre 02h e 05h para atualizações.'
+      route: '/catalogo'
     }
   ]
 
@@ -103,11 +72,13 @@ export class HomeComponent implements OnInit {
     return 'Boa noite'
   }
 
-  navigateTo(route: string, requiresAuth?: boolean) {
-    if (requiresAuth && !this.isAuthenticated) {
-      this.router.navigate(['/signin'])
-      return
-    }
+  canAccess(card: IQuickAccessCard): boolean {
+    if (!card.roles) return true
+    const role = this.userData?.user?.role
+    return !!role && card.roles.includes(role)
+  }
+
+  navigateTo(route: string) {
     this.router.navigate([route])
   }
 }

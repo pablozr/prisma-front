@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core'
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router'
 import { Observable } from 'rxjs'
+import { UserRole } from '../../interfaces/IUser'
 import { UsersService } from '../users/users.service'
 
 @Injectable({
@@ -28,14 +29,13 @@ export class AuthService {
   }
 
   async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree> {
-    const path = next.url[0]?.path
     const isAuthenticated = await this.isAuthenticated(true)
+    const path = next.routeConfig?.path || ''
 
     const publicRoutes = ['signin', 'forget-password']
 
     if (publicRoutes.includes(path) && isAuthenticated) {
-      this.router.navigate([this.usersService.getDefaultRoute()])
-      return false
+      return this.router.createUrlTree([this.usersService.getDefaultRoute()])
     }
 
     if (publicRoutes.includes(path) && !isAuthenticated) {
@@ -43,16 +43,14 @@ export class AuthService {
     }
 
     if (!isAuthenticated) {
-      this.router.navigate(['/signin'])
-      return false
+      return this.router.createUrlTree(['/signin'])
     }
 
     const role = this.usersService.currentUser?.user?.role
+    const allowedRoles = next.data?.['roles'] as UserRole[] | undefined
 
-    // Somente /admin exige papel admin. Home é pública (acessível a visitantes também).
-    if (path === 'admin' && role !== 'admin') {
-      this.router.navigate(['/home'])
-      return false
+    if (allowedRoles && (!role || !allowedRoles.includes(role))) {
+      return this.router.createUrlTree(['/home'])
     }
 
     return true

@@ -8,8 +8,6 @@ import { ISigninData, ISigninRequest, ISigninResponse } from '../../interfaces/I
 import {
   IForgetPasswordRequest,
   IForgetPasswordResponse,
-  IGoogleLoginRequest,
-  IGoogleLoginResponse,
   ILogoutResponse,
   IMeResponse,
   IRefreshResponse,
@@ -18,8 +16,7 @@ import {
   IValidateCodeRequest,
   IValidateCodeResponse
 } from '../../interfaces/IAuth'
-import { IUser } from '../../interfaces/IUser'
-import { API_BASE_URL, AUTH_ROUTES } from '../../constants/apiConfig'
+import { AUTH_ROUTES } from '../../constants/apiConfig'
 import { extractHttpErrorDetail } from '../../utils/http.utils'
 
 @Injectable({
@@ -29,8 +26,6 @@ export class UsersService {
   private http = inject(HttpClient)
   private toast = inject(AppToastService)
   private router = inject(Router)
-
-  private endpoint: string = API_BASE_URL
 
   private userSubject = new BehaviorSubject<ISigninData | null>(null)
   user$ = this.userSubject.asObservable()
@@ -47,9 +42,12 @@ export class UsersService {
     return this.initializedSubject.value
   }
 
-  /** Rota inicial conforme o papel do utilizador autenticado. */
+  /** Rota inicial conforme o perfil da pessoa autenticada. */
   getDefaultRoute(): string {
-    return this.currentUser?.user?.role === 'admin' ? '/admin' : '/home'
+    const role = this.currentUser?.user?.role
+    if (role === 'admin') return '/admin'
+    if (role === 'professor' || role === 'tecnico') return '/my-projects'
+    return '/home'
   }
 
   private withCreds = { withCredentials: true } as const
@@ -70,16 +68,6 @@ export class UsersService {
       return await this.me()
     } catch (err) {
       this.toast.error('Falha no login', extractHttpErrorDetail(err, 'Email ou senha incorretos'))
-      return false
-    }
-  }
-
-  async signinWithGoogle(data: IGoogleLoginRequest): Promise<boolean> {
-    try {
-      await firstValueFrom(this.http.post<IGoogleLoginResponse>(AUTH_ROUTES.googleLogin, data, this.withCreds))
-      return await this.me()
-    } catch (err) {
-      this.toast.error('Falha no login', extractHttpErrorDetail(err, 'Nao foi possivel autenticar com o Google.'))
       return false
     }
   }
@@ -181,77 +169,4 @@ export class UsersService {
     }
   }
 
-  // ----- Users CRUD -----
-
-  async findAllUsers(): Promise<IUser[]> {
-    try {
-      const data = await firstValueFrom(this.http.get<IUser[]>(`${this.endpoint}/users`, this.withCreds))
-      return data || []
-    } catch (err) {
-      this.toast.error('Erro ao buscar usuarios', extractHttpErrorDetail(err, 'Tente novamente.'))
-      return []
-    }
-  }
-
-  async findOneUser(userId: number): Promise<IUser | null> {
-    try {
-      const data = await firstValueFrom(this.http.get<IUser>(`${this.endpoint}/users/${userId}`, this.withCreds))
-      return data || null
-    } catch (err) {
-      this.toast.error('Erro ao buscar usuario', extractHttpErrorDetail(err, 'Tente novamente.'))
-      return null
-    }
-  }
-
-  async createUser(data: Partial<IUser>): Promise<boolean> {
-    try {
-      const res = await firstValueFrom(this.http.post<{ message?: string }>(`${this.endpoint}/users`, data, this.withCreds))
-      if (res?.message) {
-        this.toast.success('Usuario criado', 'O usuario foi criado com sucesso.')
-      }
-      return !!res
-    } catch (err) {
-      this.toast.error('Erro ao criar usuario', extractHttpErrorDetail(err, 'Tente novamente.'))
-      return false
-    }
-  }
-
-  async editUser(userId: number, data: Partial<IUser>): Promise<boolean> {
-    try {
-      const res = await firstValueFrom(this.http.patch<IUser>(`${this.endpoint}/users/${userId}`, data, this.withCreds))
-      if (res) {
-        this.toast.success('Dados alterados', 'As informacoes foram alteradas com sucesso.')
-      }
-      return !!res
-    } catch (err) {
-      this.toast.error('Erro ao alterar dados', extractHttpErrorDetail(err, 'Tente novamente.'))
-      return false
-    }
-  }
-
-  async deleteUser(userId: number): Promise<boolean> {
-    try {
-      const res = await firstValueFrom(this.http.delete<{ message?: string }>(`${this.endpoint}/users/${userId}`, this.withCreds))
-      if (res?.message) {
-        this.toast.success('Usuario excluido', 'O usuario foi excluido com sucesso.')
-      }
-      return !!res
-    } catch (err) {
-      this.toast.error('Erro ao excluir usuario', extractHttpErrorDetail(err, 'Tente novamente.'))
-      return false
-    }
-  }
-
-  async editPassword(data: { currentPassword: string; newPassword: string }): Promise<boolean> {
-    try {
-      const res = await firstValueFrom(this.http.patch<{ message?: string }>(`${this.endpoint}/users/password`, data, this.withCreds))
-      if (res?.message) {
-        this.toast.success('Senha alterada', res.message)
-      }
-      return !!res?.message
-    } catch (err) {
-      this.toast.error('Erro ao alterar senha', extractHttpErrorDetail(err, 'Tente novamente.'))
-      return false
-    }
-  }
 }

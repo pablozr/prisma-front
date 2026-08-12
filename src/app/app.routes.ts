@@ -24,19 +24,31 @@ export const routes: Routes = [
   {
     path: 'admin',
     loadComponent: () => import('./modules/admin/pages/admin/admin.component').then(m => m.AdminComponent),
-    canActivate: [AuthService]
+    canActivate: [AuthService],
+    data: { roles: ['admin'] }
   },
   {
-    path: 'editais',
+    path: 'catalogo',
     loadComponent: () => import('./modules/editais/pages/editais/editais.component').then(m => m.EditaisComponent)
   },
   {
-    path: 'professor/projects',
+    path: 'editais',
+    redirectTo: 'catalogo',
+    pathMatch: 'full'
+  },
+  {
+    path: 'my-projects',
     loadComponent: () =>
       import('./modules/professor/pages/professor-projects/professor-projects.component').then(
         m => m.ProfessorProjectsComponent
       ),
-    canActivate: [AuthService]
+    canActivate: [AuthService],
+    data: { roles: ['professor', 'tecnico', 'admin'] }
+  },
+  {
+    path: 'professor/projects',
+    redirectTo: 'my-projects',
+    pathMatch: 'full'
   },
   {
     path: '**',

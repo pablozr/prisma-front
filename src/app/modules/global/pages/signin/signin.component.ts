@@ -11,7 +11,7 @@ import { AuthHeroCaptionComponent } from '../../components/auth-hero-caption/aut
 import { LoadingComponent } from '../../components/loading/loading.component'
 import { UsersService } from '../../services/users/users.service'
 import { RippleModule } from 'primeng/ripple'
-import { environment } from '../../../../../environments/environment'
+import { AUTH_ROUTES } from '../../constants/apiConfig'
 
 type SigninTab = 'community' | 'admin'
 
@@ -117,6 +117,6 @@ export class SigninComponent implements OnInit {
     }
 
     this.googleLoginLoading = true
-    window.location.href = `${environment.apiUrl}/auth/google/start`
+    window.location.href = AUTH_ROUTES.googleStart
   }
 }

@@ -36,7 +36,8 @@ export class SidebarComponent implements OnInit {
   private readonly roleMap: Record<string, string> = {
     admin: 'Administrador',
     professor: 'Docente',
-    tecnico: 'Técnico'
+    tecnico: 'Técnico',
+    aluno: 'Aluno'
   }
 
   ngOnInit() {
@@ -65,7 +66,7 @@ export class SidebarComponent implements OnInit {
             label: 'Início',
             class: 'pi pi-home',
             codesCanAccess: [],
-            rolesCanAccess: ['professor', 'tecnico', 'admin'],
+            rolesCanAccess: ['ALL'],
             status: true,
             routes: []
           },
@@ -89,19 +90,19 @@ export class SidebarComponent implements OnInit {
         status: true,
         routes: [
           {
-            route: '/professor/projects',
+            route: '/my-projects',
             routeQuery: [],
-            label: 'Gestão de projetos',
+            label: 'Meus projetos',
             class: 'pi pi-briefcase',
             codesCanAccess: [],
-            rolesCanAccess: ['professor', 'tecnico'],
+            rolesCanAccess: ['professor', 'tecnico', 'admin'],
             status: true,
             routes: []
           },
           {
-            route: '/editais',
+            route: '/catalogo',
             routeQuery: [],
-            label: 'Editais abertos',
+            label: 'Catálogo de projetos',
             class: 'pi pi-file',
             codesCanAccess: [],
             rolesCanAccess: ['ALL'],

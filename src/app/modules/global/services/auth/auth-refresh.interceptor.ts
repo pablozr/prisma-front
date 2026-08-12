@@ -8,7 +8,6 @@ import { SessionRefreshService } from './session-refresh.service'
 
 const AUTH_BYPASS_ROUTES = new Set<string>([
   AUTH_ROUTES.login,
-  AUTH_ROUTES.googleLogin,
   AUTH_ROUTES.me,
   AUTH_ROUTES.refresh,
   AUTH_ROUTES.logout,

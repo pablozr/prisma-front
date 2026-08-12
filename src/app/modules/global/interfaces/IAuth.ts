@@ -5,10 +5,6 @@ export interface ILoginRequest {
   password: string
 }
 
-export interface IGoogleLoginRequest {
-  credential: string
-}
-
 export interface IForgetPasswordRequest {
   email: string
 }
@@ -31,7 +27,6 @@ export interface IAuthUserData {
 }
 
 export type ILoginResponse = IAuthEnvelope
-export type IGoogleLoginResponse = IAuthEnvelope
 export type IMeResponse = IAuthEnvelope<IAuthUserData>
 export type ILogoutResponse = IAuthEnvelope
 export type IRefreshResponse = IAuthEnvelope

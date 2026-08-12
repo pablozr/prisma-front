@@ -82,71 +82,12 @@
                   <div class="prisma-account__avatar-lg" aria-hidden="true">
                     <img [src]="avatarUrl" [alt]="userData?.user?.full_name || ''" />
                   </div>
-                  <button
-                    type="button"
-                    class="prisma-account__avatar-edit"
-                    (click)="goTo('/settings', { target: 'avatar' })"
-                    aria-label="Alterar foto"
-                    title="Alterar foto"
-                  >
-                    <i class="pi pi-camera" aria-hidden="true"></i>
-                  </button>
                 </div>
                 <p class="prisma-account__hi">Olá, {{ userData?.user?.full_name?.split(' ')?.[0] }}!</p>
                 <span class="prisma-account__role-pill">{{ roleLabel(userData?.user?.role) }}</span>
               </div>
 
-              <button
-                type="button"
-                role="menuitem"
-                class="prisma-account__primary"
-                (click)="goTo('/settings')"
-              >
-                <span>Gerenciar sua conta institucional</span>
-              </button>
-
-              <div class="prisma-account__divider" role="separator"></div>
-
               <ul class="prisma-account__list" role="none">
-                <li role="none">
-                  <button
-                    type="button"
-                    role="menuitem"
-                    class="prisma-account__item"
-                    (click)="goTo('/settings', { target: 'preferences' })"
-                  >
-                    <span class="prisma-account__item-icon" aria-hidden="true">
-                      <i class="pi pi-sliders-h"></i>
-                    </span>
-                    <span class="prisma-account__item-label">Preferências</span>
-                  </button>
-                </li>
-                <li role="none">
-                  <button
-                    type="button"
-                    role="menuitem"
-                    class="prisma-account__item"
-                    (click)="goTo('/settings', { target: 'security' })"
-                  >
-                    <span class="prisma-account__item-icon" aria-hidden="true">
-                      <i class="pi pi-shield"></i>
-                    </span>
-                    <span class="prisma-account__item-label">Privacidade e segurança</span>
-                  </button>
-                </li>
-                <li role="none">
-                  <button
-                    type="button"
-                    role="menuitem"
-                    class="prisma-account__item"
-                    (click)="goTo('/settings', { target: 'help' })"
-                  >
-                    <span class="prisma-account__item-icon" aria-hidden="true">
-                      <i class="pi pi-question-circle"></i>
-                    </span>
-                    <span class="prisma-account__item-label">Ajuda</span>
-                  </button>
-                </li>
                 <li role="none">
                   <button
                     type="button"
@@ -162,18 +103,13 @@
                 </li>
               </ul>
 
-              <footer class="prisma-account__footer">
-                <a href="#" (click)="$event.preventDefault()">Política de privacidade</a>
-                <span class="prisma-account__footer-sep" aria-hidden="true">·</span>
-                <a href="#" (click)="$event.preventDefault()">Termos de uso</a>
-              </footer>
             </div>
           }
         </div>
       } @else {
         <div class="prisma-header__guest">
           <div class="prisma-header__guest-copy">
-            <span class="prisma-header__guest-kicker">Docente ou técnico?</span>
+            <span class="prisma-header__guest-kicker">Comunidade acadêmica</span>
             <span class="prisma-header__guest-text">Entre com sua conta institucional</span>
           </div>
           <a

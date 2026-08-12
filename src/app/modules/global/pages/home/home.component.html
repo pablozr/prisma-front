@@ -15,8 +15,7 @@
           Olá, <span class="home-welcome__firstname">{{ firstName }}</span>.
         </h1>
         <p class="home-welcome__lead">
-          Este é o seu portal da UNIRIO para acompanhar projetos de iniciação científica, extensão e
-          atividades acadêmicas. Escolha por onde começar.
+          Consulte o catálogo de projetos acadêmicos da UNIRIO e, quando autorizado, gerencie o conteúdo local dos seus projetos.
         </p>
       </section>
     } @else {
@@ -27,9 +26,8 @@
             Bem-vindo(a) ao <span class="home-visitor__brand">PRISMA</span>.
           </h1>
           <p class="home-visitor__lead">
-            Um espaço público da UNIRIO para divulgar editais, projetos de iniciação científica,
-            extensão e atividades acadêmicas. Explore os conteúdos abertos ou entre com sua conta
-            institucional para acessar os recursos completos.
+            Um espaço público da UNIRIO para consultar projetos acadêmicos publicados. Entre com sua
+            conta institucional para acessar recursos conforme o seu perfil.
           </p>
           <div class="home-visitor__actions">
             <a class="home-visitor__cta home-visitor__cta--primary" routerLink="/signin">
@@ -43,17 +41,13 @@
           </div>
           <p class="home-visitor__note">
             <i class="pi pi-info-circle" aria-hidden="true"></i>
-            <span>O login é destinado a <strong>estudantes</strong> e <strong>docentes</strong> da UNIRIO.</span>
+            <span>O login é destinado a <strong>alunos</strong>, <strong>docentes</strong>, <strong>técnicos</strong> e administradores reconhecidos pelo SIE.</span>
           </p>
         </div>
         <aside class="home-visitor__meta" aria-label="Informações rápidas">
           <div class="home-visitor__meta-item">
             <span class="home-visitor__meta-kicker">Instituição</span>
             <span class="home-visitor__meta-value">UNIRIO</span>
-          </div>
-          <div class="home-visitor__meta-item">
-            <span class="home-visitor__meta-kicker">Contato</span>
-            <a class="home-visitor__meta-link" href="mailto:prisma@unirio.br">prisma&#64;unirio.br</a>
           </div>
         </aside>
       </section>
@@ -63,19 +57,20 @@
       <h2 id="home-quick-title" class="home-quick__title">Acessos rápidos</h2>
       <p class="home-quick__desc">
         @if (isAuthenticated) {
-          Clique num dos blocos abaixo para ir direto ao módulo.
+          Clique num dos blocos abaixo para acessar os recursos disponíveis para o seu perfil.
         } @else {
-          Conheça os módulos disponíveis. Alguns exigem login institucional.
+          Conheça o catálogo público de projetos acadêmicos.
         }
       </p>
 
       <ul class="home-quick__grid" role="list">
         @for (card of quickAccess; track card.label) {
+          @if (canAccess(card)) {
           <li>
             <button
               type="button"
               class="home-card"
-              (click)="navigateTo(card.route, card.requiresAuth)"
+              (click)="navigateTo(card.route)"
               [attr.aria-label]="card.label + '. ' + card.description"
             >
               <span class="home-card__icon" aria-hidden="true">
@@ -85,50 +80,13 @@
                 <span class="home-card__label">{{ card.label }}</span>
                 <span class="home-card__desc">{{ card.description }}</span>
               </span>
-              @if (card.requiresAuth && !isAuthenticated) {
-                <span class="home-card__lock" aria-label="Requer login">
-                  <i class="pi pi-lock" aria-hidden="true"></i>
-                </span>
-              } @else {
-                <i class="home-card__arrow pi pi-arrow-right" aria-hidden="true"></i>
-              }
+              <i class="home-card__arrow pi pi-arrow-right" aria-hidden="true"></i>
             </button>
           </li>
+          }
         }
       </ul>
     </section>
 
-    <section class="home-announcements" aria-labelledby="home-announcements-title">
-      <header class="home-announcements__header">
-        <h2 id="home-announcements-title" class="home-announcements__title">Avisos recentes</h2>
-        <p class="home-announcements__desc">Informações importantes da sua universidade.</p>
-      </header>
-
-      <ul class="home-announcements__list" role="list">
-        @for (item of announcements; track item.title) {
-          <li class="home-announcement">
-            <span class="home-announcement__tag">{{ item.tag }}</span>
-            <div class="home-announcement__body">
-              <p class="home-announcement__title">{{ item.title }}</p>
-              <p class="home-announcement__text">{{ item.body }}</p>
-            </div>
-          </li>
-        }
-      </ul>
-    </section>
-
-    <section class="home-help" aria-label="Precisa de ajuda">
-      <div class="home-help__body">
-        <h2 class="home-help__title">Precisa de ajuda?</h2>
-        <p class="home-help__desc">
-          Se encontrar qualquer dificuldade ao utilizar o sistema, entre em contato com o suporte
-          institucional. Respondemos em dias úteis, das 9h às 17h.
-        </p>
-      </div>
-      <a class="home-help__link" href="mailto:prisma@unirio.br">
-        <i class="pi pi-envelope" aria-hidden="true"></i>
-        <span>prisma&#64;unirio.br</span>
-      </a>
-    </section>
   </main>
 </div>
