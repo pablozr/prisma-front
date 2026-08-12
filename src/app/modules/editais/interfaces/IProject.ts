@@ -1,23 +1,17 @@
-export type ProjectStatus = 'draft' | 'published' | 'archived'
-
-export type UnitType = 'centro' | 'escola' | 'departamento' | 'instituto'
-
-export type CourseLevel = 'graduacao' | 'pos'
+export type UnitType = 'centro' | 'unidade'
 
 export interface IOrganizationalUnit {
   id: number
   name: string
-  short_name?: string
-  type: UnitType
-  parent_unit_id?: number
+  unit_type: UnitType
+  parent_unit_id?: number | null
 }
 
 export interface ICourse {
   id: number
   name: string
-  level: CourseLevel
-  unit_id?: number
-  code?: string
+  code: string | null
+  offering_unit: IOrganizationalUnit | null
 }
 
 export interface IProjectArea {
@@ -26,49 +20,45 @@ export interface IProjectArea {
   slug: string
 }
 
-export interface IProjectImage {
+export interface IProjectCover {
   id: number
-  image_type: 'cover' | 'gallery'
   image_url: string
-  alt_text?: string
+  alt_text: string | null
 }
 
-export interface IResponsiblePerson {
+export interface IProjectInstitutionalData {
+  summary: string | null
+  type: string | null
+  status: string | null
+  starts_at: string | null
+  ends_at: string | null
+  center: IOrganizationalUnit | null
+  executing_unit: IOrganizationalUnit | null
+}
+
+export interface IProjectEditorialData {
+  short_description: string | null
+  description: string | null
+  areas: IProjectArea[]
+  courses: ICourse[]
+  cover: IProjectCover | null
+}
+
+export interface IProjectOpportunity {
   id: number
-  full_name: string
-  institutional_email: string
-  type: 'docente' | 'tecnico'
-}
-
-export interface IProjectAssignment {
-  atribuicao_id: number
-  projeto_id: number
-  descricao: string
-  curso_ids: number[]
+  description: string
+  courses: ICourse[]
 }
 
 export interface IProject {
   id: number
-  process_code?: string
+  sie_project_id: number
+  process_code: string | null
   title: string
-  short_description?: string
-  full_description?: string
-  contact_email: string
-  status: ProjectStatus
-  is_active: boolean
-  starts_at?: string
-  ends_at?: string
-  published_at?: string
-  created_at: string
-  responsible_person: IResponsiblePerson
-  executing_unit?: IOrganizationalUnit
-  areas: IProjectArea[]
-  courses: ICourse[]
-  assignments: IProjectAssignment[]
-  cover?: IProjectImage
-  vacancies?: number
-  weekly_hours?: number
-  modality?: 'presencial' | 'remoto' | 'hibrido'
+  institutional: IProjectInstitutionalData
+  editorial: IProjectEditorialData
+  opportunities: IProjectOpportunity[]
+  published_at: string | null
 }
 
 export interface IProjectFilters {
@@ -77,9 +67,5 @@ export interface IProjectFilters {
   courseIds: number[]
   centerIds: number[]
   academicUnitIds: number[]
-  modality: IProject['modality'] | null
-  deadline: 'open' | 'closing_soon' | 'closed' | null
-  level: CourseLevel | null
-  sort: 'recent' | 'deadline' | 'alphabetical'
+  sort: 'recent' | 'alphabetical'
 }
-
