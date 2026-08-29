@@ -5,17 +5,7 @@ import { BehaviorSubject } from 'rxjs'
 import { firstValueFrom } from 'rxjs'
 import { Router } from '@angular/router'
 import { ISigninData, ISigninRequest, ISigninResponse } from '../../interfaces/ISignin'
-import {
-  IForgetPasswordRequest,
-  IForgetPasswordResponse,
-  ILogoutResponse,
-  IMeResponse,
-  IRefreshResponse,
-  IUpdatePasswordRequest,
-  IUpdatePasswordResponse,
-  IValidateCodeRequest,
-  IValidateCodeResponse
-} from '../../interfaces/IAuth'
+import { ILogoutResponse, IMeResponse, IRefreshResponse } from '../../interfaces/IAuth'
 import { AUTH_ROUTES } from '../../constants/apiConfig'
 import { extractHttpErrorDetail } from '../../utils/http.utils'
 
@@ -126,46 +116,6 @@ export class UsersService {
       return this.me()
     } finally {
       if (!this.initializedSubject.value) this.initializedSubject.next(true)
-    }
-  }
-
-  // ----- Forget password flow -----
-
-  async forgetPassword(data: IForgetPasswordRequest): Promise<boolean> {
-    try {
-      const res = await firstValueFrom(this.http.post<IForgetPasswordResponse>(AUTH_ROUTES.forgetPassword, data, this.withCreds))
-      if (res?.message) {
-        this.toast.success('E-mail enviado', res.message)
-      }
-      return true
-    } catch (err) {
-      this.toast.error('Erro ao enviar e-mail', extractHttpErrorDetail(err, 'Tente novamente.'))
-      return false
-    }
-  }
-
-  async validateCode(data: IValidateCodeRequest): Promise<boolean> {
-    try {
-      await firstValueFrom(this.http.post<IValidateCodeResponse>(AUTH_ROUTES.validateCode, data, this.withCreds))
-      this.toast.success('Codigo validado', 'Codigo de confirmacao validado.')
-      return true
-    } catch (err) {
-      this.toast.error('Codigo invalido', extractHttpErrorDetail(err, 'O codigo informado e invalido ou expirou.'))
-      return false
-    }
-  }
-
-  async updatePassword(data: IUpdatePasswordRequest): Promise<boolean> {
-    try {
-      const res = await firstValueFrom(this.http.post<IUpdatePasswordResponse>(AUTH_ROUTES.updatePassword, data, this.withCreds))
-      if (res?.data?.user) {
-        this.setSession({ user: res.data.user })
-      }
-      this.toast.success('Senha alterada', 'A senha foi redefinida com sucesso.')
-      return true
-    } catch (err) {
-      this.toast.error('Erro ao alterar senha', extractHttpErrorDetail(err, 'Tente novamente.'))
-      return false
     }
   }
 

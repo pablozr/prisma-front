@@ -7,8 +7,5 @@ export const AUTH_ROUTES = {
   googleStart: `${API_BASE_URL}/auth/google/start`,
   me: `${API_BASE_URL}/auth/me`,
   logout: `${API_BASE_URL}/auth/logout`,
-  refresh: `${API_BASE_URL}/auth/refresh`,
-  forgetPassword: `${API_BASE_URL}/auth/forget-password`,
-  validateCode: `${API_BASE_URL}/auth/validate-code`,
-  updatePassword: `${API_BASE_URL}/auth/update-password`
+  refresh: `${API_BASE_URL}/auth/refresh`
 } as const

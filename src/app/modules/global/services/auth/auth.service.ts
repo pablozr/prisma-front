@@ -32,7 +32,7 @@ export class AuthService {
     const isAuthenticated = await this.isAuthenticated(true)
     const path = next.routeConfig?.path || ''
 
-    const publicRoutes = ['signin', 'forget-password']
+    const publicRoutes = ['signin']
 
     if (publicRoutes.includes(path) && isAuthenticated) {
       return this.router.createUrlTree([this.usersService.getDefaultRoute()])

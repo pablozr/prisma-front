@@ -13,11 +13,6 @@ export const routes: Routes = [
     canActivate: [AuthService]
   },
   {
-    path: 'forget-password',
-    loadComponent: () => import('./modules/global/pages/forget-password/forget-password.component').then(m => m.ForgetPasswordComponent),
-    canActivate: [AuthService]
-  },
-  {
     path: 'home',
     loadComponent: () => import('./modules/global/pages/home/home.component').then(m => m.HomeComponent)
   },

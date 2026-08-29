@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core'
 import { InputTextModule } from 'primeng/inputtext'
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms'
 import { ButtonModule } from 'primeng/button'
-import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import { CommonModule } from '@angular/common'
 import { AUTH_HERO_IMAGE_PATH } from '../../constants/authHeroImagePath'
 import { AppToastService } from '../../services/toast/app-toast.service'
@@ -45,7 +45,7 @@ const noEdgeWhitespace: ValidatorFn = (control: AbstractControl): ValidationErro
 @Component({
   selector: 'app-signin',
   standalone: true,
-  imports: [InputTextModule, ButtonModule, CommonModule, ReactiveFormsModule, RouterLink, LoadingComponent, ButtonThemeComponent, AuthHeroCaptionComponent, RippleModule],
+  imports: [InputTextModule, ButtonModule, CommonModule, ReactiveFormsModule, LoadingComponent, ButtonThemeComponent, AuthHeroCaptionComponent, RippleModule],
   templateUrl: './signin.component.html',
   styleUrl: './signin.component.scss',
 })

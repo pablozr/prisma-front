@@ -10,10 +10,7 @@ const AUTH_BYPASS_ROUTES = new Set<string>([
   AUTH_ROUTES.login,
   AUTH_ROUTES.me,
   AUTH_ROUTES.refresh,
-  AUTH_ROUTES.logout,
-  AUTH_ROUTES.forgetPassword,
-  AUTH_ROUTES.validateCode,
-  AUTH_ROUTES.updatePassword
+  AUTH_ROUTES.logout
 ])
 
 function shouldTryRefresh(request: HttpRequest<unknown>, error: HttpErrorResponse): boolean {
@@ -26,7 +23,7 @@ function shouldTryRefresh(request: HttpRequest<unknown>, error: HttpErrorRespons
 
 function handleSessionExpired(usersService: UsersService, router: Router): void {
   usersService.clearSession()
-  const alreadyOnPublicAuthRoute = router.url.startsWith('/signin') || router.url.startsWith('/forget-password')
+  const alreadyOnPublicAuthRoute = router.url.startsWith('/signin')
   if (!alreadyOnPublicAuthRoute) {
     void router.navigate(['/signin'])
   }
