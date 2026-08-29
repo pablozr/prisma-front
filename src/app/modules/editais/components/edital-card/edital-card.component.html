@@ -1,10 +1,12 @@
 <article class="edital-card" (click)="onDetails()" (keydown.enter)="onDetails()" tabindex="0" [attr.aria-label]="'Abrir detalhes do projeto ' + project.title">
-  @if (project.editorial.cover?.image_url) {
-    <figure class="edital-card__cover">
+  <figure class="edital-card__cover">
+    @if (project.editorial.cover?.image_url) {
       <img class="edital-card__cover-img" [src]="project.editorial.cover!.image_url" [alt]="project.editorial.cover!.alt_text || project.title" [attr.loading]="prioritizeCover ? 'eager' : 'lazy'" [attr.fetchpriority]="prioritizeCover ? 'high' : 'auto'" decoding="async" />
       <span class="edital-card__cover-shade" aria-hidden="true"></span>
-    </figure>
-  }
+    } @else {
+      <div class="edital-card__cover-placeholder" aria-label="Sem imagem de capa"><i class="pi pi-image" aria-hidden="true"></i><span>Sem imagem de capa</span></div>
+    }
+  </figure>
   <header class="edital-card__top">
     <span class="edital-card__type">{{ project.institutional.type || 'Projeto institucional' }}</span>
     @if (project.opportunities.length) {

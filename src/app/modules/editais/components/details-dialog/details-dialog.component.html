@@ -12,7 +12,7 @@
   </ng-template>
   @if (project) {
     <div class="details-dialog__body">
-      <div class="details-dialog__meta"><span><i class="pi pi-sitemap" aria-hidden="true"></i>{{ organizationLabel }}</span><span><i class="pi pi-calendar" aria-hidden="true"></i>{{ periodLabel }}</span></div>
+      <div class="details-dialog__meta"><span><i class="pi pi-sitemap" aria-hidden="true"></i>{{ organizationLabel }}</span><span><i class="pi pi-calendar" aria-hidden="true"></i>{{ periodLabel }}</span>@for (contact of project.contacts; track contact.institutional_email) { <a [href]="'mailto:' + contact.institutional_email" [attr.aria-label]="'Enviar e-mail para ' + contact.full_name"><i class="pi pi-envelope" aria-hidden="true"></i>{{ contact.full_name }}: {{ contact.institutional_email }}</a> }</div>
       @if (project.editorial.cover?.image_url) { <figure class="details-dialog__cover"><img class="details-dialog__cover-img" [src]="project.editorial.cover!.image_url" [alt]="project.editorial.cover!.alt_text || project.title" loading="lazy" decoding="async" /></figure> }
       <details class="details-dialog__summary"><summary>Resumo institucional</summary><p class="details-dialog__desc">{{ project.institutional.summary || 'Resumo institucional não informado.' }}</p></details>
       @if (project.editorial.description || project.editorial.short_description) { <section class="details-dialog__section details-dialog__section--editorial"><h3 class="details-dialog__section-title">Sobre o projeto</h3><p class="details-dialog__desc">{{ project.editorial.description || project.editorial.short_description }}</p></section> }

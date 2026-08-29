@@ -45,6 +45,20 @@
   transition: transform 0.35s ease;
 }
 
+.edital-card__cover-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  height: 100%;
+  color: #58778a;
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  i { font-size: 1rem; }
+}
+
 .edital-card__cover-shade { display: none; }
 
 .edital-card__top {
@@ -211,6 +225,7 @@
 }
 
 :host-context(.my-app-dark) .edital-card__cover { background: #293640; }
+:host-context(.my-app-dark) .edital-card__cover-placeholder { color: #9db8c8; }
 :host-context(.my-app-dark) .edital-card__type { color: #9acbfa; }
 :host-context(.my-app-dark) .edital-card__opportunities { background: rgba(89, 160, 108, 0.18); color: #a9dcb3; }
 :host-context(.my-app-dark) .edital-card__title { color: #f4f8fb; }

@@ -26,6 +26,12 @@ export interface IProjectCover {
   alt_text: string | null
 }
 
+export interface IProjectContact {
+  full_name: string
+  institutional_email: string
+  role: 'professor' | 'tecnico' | string
+}
+
 export interface IProjectInstitutionalData {
   summary: string | null
   type: string | null
@@ -55,6 +61,7 @@ export interface IProject {
   sie_project_id: number
   process_code: string | null
   title: string
+  contacts: IProjectContact[]
   institutional: IProjectInstitutionalData
   editorial: IProjectEditorialData
   opportunities: IProjectOpportunity[]
