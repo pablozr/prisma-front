@@ -47,7 +47,7 @@ export class EditalFiltersComponent implements OnChanges {
   @Input({ required: true }) areas: IProjectArea[] = []
   @Input({ required: true }) courses: ICourse[] = []
   @Input({ required: true }) units: IOrganizationalUnit[] = []
-  @Input() resultCount = 0
+  @Input() resultCount: number | null = 0
 
   @Output() filtersChange = new EventEmitter<IProjectFilters>()
   @Output() reset = new EventEmitter<void>()

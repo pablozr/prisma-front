@@ -5,7 +5,7 @@
       type="search"
       pInputText
       class="edital-filters__input"
-        placeholder="Busque por tema, projeto, unidade ou palavra-chave"
+      placeholder="Busque por tema, projeto, unidade ou palavra-chave"
       [(ngModel)]="filters.search"
       (ngModelChange)="onChange()"
       [attr.aria-label]="'Buscar projetos'"
@@ -27,6 +27,7 @@
       <span class="edital-filters__label">Área</span>
       <p-multiSelect
         styleClass="edital-filters__select"
+        ariaLabel="Filtrar por área"
         [options]="areaOptions"
         [(ngModel)]="filters.areaIds"
         (onChange)="onChange()"
@@ -49,6 +50,7 @@
       <span class="edital-filters__label">Centro</span>
       <p-multiSelect
         styleClass="edital-filters__select"
+        ariaLabel="Filtrar por centro"
         [options]="centerOptions"
         [(ngModel)]="filters.centerIds"
         (onChange)="onCenterChange()"
@@ -71,6 +73,7 @@
         <span class="edital-filters__label">Cursos</span>
         <p-multiSelect
           styleClass="edital-filters__select"
+          ariaLabel="Filtrar por cursos"
           [options]="courseOptions"
           [(ngModel)]="filters.courseIds"
           (onChange)="onChange()"
@@ -91,10 +94,39 @@
 
     <div class="edital-filters__actions">
       <div class="edital-filters__sort" aria-label="Ordenar projetos">
-        <button type="button" [class.edital-filters__sort-btn--active]="filters.sort === 'recent'" (click)="setSort('recent')">Recentes</button>
-        <button type="button" [class.edital-filters__sort-btn--active]="filters.sort === 'alphabetical'" (click)="setSort('alphabetical')">A-Z</button>
+        <button
+          type="button"
+          [class.edital-filters__sort-btn--active]="filters.sort === 'recent'"
+          [attr.aria-pressed]="filters.sort === 'recent'"
+          (click)="setSort('recent')"
+        >
+          Recentes
+        </button>
+        <button
+          type="button"
+          [class.edital-filters__sort-btn--active]="
+            filters.sort === 'alphabetical'
+          "
+          [attr.aria-pressed]="filters.sort === 'alphabetical'"
+          (click)="setSort('alphabetical')"
+        >
+          A-Z
+        </button>
       </div>
-      <button type="button" class="edital-filters__more" [attr.aria-expanded]="showMoreFilters" (click)="showMoreFilters = !showMoreFilters"><i class="pi" [class.pi-sliders-h]="!showMoreFilters" [class.pi-angle-up]="showMoreFilters" aria-hidden="true"></i>{{ showMoreFilters ? 'Menos filtros' : 'Mais filtros' }}</button>
+      <button
+        type="button"
+        class="edital-filters__more"
+        [attr.aria-expanded]="showMoreFilters"
+        (click)="showMoreFilters = !showMoreFilters"
+      >
+        <i
+          class="pi"
+          [class.pi-sliders-h]="!showMoreFilters"
+          [class.pi-angle-up]="showMoreFilters"
+          aria-hidden="true"
+        ></i
+        >{{ showMoreFilters ? "Menos filtros" : "Mais filtros" }}
+      </button>
     </div>
   </div>
 
@@ -102,13 +134,33 @@
     <div class="edital-filters__more-panel">
       <label class="edital-filters__field">
         <span class="edital-filters__label">Unidade executora</span>
-        <p-multiSelect styleClass="edital-filters__select" [options]="academicUnitOptions" [(ngModel)]="filters.academicUnitIds" (onChange)="onChange()" optionLabel="label" optionValue="value" placeholder="Todas as unidades" display="chip" [showClear]="true" [maxSelectedLabels]="1" selectedItemsLabel="{0} selecionadas" appendTo="body" [filter]="true" emptyMessage="Nenhuma unidade encontrada" emptyFilterMessage="Nenhuma unidade corresponde" />
+        <p-multiSelect
+          styleClass="edital-filters__select"
+          ariaLabel="Filtrar por unidade executora"
+          [options]="academicUnitOptions"
+          [(ngModel)]="filters.academicUnitIds"
+          (onChange)="onChange()"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Todas as unidades"
+          display="chip"
+          [showClear]="true"
+          [maxSelectedLabels]="1"
+          selectedItemsLabel="{0} selecionadas"
+          appendTo="body"
+          [filter]="true"
+          emptyMessage="Nenhuma unidade encontrada"
+          emptyFilterMessage="Nenhuma unidade corresponde"
+        />
       </label>
     </div>
   }
 
   @if (activeFilters.length) {
-    <div class="edital-filters__active" aria-label="Filtros ativos selecionados">
+    <div
+      class="edital-filters__active"
+      aria-label="Filtros ativos selecionados"
+    >
       @for (chip of activeFilters; track chip.key) {
         <button
           type="button"
@@ -126,10 +178,19 @@
   <div class="edital-filters__footer">
     <div class="edital-filters__summary">
       <span class="edital-filters__count" aria-live="polite">
-        <strong>{{ resultCount }}</strong>
-        {{ resultCount === 1 ? 'projeto encontrado' : 'projetos encontrados' }}
+        <strong>{{ resultCount === null ? "—" : resultCount }}</strong>
+        {{
+          resultCount === null
+            ? "Resultados ainda não disponíveis"
+            : resultCount === 1
+              ? "projeto encontrado"
+              : "projetos encontrados"
+        }}
         @if (activeCount > 0) {
-          <span>· {{ activeCount }} {{ activeCount === 1 ? 'filtro ativo' : 'filtros ativos' }}</span>
+          <span
+            >· {{ activeCount }}
+            {{ activeCount === 1 ? "filtro ativo" : "filtros ativos" }}</span
+          >
         }
       </span>
 
