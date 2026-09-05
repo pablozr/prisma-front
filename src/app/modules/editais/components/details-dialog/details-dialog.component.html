@@ -1,30 +1,182 @@
-<p-dialog [visible]="visible" (visibleChange)="visibleChange.emit($event); visible = $event" [modal]="true" [draggable]="false" [dismissableMask]="true" [closable]="false" [closeOnEscape]="true" position="center" maskStyleClass="details-dialog-mask" styleClass="details-dialog" [breakpoints]="{ '1200px': '96vw', '960px': '96vw', '640px': '100vw' }" [style]="{ width: '860px', maxWidth: '100vw' }">
+<p-dialog
+  [visible]="visible"
+  (visibleChange)="visibleChange.emit($event); visible = $event"
+  [modal]="true"
+  transitionOptions="120ms ease-out"
+  ariaLabelledBy="project-details-title"
+  [blockScroll]="true"
+  [draggable]="false"
+  [dismissableMask]="true"
+  [closable]="false"
+  [closeOnEscape]="true"
+  position="center"
+  maskStyleClass="details-dialog-mask"
+  styleClass="details-dialog"
+  [breakpoints]="{ '1200px': '96vw', '960px': '96vw', '640px': '100vw' }"
+  [style]="{ width: '1040px', maxWidth: '100vw' }"
+>
   <ng-template pTemplate="header">
     <div class="details-dialog__header">
       @if (project) {
         <div class="details-dialog__header-body">
-          <span class="details-dialog__kicker">{{ project.institutional.type || 'Projeto institucional' }}</span>
-          <h2 class="details-dialog__title" [title]="project.title">{{ project.title }}</h2>
+          <span class="details-dialog__kicker">{{
+            project.institutional.type || "Projeto institucional"
+          }}</span>
+          <h2 id="project-details-title" class="details-dialog__title" [title]="project.title">
+            {{ project.title }}
+          </h2>
         </div>
       }
-      <button type="button" class="details-dialog__close" (click)="close()" aria-label="Fechar"><i class="pi pi-times" aria-hidden="true"></i></button>
+      <button
+        type="button"
+        class="details-dialog__close"
+        (click)="close()"
+        aria-label="Fechar"
+      >
+        <i class="pi pi-times" aria-hidden="true"></i>
+      </button>
     </div>
   </ng-template>
   @if (project) {
     <div class="details-dialog__body">
-      <div class="details-dialog__meta"><span><i class="pi pi-sitemap" aria-hidden="true"></i>{{ organizationLabel }}</span><span><i class="pi pi-calendar" aria-hidden="true"></i>{{ periodLabel }}</span>@for (contact of project.contacts; track contact.institutional_email) { <a [href]="'mailto:' + contact.institutional_email" [attr.aria-label]="'Enviar e-mail para ' + contact.full_name"><i class="pi pi-envelope" aria-hidden="true"></i>{{ contact.full_name }}: {{ contact.institutional_email }}</a> }</div>
-      @if (project.editorial.cover?.image_url) { <figure class="details-dialog__cover"><img class="details-dialog__cover-img" [src]="project.editorial.cover!.image_url" [alt]="project.editorial.cover!.alt_text || project.title" loading="lazy" decoding="async" /></figure> }
-      <details class="details-dialog__summary"><summary>Resumo institucional</summary><p class="details-dialog__desc">{{ project.institutional.summary || 'Resumo institucional não informado.' }}</p></details>
-      @if (project.editorial.description || project.editorial.short_description) { <section class="details-dialog__section details-dialog__section--editorial"><h3 class="details-dialog__section-title">Sobre o projeto</h3><p class="details-dialog__desc">{{ project.editorial.description || project.editorial.short_description }}</p></section> }
-      @if (project.opportunities.length) { <section class="details-dialog__section details-dialog__opportunities"><h3 class="details-dialog__section-title"><i class="pi pi-briefcase" aria-hidden="true"></i>Oportunidades</h3><ul class="details-dialog__opportunity-list" role="list">@for (opportunity of project.opportunities; track opportunity.id) { <li><strong>{{ opportunity.description }}</strong>@if (opportunity.courses.length) { <span>@for (course of opportunity.courses; track course.id; let last = $last) { {{ course.name }}{{ last ? '' : ', ' }} }</span> }</li> }</ul></section> }
-      @if (project.editorial.areas.length || project.editorial.courses.length) { <section class="details-dialog__section"><h3 class="details-dialog__section-title">Áreas e cursos</h3><div class="details-dialog__tags">@for (area of project.editorial.areas; track area.id) { <span>{{ area.name }}</span> } @for (course of project.editorial.courses; track course.id) { <span class="details-dialog__tag--course">{{ course.name }}</span> }</div></section> }
-      <details class="details-dialog__technical"><summary>Dados institucionais</summary><dl>
-        <div><dt>Situação no SIE</dt><dd>{{ project.institutional.status || 'Não informada' }}</dd></div>
-        <div><dt>Processo</dt><dd>{{ project.process_code || 'Não informado' }}</dd></div>
-        @if (project.institutional.center) { <div><dt>Centro</dt><dd>{{ project.institutional.center.name }}</dd></div> }
-        @if (project.institutional.executing_unit) { <div><dt>Unidade executora</dt><dd>{{ project.institutional.executing_unit.name }}</dd></div> }
-      </dl></details>
+      <div class="details-dialog__layout">
+      <div class="details-dialog__main">
+      @if (project.editorial.cover?.image_url) {
+        <figure class="details-dialog__cover">
+          <img
+            class="details-dialog__cover-img"
+            [src]="project.editorial.cover!.image_url"
+            [alt]="project.editorial.cover!.alt_text || project.title"
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
+      } @else {
+        <div class="details-dialog__cover details-dialog__cover--empty">
+          <div class="project-cover-placeholder">
+            <i class="pi pi-image" aria-hidden="true"></i>
+            <span>Sem imagem de capa</span>
+          </div>
+        </div>
+      }
+      <section class="details-dialog__summary">
+        <h3 class="details-dialog__section-title">Resumo do projeto</h3>
+        <p class="details-dialog__desc">
+          {{
+            project.institutional.summary ||
+              "Resumo institucional não informado."
+          }}
+        </p>
+      </section>
+      @if (
+        project.editorial.description || project.editorial.short_description
+      ) {
+        <section
+          class="details-dialog__section details-dialog__section--editorial"
+        >
+          <h3 class="details-dialog__section-title">Sobre o projeto</h3>
+          <p class="details-dialog__desc">
+            {{
+              project.editorial.description ||
+                project.editorial.short_description
+            }}
+          </p>
+        </section>
+      }
+      @if (project.opportunities.length) {
+        <section class="details-dialog__section details-dialog__opportunities">
+          <h3 class="details-dialog__section-title">
+            <i class="pi pi-briefcase" aria-hidden="true"></i>Oportunidades
+          </h3>
+          <ul class="details-dialog__opportunity-list" role="list">
+            @for (opportunity of project.opportunities; track opportunity.id) {
+              <li>
+                <strong>{{ opportunity.description }}</strong>
+                @if (opportunity.courses.length) {
+                  <span>
+                    @for (
+                      course of opportunity.courses;
+                      track course.id;
+                      let last = $last
+                    ) {
+                      {{ course.name }}{{ last ? "" : ", " }}
+                    }
+                  </span>
+                }
+              </li>
+            }
+          </ul>
+        </section>
+      }
+      @if (project.editorial.areas.length || project.editorial.courses.length) {
+        <section class="details-dialog__section">
+          <h3 class="details-dialog__section-title">Áreas e cursos</h3>
+          <div class="details-dialog__tags">
+            @for (area of project.editorial.areas; track area.id) {
+              <span>{{ area.name }}</span>
+            }
+            @for (course of project.editorial.courses; track course.id) {
+              <span class="details-dialog__tag--course">{{ course.name }}</span>
+            }
+          </div>
+        </section>
+      }
+      </div>
+      <aside class="details-dialog__aside" aria-label="Informações do projeto">
+      <section class="details-dialog__facts">
+        <h3 class="details-dialog__section-title">Informações gerais</h3>
+        <dl>
+          <div><dt><i class="pi pi-calendar" aria-hidden="true"></i> Período</dt><dd>{{ periodLabel }}</dd></div>
+          <div><dt><i class="pi pi-sitemap" aria-hidden="true"></i> Unidade</dt><dd>{{ organizationLabel }}</dd></div>
+        </dl>
+      </section>
+      <section class="details-dialog__contacts">
+        <h3 class="details-dialog__section-title">Contato</h3>
+        @for (contact of project.contacts; track $index) {
+          <div class="details-dialog__contact">
+            <strong>{{ contact.full_name }}</strong>
+            <a [href]="'mailto:' + contact.institutional_email">
+              <i class="pi pi-envelope" aria-hidden="true"></i>{{ contact.institutional_email }}
+            </a>
+          </div>
+        } @empty {
+          <p class="details-dialog__desc">Nenhum contato informado.</p>
+        }
+      </section>
+      <details class="details-dialog__technical">
+        <summary>Registro institucional</summary>
+        <dl>
+          <div>
+            <dt>Situação no SIE</dt>
+            <dd>{{ project.institutional.status || "Não informada" }}</dd>
+          </div>
+          <div>
+            <dt>Processo</dt>
+            <dd>{{ project.process_code || "Não informado" }}</dd>
+          </div>
+          @if (project.institutional.center) {
+            <div>
+              <dt>Centro</dt>
+              <dd>{{ project.institutional.center.name }}</dd>
+            </div>
+          }
+          @if (project.institutional.executing_unit) {
+            <div>
+              <dt>Unidade executora</dt>
+              <dd>{{ project.institutional.executing_unit.name }}</dd>
+            </div>
+          }
+        </dl>
+      </details>
+      </aside>
+      </div>
     </div>
   }
-  <ng-template pTemplate="footer"><div class="details-dialog__footer"><button type="button" class="details-dialog__btn" (click)="close()">Fechar</button></div></ng-template>
+  <ng-template pTemplate="footer"
+    ><div class="details-dialog__footer">
+      <button type="button" class="details-dialog__btn" (click)="close()">
+        Fechar
+      </button>
+    </div></ng-template
+  >
 </p-dialog>
