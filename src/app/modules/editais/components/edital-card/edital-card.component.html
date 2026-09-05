@@ -1,30 +1,72 @@
-<article class="edital-card" (click)="onDetails()" (keydown.enter)="onDetails()" tabindex="0" [attr.aria-label]="'Abrir detalhes do projeto ' + project.title">
+<article class="edital-card">
   <figure class="edital-card__cover">
     @if (project.editorial.cover?.image_url) {
-      <img class="edital-card__cover-img" [src]="project.editorial.cover!.image_url" [alt]="project.editorial.cover!.alt_text || project.title" [attr.loading]="prioritizeCover ? 'eager' : 'lazy'" [attr.fetchpriority]="prioritizeCover ? 'high' : 'auto'" decoding="async" />
-      <span class="edital-card__cover-shade" aria-hidden="true"></span>
+      <img
+        class="edital-card__cover-img"
+        [src]="project.editorial.cover!.image_url"
+        [alt]="project.editorial.cover!.alt_text || project.title"
+        [attr.loading]="prioritizeCover ? 'eager' : 'lazy'"
+        [attr.fetchpriority]="prioritizeCover ? 'high' : 'auto'"
+        decoding="async"
+      />
     } @else {
-      <div class="edital-card__cover-placeholder" aria-label="Sem imagem de capa"><i class="pi pi-image" aria-hidden="true"></i><span>Sem imagem de capa</span></div>
+      <div class="project-cover-placeholder">
+        <i class="pi pi-image" aria-hidden="true"></i>
+        <span>Sem imagem de capa</span>
+      </div>
     }
   </figure>
   <header class="edital-card__top">
-    <span class="edital-card__type">{{ project.institutional.type || 'Projeto institucional' }}</span>
+    <span class="edital-card__type">{{
+      project.institutional.type || "Projeto institucional"
+    }}</span>
     @if (project.opportunities.length) {
-      <span class="edital-card__opportunities"><i class="pi pi-briefcase" aria-hidden="true"></i>{{ project.opportunities.length }} oportunidade{{ project.opportunities.length === 1 ? '' : 's' }}</span>
+      <span class="edital-card__opportunities"
+        ><i class="pi pi-briefcase" aria-hidden="true"></i
+        >{{ project.opportunities.length }} oportunidade{{
+          project.opportunities.length === 1 ? "" : "s"
+        }}</span
+      >
     }
   </header>
   <h3 class="edital-card__title">{{ project.title }}</h3>
-  <p class="edital-card__organization"><i class="pi pi-sitemap" aria-hidden="true"></i><span>{{ organizationLabel }}</span></p>
-  @if (project.editorial.short_description) { <p class="edital-card__desc" [title]="project.editorial.short_description">{{ project.editorial.short_description }}</p> }
-  @else if (project.institutional.summary) { <p class="edital-card__desc" [title]="project.institutional.summary">{{ project.institutional.summary }}</p> }
+  <p class="edital-card__organization">
+    <i class="pi pi-sitemap" aria-hidden="true"></i
+    ><span>{{ organizationLabel }}</span>
+  </p>
+  @if (project.editorial.short_description) {
+    <p class="edital-card__desc" [title]="project.editorial.short_description">
+      {{ project.editorial.short_description }}
+    </p>
+  } @else if (project.institutional.summary) {
+    <p class="edital-card__desc" [title]="project.institutional.summary">
+      {{ project.institutional.summary }}
+    </p>
+  }
   @if (project.editorial.areas.length) {
     <ul class="edital-card__areas" role="list">
-      @for (area of project.editorial.areas.slice(0, 2); track area.id) { <li class="edital-card__area">{{ area.name }}</li> }
-      @if (project.editorial.areas.length > 2) { <li class="edital-card__area edital-card__area--more">+{{ project.editorial.areas.length - 2 }}</li> }
+      @for (area of project.editorial.areas.slice(0, 2); track area.id) {
+        <li class="edital-card__area">{{ area.name }}</li>
+      }
+      @if (project.editorial.areas.length > 2) {
+        <li class="edital-card__area edital-card__area--more">
+          +{{ project.editorial.areas.length - 2 }}
+        </li>
+      }
     </ul>
   }
   <footer class="edital-card__footer">
-    <span class="edital-card__period"><i class="pi pi-calendar" aria-hidden="true"></i>{{ periodLabel }}</span>
-    <button type="button" class="edital-card__btn" (click)="onDetails(); $event.stopPropagation()" [attr.aria-label]="'Ver projeto ' + project.title"><span>Ver projeto</span><i class="pi pi-arrow-up-right" aria-hidden="true"></i></button>
+    <span class="edital-card__period"
+      ><i class="pi pi-calendar" aria-hidden="true"></i>{{ periodLabel }}</span
+    >
+    <button
+      type="button"
+      class="edital-card__btn"
+      (click)="onDetails(); $event.stopPropagation()"
+      [attr.aria-label]="'Ver projeto ' + project.title"
+    >
+      <span>Ver projeto</span
+      ><i class="pi pi-arrow-up-right" aria-hidden="true"></i>
+    </button>
   </footer>
 </article>
