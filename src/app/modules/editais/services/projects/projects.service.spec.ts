@@ -22,6 +22,21 @@ describe('ProjectsService', () => {
 
   afterEach(() => http.verify())
 
+  it('distinguishes an unavailable catalogue from an empty successful response', () => {
+    service.listProjects({ search: '', areaIds: [], courseIds: [], centerIds: [], academicUnitIds: [], sort: 'recent' })
+      .subscribe(response => expect(response.failed).toBeTrue())
+    http.expectOne(request => request.url.endsWith('/projects')).flush({}, { status: 503, statusText: 'Unavailable' })
+
+    service.listProjects({ search: '', areaIds: [], courseIds: [], centerIds: [], academicUnitIds: [], sort: 'recent' })
+      .subscribe(response => {
+        expect(response.failed).toBeUndefined()
+        expect(response.projects).toEqual([])
+      })
+    http.expectOne(request => request.url.endsWith('/projects')).flush({
+      data: { projetos: [], paginacao: { page: 1, page_size: 20, total: 0, total_pages: 0 } }
+    })
+  })
+
   it('uses the public catalog contract and only supported server filters', () => {
     service.listProjects({ search: 'sustentabilidade', areaIds: [3], courseIds: [8], centerIds: [5], academicUnitIds: [6], sort: 'alphabetical' }).subscribe(response => {
       expect(response.projects[0].institutional.status).toBe('Ativo')

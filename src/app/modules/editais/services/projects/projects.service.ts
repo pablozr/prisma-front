@@ -54,6 +54,7 @@ export interface IProjectsPagination {
 }
 
 export interface IProjectsListResponse {
+  failed?: boolean
   projects: IProject[]
   pagination: IProjectsPagination
 }
@@ -74,7 +75,7 @@ export class ProjectsService {
   private readonly projectDetailsCache = new Map<number, Observable<IProject>>()
   private readonly cataloguePageSize = 50
 
-  listProjects(filters: IProjectFilters, page = 1, pageSize = 20): Observable<IProjectsListResponse> {
+  listProjects(filters: IProjectFilters, page = 1, pageSize = 20, notifyError = true): Observable<IProjectsListResponse> {
     return this.http
       .get<IApiResponse<IProjectsListPayload>>(EDITAIS_ROUTES.listProjects, {
         params: this.buildProjectsParams(filters, page, pageSize)
@@ -90,8 +91,8 @@ export class ProjectsService {
           }
         })),
         catchError(error => {
-          this.toast.error('Falha ao carregar projetos', this.extractDetail(error, 'Não foi possível carregar o catálogo de projetos.'))
-          return of({ projects: [], pagination: { page, pageSize, total: 0, totalPages: 1 } })
+          if (notifyError) this.toast.error('Falha ao carregar projetos', this.extractDetail(error, 'Não foi possível carregar o catálogo de projetos.'))
+          return of({ failed: true, projects: [], pagination: { page, pageSize, total: 0, totalPages: 1 } })
         })
       )
   }
