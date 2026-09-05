@@ -1,39 +1,26 @@
-import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { StorageService } from '../local-storage/storage.service';
+import { Injectable, inject } from '@angular/core'
+import { BehaviorSubject } from 'rxjs'
+import { StorageService } from '../local-storage/storage.service'
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class ThemeService {
-  private localStorage = inject(StorageService);
-
-  private theme = new BehaviorSubject<string>('dark');
-  themeInformation = this.theme.asObservable();
+  private localStorage = inject(StorageService)
+  private theme = new BehaviorSubject<string>('light')
+  themeInformation = this.theme.asObservable()
 
   constructor() {
-    const localTheme = this.localStorage.getLocalStorage('THEME-BASIC-TEMPLATE');
-
-    if (localTheme){
-      this.theme.next(localTheme);
-
-      const linkElement = document.querySelector('html');
-      if (linkElement !== null){
-        if (localTheme == 'dark'){
-          linkElement.classList.add('my-app-dark');
-        }
-      }
-    }
+    const saved = this.localStorage.getLocalStorage('THEME-BASIC-TEMPLATE')
+    this.applyTheme(saved === 'dark' ? 'dark' : 'light')
   }
 
   toggleDarkMode() {
-    const element = document.querySelector('html');
-    if (element !== null){
-      element.classList.toggle('my-app-dark');
+    const next = this.theme.value === 'dark' ? 'light' : 'dark'
+    this.localStorage.setNormalLocalStorage('THEME-BASIC-TEMPLATE', next)
+    this.applyTheme(next)
+  }
 
-      const themeValue = element.classList[0] != undefined ? 'dark' : 'light'
-      this.localStorage.setNormalLocalStorage('THEME-BASIC-TEMPLATE', themeValue);
-      this.theme.next(themeValue);
-    }
+  private applyTheme(theme: string) {
+    document.documentElement.classList.toggle('my-app-dark', theme === 'dark')
+    this.theme.next(theme)
   }
 }

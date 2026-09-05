@@ -1,12 +1,17 @@
-<div class="theme-toggle-shell">
-  <p-toggleButton
-    [(ngModel)]="isDarkTheme"
-    (onChange)="toggleLightDark()"
-    [onLabel]="compact ? ' ' : 'Dark'"
-    [offLabel]="compact ? ' ' : 'Light'"
-    onIcon="pi pi-moon"
-    offIcon="pi pi-sun"
-    [styleClass]="compact ? 'theme-toggle-btn-compact' : 'theme-toggle-btn'"
-    ariaLabel="Toggle light or dark theme"
-  />
-</div>
+<button
+  type="button"
+  class="theme-toggle"
+  (click)="toggleLightDark()"
+  [attr.aria-label]="isDarkTheme ? 'Ativar tema claro' : 'Ativar tema escuro'"
+  [title]="isDarkTheme ? 'Tema claro' : 'Tema escuro'"
+>
+  <i
+    class="pi"
+    [class.pi-sun]="isDarkTheme"
+    [class.pi-moon]="!isDarkTheme"
+    aria-hidden="true"
+  ></i>
+  @if (!compact) {
+    <span>{{ isDarkTheme ? "Tema claro" : "Tema escuro" }}</span>
+  }
+</button>
