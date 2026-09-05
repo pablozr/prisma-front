@@ -1,24 +1,18 @@
 import { Component, DestroyRef, inject, OnInit } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { CommonModule } from '@angular/common'
+import { FormsModule } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
 import { ISigninData } from '../../interfaces/ISignin'
 import { UsersService } from '../../services/users/users.service'
 import { HeaderComponent } from '../../components/header/header.component'
-import { BreadcrumbsComponent, IBreadcrumbItem } from '../../components/breadcrumbs/breadcrumbs.component'
-
-interface IQuickAccessCard {
-  label: string
-  description: string
-  icon: string
-  route: string
-  roles?: string[]
-}
+import { ProjectsService } from '../../../editais/services/projects/projects.service'
+import { IProject } from '../../../editais/interfaces/IProject'
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, RouterLink, BreadcrumbsComponent],
+  imports: [CommonModule, FormsModule, HeaderComponent, RouterLink],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -26,59 +20,42 @@ export class HomeComponent implements OnInit {
   private usersService = inject(UsersService)
   private router = inject(Router)
   private destroyRef = inject(DestroyRef)
-
+  private projectsService = inject(ProjectsService)
   userData: ISigninData | null = null
-
-  readonly quickAccess: IQuickAccessCard[] = [
-    {
-      label: 'Meus projetos',
-      description: 'Gerencie o conteúdo local dos projetos em que você tem permissão.',
-      icon: 'pi pi-book',
-      route: '/my-projects',
-      roles: ['professor', 'tecnico', 'admin']
-    },
-    {
-      label: 'Catálogo de projetos',
-      description: 'Consulte projetos acadêmicos publicados pela UNIRIO.',
-      icon: 'pi pi-file',
-      route: '/catalogo'
-    }
-  ]
+  search = ''
+  projects: IProject[] = []
+  loading = true
+  loadFailed = false
+  total: number | null = null
 
   ngOnInit() {
-    this.usersService.user$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data) => {
-      this.userData = data
-    })
+    this.usersService.user$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => this.userData = data)
+    this.loadProjects()
   }
 
-  get isAuthenticated(): boolean {
-    return !!this.userData?.user
+  get isAuthenticated(): boolean { return !!this.userData?.user }
+  get firstName(): string { return this.userData?.user?.full_name?.trim().split(/\s+/)[0] || 'boas-vindas' }
+  get canManage(): boolean { return ['professor', 'tecnico', 'admin'].includes(this.userData?.user?.role || '') }
+  get isAdmin(): boolean { return this.userData?.user?.role === 'admin' }
+
+  loadProjects() {
+    this.loading = true
+    this.loadFailed = false
+    this.projectsService.listProjects({ search: '', areaIds: [], courseIds: [], centerIds: [], academicUnitIds: [], sort: 'recent' }, 1, 3, false)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(response => {
+        this.projects = response.projects
+        this.loadFailed = !!response.failed
+        this.total = response.failed ? null : response.pagination.total
+        this.loading = false
+      })
   }
 
-  readonly breadcrumbs: IBreadcrumbItem[] = [
-    { label: 'Início', icon: 'pi pi-home' }
-  ]
-
-  get firstName(): string {
-    const full = this.userData?.user?.full_name?.trim()
-    if (!full) return 'bem-vindo(a)'
-    return full.split(' ')[0]
+  searchProjects() {
+    this.router.navigate(['/catalogo'], { queryParams: this.search.trim() ? { q: this.search.trim() } : {} })
   }
 
-  get greeting(): string {
-    const h = new Date().getHours()
-    if (h < 12) return 'Bom dia'
-    if (h < 19) return 'Boa tarde'
-    return 'Boa noite'
-  }
-
-  canAccess(card: IQuickAccessCard): boolean {
-    if (!card.roles) return true
-    const role = this.userData?.user?.role
-    return !!role && card.roles.includes(role)
-  }
-
-  navigateTo(route: string) {
-    this.router.navigate([route])
+  openProject(project: IProject) {
+    this.router.navigate(['/catalogo'], { queryParams: { projeto: project.id } })
   }
 }

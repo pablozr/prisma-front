@@ -1,92 +1,223 @@
-<div class="home-shell">
-  <app-header></app-header>
-
-  <main class="home-page" id="conteudo">
-    <a class="skip-link" href="#acesso-rapido">Saltar para acessos rápidos</a>
-
-    @if (isAuthenticated) {
-      <app-breadcrumbs [items]="breadcrumbs"></app-breadcrumbs>
-    }
-
-    @if (isAuthenticated) {
-      <section class="home-welcome" aria-labelledby="home-welcome-title">
-        <p class="home-welcome__kicker">{{ greeting }}</p>
-        <h1 id="home-welcome-title" class="home-welcome__title">
-          Olá, <span class="home-welcome__firstname">{{ firstName }}</span>.
-        </h1>
-        <p class="home-welcome__lead">
-          Consulte o catálogo de projetos acadêmicos da UNIRIO e, quando autorizado, gerencie o conteúdo local dos seus projetos.
-        </p>
-      </section>
-    } @else {
-      <section class="home-visitor" aria-labelledby="home-visitor-title">
-        <div class="home-visitor__body">
-          <p class="home-visitor__kicker">Portal acadêmico UNIRIO</p>
-          <h1 id="home-visitor-title" class="home-visitor__title">
-            Bem-vindo(a) ao <span class="home-visitor__brand">PRISMA</span>.
-          </h1>
-          <p class="home-visitor__lead">
-            Um espaço público da UNIRIO para consultar projetos acadêmicos publicados. Entre com sua
-            conta institucional para acessar recursos conforme o seu perfil.
-          </p>
-          <div class="home-visitor__actions">
-            <a class="home-visitor__cta home-visitor__cta--primary" routerLink="/signin">
-              <i class="pi pi-sign-in" aria-hidden="true"></i>
-              <span>Entrar com conta institucional</span>
-            </a>
-            <a class="home-visitor__cta home-visitor__cta--ghost" href="#acesso-rapido">
-              <span>Explorar como visitante</span>
-              <i class="pi pi-arrow-down" aria-hidden="true"></i>
-            </a>
-          </div>
-          <p class="home-visitor__note">
-            <i class="pi pi-info-circle" aria-hidden="true"></i>
-            <span>O login é destinado a <strong>alunos</strong>, <strong>docentes</strong>, <strong>técnicos</strong> e administradores reconhecidos pelo SIE.</span>
-          </p>
-        </div>
-        <aside class="home-visitor__meta" aria-label="Informações rápidas">
-          <div class="home-visitor__meta-item">
-            <span class="home-visitor__meta-kicker">Instituição</span>
-            <span class="home-visitor__meta-value">UNIRIO</span>
-          </div>
-        </aside>
-      </section>
-    }
-
-    <section class="home-quick" id="acesso-rapido" aria-labelledby="home-quick-title">
-      <h2 id="home-quick-title" class="home-quick__title">Acessos rápidos</h2>
-      <p class="home-quick__desc">
-        @if (isAuthenticated) {
-          Clique num dos blocos abaixo para acessar os recursos disponíveis para o seu perfil.
-        } @else {
-          Conheça o catálogo público de projetos acadêmicos.
-        }
+<app-header />
+<main class="home-page" id="conteudo" tabindex="-1">
+  <section class="home-intro" aria-labelledby="home-title">
+    <div class="home-intro__text">
+      <p class="section-label">Consulta pública</p>
+      <h1 id="home-title">Projetos acadêmicos</h1>
+      <p class="home-intro__description">
+        Consulte os projetos de ensino, pesquisa e extensão da UNIRIO.
       </p>
+      <form class="home-search" role="search" (ngSubmit)="searchProjects()">
+        <label for="home-search">Buscar no catálogo</label>
+        <div class="home-search__field">
+          <i class="pi pi-search" aria-hidden="true"></i
+          ><input
+            id="home-search"
+            name="search"
+            type="search"
+            [(ngModel)]="search"
+            placeholder="Título, tema ou palavra-chave"
+          /><button type="submit">Buscar</button>
+        </div>
+      </form>
+      <a class="home-catalogue-link" routerLink="/catalogo"
+        >Catálogo completo <i class="pi pi-arrow-right" aria-hidden="true"></i
+      ></a>
+    </div>
+    <figure class="home-intro__image">
+      <img
+        src="assets/images/maxresdefault.jpg"
+        alt="Identidade institucional da UNIRIO sobre imagem de sua arquitetura"
+        width="1280"
+        height="720"
+        fetchpriority="high"
+        decoding="async"
+      />
+      <figcaption>Universidade Federal do Estado do Rio de Janeiro</figcaption>
+    </figure>
+  </section>
 
-      <ul class="home-quick__grid" role="list">
-        @for (card of quickAccess; track card.label) {
-          @if (canAccess(card)) {
-          <li>
-            <button
-              type="button"
-              class="home-card"
-              (click)="navigateTo(card.route)"
-              [attr.aria-label]="card.label + '. ' + card.description"
-            >
-              <span class="home-card__icon" aria-hidden="true">
-                <i [class]="card.icon"></i>
-              </span>
-              <span class="home-card__body">
-                <span class="home-card__label">{{ card.label }}</span>
-                <span class="home-card__desc">{{ card.description }}</span>
-              </span>
-              <i class="home-card__arrow pi pi-arrow-right" aria-hidden="true"></i>
-            </button>
-          </li>
+  <div class="home-content">
+    <section
+      class="home-publications"
+      aria-labelledby="recent-title"
+      [attr.aria-busy]="loading"
+    >
+      <header class="section-heading">
+        <div>
+          <h2 id="recent-title">Projetos publicados</h2>
+        </div>
+        <a routerLink="/catalogo"
+          >Ver todos <i class="pi pi-arrow-right" aria-hidden="true"></i
+        ></a>
+      </header>
+      <p class="section-description">
+        Publicações mais recentes disponíveis para consulta.
+      </p>
+      @if (loading) {
+        <div role="status" aria-label="Carregando projetos">
+          @for (item of [1, 2, 3]; track item) {
+            <div class="project-skeleton" aria-hidden="true">
+              <span class="skeleton-line"></span
+              ><span class="skeleton-line"></span>
+            </div>
           }
-        }
-      </ul>
+        </div>
+      } @else if (loadFailed) {
+        <div class="home-notice" role="status">
+          <i class="pi pi-info-circle" aria-hidden="true"></i>
+          <div>
+            <h3>Consulta temporariamente indisponível</h3>
+            <p>
+              Não foi possível obter os projetos. Tente novamente em instantes.
+            </p>
+            <button type="button" (click)="loadProjects()">
+              Tentar novamente
+            </button>
+          </div>
+        </div>
+      } @else if (!projects.length) {
+        <div class="home-notice">
+          <i class="pi pi-file" aria-hidden="true"></i>
+          <div>
+            <h3>Nenhum projeto publicado no momento</h3>
+            <p>
+              As publicações aparecerão nesta seção quando estiverem disponíveis
+              no catálogo.
+            </p>
+          </div>
+        </div>
+      } @else {
+        <ul class="publication-list">
+          @for (project of projects; track project.id) {
+            <li>
+              <div class="publication-list__meta">
+                <span>{{
+                  project.institutional.type || "Projeto institucional"
+                }}</span>
+                @if (project.published_at) {
+                  <time>{{ project.published_at | date: "dd/MM/yyyy" }}</time>
+                }
+              </div>
+              <h3>
+                {{ project.title }}
+              </h3>
+              <p>
+                {{
+                  project.editorial.short_description ||
+                    project.institutional.summary ||
+                    "Consulte os dados disponíveis nos detalhes do projeto."
+                }}
+              </p>
+              @if (
+                project.institutional.executing_unit ||
+                project.institutional.center
+              ) {
+                <span class="publication-list__unit">{{
+                  project.institutional.executing_unit?.name ||
+                    project.institutional.center?.name
+                }}</span>
+              }
+              <div>
+                <button type="button" class="publication-list__action" (click)="openProject(project)" [attr.aria-label]="'Ver projeto ' + project.title">
+                  Ver projeto <i class="pi pi-arrow-right" aria-hidden="true"></i>
+                </button>
+              </div>
+            </li>
+          }
+        </ul>
+        <p class="home-total">
+          {{ total }}
+          {{ total === 1 ? "projeto disponível" : "projetos disponíveis" }} no
+          catálogo público.
+        </p>
+      }
+      <section class="home-about" aria-labelledby="about-title">
+        <h2 id="about-title">Sobre o PRISMA</h2>
+        <p>
+          A Plataforma de Referência e Integração de Saberes e Mediação
+          Acadêmica reúne informações institucionais e conteúdo de divulgação
+          dos projetos da UNIRIO.
+        </p>
+        <p>
+          O catálogo é público. Descrições, imagens e oportunidades são
+          disponibilizadas conforme o conteúdo informado em cada projeto.
+        </p>
+        <a
+          href="https://www.unirio.br/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Portal da Universidade
+          <i class="pi pi-arrow-up-right" aria-hidden="true"></i
+          ><span class="sr-only"> (abre em nova aba)</span></a
+        >
+      </section>
     </section>
 
-  </main>
-</div>
+    <aside class="home-directory" aria-label="Serviços e orientações">
+      <section>
+        <h2>Acesso ao portal</h2>
+        <nav aria-label="Acessos da página inicial">
+          <a routerLink="/catalogo"
+            ><span
+              >Catálogo de projetos<small
+                >Consulta pública, sem necessidade de login</small
+              ></span
+            ><i class="pi pi-chevron-right" aria-hidden="true"></i
+          ></a>
+          @if (canManage) {
+            <a routerLink="/my-projects"
+              ><span
+                >Meus projetos<small
+                  >Descrições, imagens e oportunidades</small
+                ></span
+              ><i class="pi pi-chevron-right" aria-hidden="true"></i
+            ></a>
+          }
+          @if (isAdmin) {
+            <a routerLink="/admin"
+              ><span
+                >Administração<small
+                  >Usuários, publicações e sincronizações</small
+                ></span
+              ><i class="pi pi-chevron-right" aria-hidden="true"></i
+            ></a>
+          }
+          @if (!isAuthenticated) {
+            <a routerLink="/signin"
+              ><span
+                >Acesso institucional<small
+                  >Comunidade acadêmica e administração</small
+                ></span
+              ><i class="pi pi-chevron-right" aria-hidden="true"></i
+            ></a>
+          }
+        </nav>
+      </section>
+      <section id="como-funciona">
+        <h2>Informações dos projetos</h2>
+        <dl>
+          <div>
+            <dt>Áreas e cursos</dt>
+            <dd>Refine a consulta pelos filtros do catálogo.</dd>
+          </div>
+          <div>
+            <dt>Período e responsáveis</dt>
+            <dd>Consulte as datas e os contatos institucionais disponíveis.</dd>
+          </div>
+          <div>
+            <dt>Oportunidades</dt>
+            <dd>
+              Veja as informações cadastradas pelos responsáveis de cada
+              projeto.
+            </dd>
+          </div>
+        </dl>
+      </section>
+      <p class="home-directory__note">
+        <i class="pi pi-info-circle" aria-hidden="true"></i>Para dúvidas sobre
+        participação, utilize o contato publicado nos detalhes do projeto.
+      </p>
+    </aside>
+  </div>
+</main>
