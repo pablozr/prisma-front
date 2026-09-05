@@ -10,7 +10,7 @@ export const InstitutionalPortal = definePreset(Aura, {
       sm: '0.25rem',
       md: '0.375rem',
       lg: '0.5rem',
-      xl: '0.75rem',
+      xl: '0.625rem',
       full: '9999px'
     },
     navy: {
@@ -20,8 +20,8 @@ export const InstitutionalPortal = definePreset(Aura, {
       300: '#78a6ce',
       400: '#4e8bc0',
       500: '#276199',
-      600: '#004b82',
-      700: '#00345d',
+      600: '#004169',
+      700: '#132e53',
       800: '#002544',
       900: '#00172f',
       950: '#000c18'
@@ -75,18 +75,18 @@ export const InstitutionalPortal = definePreset(Aura, {
           focusColor: '{navy.800}'
         },
         surface: {
-          0: '#fbf9f8',
-          50: '#f6f3f2',
-          100: '#f0eded',
+          0: '#ffffff',
+          50: '#f5f7fa',
+          100: '#edf3f7',
           200: '#eae7e7',
-          300: '#e4e2e1',
+          300: '#dde5eb',
           400: '#dcd9d9',
           500: '#c2c7d1',
           600: '#727781',
           700: '#565c64',
           800: '#424750',
           900: '#2f2f2f',
-          950: '#1b1c1c'
+          950: '#111d28'
         }
       },
       dark: {
@@ -103,18 +103,18 @@ export const InstitutionalPortal = definePreset(Aura, {
           focusColor: '#ffffff'
         },
         surface: {
-          0: '#1b1c1c',
-          50: '#242424',
-          100: '#303030',
+          0: '#111d28',
+          50: '#1a2a38',
+          100: '#223644',
           200: '#3a3a3a',
           300: '#454545',
           400: '#525252',
           500: '#727781',
           600: '#8a9099',
           700: '#c2c7d1',
-          800: '#e4e2e1',
-          900: '#f0eded',
-          950: '#fbf9f8'
+          800: '#dde5eb',
+          900: '#edf3f7',
+          950: '#ffffff'
         }
       }
     }
@@ -153,7 +153,7 @@ export const InstitutionalPortal = definePreset(Aura, {
           info: {
             background: '#ffffff',
             borderColor: '#c2c7d1',
-            color: '#1b1c1c',
+            color: '#111d28',
             detailColor: '#424750',
             shadow: '0 1px 0 rgba(27, 28, 28, 0.06)',
             closeButton: {
@@ -167,7 +167,7 @@ export const InstitutionalPortal = definePreset(Aura, {
           success: {
             background: '#ffffff',
             borderColor: '#c2c7d1',
-            color: '#1b1c1c',
+            color: '#111d28',
             detailColor: '#18733d',
             shadow: '0 1px 0 rgba(27, 28, 28, 0.06)',
             closeButton: {
@@ -181,7 +181,7 @@ export const InstitutionalPortal = definePreset(Aura, {
           warn: {
             background: '#ffffff',
             borderColor: '#c2c7d1',
-            color: '#1b1c1c',
+            color: '#111d28',
             detailColor: '#565c64',
             shadow: '0 1px 0 rgba(27, 28, 28, 0.06)',
             closeButton: {
@@ -195,7 +195,7 @@ export const InstitutionalPortal = definePreset(Aura, {
           error: {
             background: '#ffffff',
             borderColor: '#c2c7d1',
-            color: '#1b1c1c',
+            color: '#111d28',
             detailColor: '#93000a',
             shadow: '0 1px 0 rgba(27, 28, 28, 0.06)',
             closeButton: {
@@ -209,7 +209,7 @@ export const InstitutionalPortal = definePreset(Aura, {
           secondary: {
             background: '#ffffff',
             borderColor: '#c2c7d1',
-            color: '#1b1c1c',
+            color: '#111d28',
             detailColor: '#424750',
             shadow: '0 1px 0 rgba(27, 28, 28, 0.05)',
             closeButton: {
@@ -221,8 +221,8 @@ export const InstitutionalPortal = definePreset(Aura, {
             }
           },
           contrast: {
-            background: '#00345d',
-            borderColor: '#004b82',
+            background: '#132e53',
+            borderColor: '#004169',
             color: '#ffffff',
             detailColor: '#d2e4ff',
             shadow: 'none',
@@ -238,7 +238,7 @@ export const InstitutionalPortal = definePreset(Aura, {
         dark: {
           blur: '10px',
           info: {
-            background: '#303030',
+            background: '#223644',
             borderColor: '#525252',
             color: '#f3f0f0',
             detailColor: '#c2c7d1',
@@ -252,7 +252,7 @@ export const InstitutionalPortal = definePreset(Aura, {
             }
           },
           success: {
-            background: '#303030',
+            background: '#223644',
             borderColor: '#525252',
             color: '#f3f0f0',
             detailColor: '#9ef6b3',
@@ -266,7 +266,7 @@ export const InstitutionalPortal = definePreset(Aura, {
             }
           },
           warn: {
-            background: '#303030',
+            background: '#223644',
             borderColor: '#525252',
             color: '#f3f0f0',
             detailColor: '#eae7e7',
@@ -280,7 +280,7 @@ export const InstitutionalPortal = definePreset(Aura, {
             }
           },
           error: {
-            background: '#303030',
+            background: '#223644',
             borderColor: '#525252',
             color: '#f3f0f0',
             detailColor: '#ffdad6',
@@ -296,7 +296,7 @@ export const InstitutionalPortal = definePreset(Aura, {
           secondary: {
             background: '#2a2a2a',
             borderColor: '#454545',
-            color: '#e4e2e1',
+            color: '#dde5eb',
             detailColor: '#c2c7d1',
             shadow: 'none',
             closeButton: {
@@ -308,15 +308,15 @@ export const InstitutionalPortal = definePreset(Aura, {
             }
           },
           contrast: {
-            background: '#fbf9f8',
-            borderColor: '#e4e2e1',
-            color: '#1b1c1c',
+            background: '#ffffff',
+            borderColor: '#dde5eb',
+            color: '#111d28',
             detailColor: '#424750',
             shadow: 'none',
             closeButton: {
               hoverBackground: 'rgba(27, 28, 28, 0.06)',
               focusRing: {
-                color: '#00345d',
+                color: '#132e53',
                 shadow: '0 0 0 2px rgba(0, 52, 93, 0.2)'
               }
             }

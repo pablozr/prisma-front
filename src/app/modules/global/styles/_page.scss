@@ -1,0 +1,37 @@
+// Shared page anatomy. Colors and spacing come from src/styles.scss.
+@mixin layout {
+  max-width: var(--container-max);
+  margin: auto;
+  padding: 26px var(--gutter) 64px;
+}
+
+@mixin heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 34px 0;
+}
+
+@mixin title {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  margin-bottom: 12px;
+}
+
+@mixin eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  color: var(--on-surface-variant);
+  margin-bottom: 12px;
+}
+
+@mixin lead {
+  color: var(--on-surface-variant);
+  font-size: 1rem;
+  line-height: 1.75;
+  margin: 0;
+}
