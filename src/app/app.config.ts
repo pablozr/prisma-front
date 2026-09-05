@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideZoneChangeDetection, LOCALE_ID, inject, provideAppInitializer } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
@@ -26,7 +26,7 @@ const ptBR = {
 };
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideHttpClient(withInterceptors([authRefreshInterceptor])), MessageService,
+  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled' })), provideHttpClient(withInterceptors([authRefreshInterceptor])), MessageService,
     { provide: LOCALE_ID, useValue: 'pt-BR' },
     provideAnimationsAsync(),
     provideAppInitializer(() => {
