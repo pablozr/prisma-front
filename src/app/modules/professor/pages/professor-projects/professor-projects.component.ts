@@ -54,6 +54,13 @@ export class ProfessorProjectsComponent implements OnInit {
   totalPages = 1
   total = 0
   search = ''
+  managerSection = 'content'
+  readonly managerSections = [
+    { id: 'content', label: 'Conteúdo', icon: 'pi pi-pencil' },
+    { id: 'cover', label: 'Capa', icon: 'pi pi-image' },
+    { id: 'opportunities', label: 'Oportunidades', icon: 'pi pi-briefcase' },
+    { id: 'institutional', label: 'Dados institucionais', icon: 'pi pi-info-circle' }
+  ]
   managerVisible = false
   showNewOpportunityForm = false
   edit: IProjectEdit | null = null
@@ -86,6 +93,7 @@ export class ProfessorProjectsComponent implements OnInit {
   }
 
   openManager(projectId: number) {
+    this.managerSection = 'content'
     this.managerVisible = true
     this.loadingProject = true
     this.managerProject = null

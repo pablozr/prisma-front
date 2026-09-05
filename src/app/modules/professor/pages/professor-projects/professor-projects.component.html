@@ -2,22 +2,32 @@
   <p-confirmDialog appendTo="body"></p-confirmDialog>
   <app-header></app-header>
 
-  <main class="professor-page">
+  <main class="professor-page" id="conteudo" tabindex="-1">
     <app-breadcrumbs [items]="breadcrumbs"></app-breadcrumbs>
 
     <header class="professor-hero">
       <div>
         <p class="professor-hero__eyebrow">Área de gestão</p>
         <h1 class="professor-hero__title">Meus projetos</h1>
-        <p class="professor-hero__lead">Consulte os dados institucionais e gerencie o conteúdo editorial dos projetos autorizados.</p>
+        <p class="professor-hero__lead">
+          Consulte os dados institucionais e gerencie o conteúdo editorial dos
+          projetos autorizados.
+        </p>
       </div>
       <span class="professor-hero__total">{{ total }} projetos</span>
     </header>
 
-    <section class="professor-search">
-      <input type="text" [(ngModel)]="search" placeholder="Buscar por título" class="professor-input" />
-      <button type="button" class="professor-btn" (click)="onSearch()">Buscar</button>
-    </section>
+    <form class="professor-search" role="search" (ngSubmit)="onSearch()">
+      <input
+        type="text"
+        name="search"
+        [(ngModel)]="search"
+        placeholder="Buscar por título"
+        aria-label="Buscar meus projetos por título"
+        class="professor-input"
+      />
+      <button type="submit" class="professor-btn">Buscar</button>
+    </form>
 
     @if (loading) {
       <p class="professor-loading">Carregando projetos...</p>
@@ -29,20 +39,46 @@
           <article class="professor-card professor-card--compact">
             <header class="professor-card__header">
               <h2>{{ project.title }}</h2>
-              <span class="professor-badge">{{ project.institutional.status || 'Sem situação' }}</span>
+              <span class="professor-badge">{{
+                project.institutional.status || "Sem situação"
+              }}</span>
             </header>
-            <p class="professor-card__summary">{{ getProjectSummary(project) }}</p>
-            <p class="professor-card__desc">{{ getProjectDescription(project) }}</p>
-            <button type="button" class="professor-btn" (click)="openManager(project.id)">Gerenciar</button>
+            <p class="professor-card__summary">
+              {{ getProjectSummary(project) }}
+            </p>
+            <p class="professor-card__desc">
+              {{ getProjectDescription(project) }}
+            </p>
+            <button
+              type="button"
+              class="professor-btn"
+              (click)="openManager(project.id)"
+            >
+              Gerenciar
+            </button>
           </article>
         }
       </section>
 
       @if (totalPages > 1) {
         <nav class="professor-pagination" aria-label="Paginação dos projetos">
-          <button type="button" class="professor-btn professor-btn--ghost" (click)="onPageChange(page - 1)">Anterior</button>
+          <button
+            type="button"
+            class="professor-btn professor-btn--ghost"
+            [disabled]="page <= 1"
+            (click)="onPageChange(page - 1)"
+          >
+            Anterior
+          </button>
           <span>Página {{ page }} de {{ totalPages }}</span>
-          <button type="button" class="professor-btn professor-btn--ghost" (click)="onPageChange(page + 1)">Próxima</button>
+          <button
+            type="button"
+            class="professor-btn professor-btn--ghost"
+            [disabled]="page >= totalPages"
+            (click)="onPageChange(page + 1)"
+          >
+            Próxima
+          </button>
         </nav>
       }
     }
@@ -52,7 +88,9 @@
       (visibleChange)="managerVisible = $event; !$event && closeManager()"
       [modal]="true"
       [draggable]="false"
-      [dismissableMask]="true"
+      [dismissableMask]="false"
+      transitionOptions="120ms ease-out"
+      ariaLabelledBy="project-manager-title"
       [closable]="false"
       [closeOnEscape]="true"
       [blockScroll]="true"
@@ -65,101 +103,280 @@
       [contentStyle]="{ 'max-height': 'calc(100vh - 8rem)', overflow: 'auto' }"
     >
       <ng-template pTemplate="header">
-        @if (managerProject; as project) {
-          <div class="professor-manager__header">
-            <div>
-              <span class="professor-manager__eyebrow">Projeto</span>
-              <h2>{{ project.title }}</h2>
-              <p>{{ getProjectSummary(project) }}</p>
-            </div>
-            <button type="button" class="professor-manager__close" (click)="closeManager()" aria-label="Fechar"><i class="pi pi-times" aria-hidden="true"></i></button>
+        <div class="professor-manager__header">
+          <div>
+            <span class="professor-manager__eyebrow">Gerenciar projeto</span>
+            <h2 id="project-manager-title">{{ managerProject?.title || 'Carregando projeto…' }}</h2>
+            <p>Edite a divulgação, a capa e as oportunidades do projeto.</p>
           </div>
-        }
+          <button type="button" class="professor-manager__close" (click)="closeManager()" aria-label="Fechar edição">
+            <i class="pi pi-times" aria-hidden="true"></i>
+          </button>
+        </div>
       </ng-template>
 
       @if (loadingProject) {
-        <p class="professor-loading">Carregando detalhes do projeto...</p>
+        <p class="professor-loading" role="status">Carregando detalhes do projeto...</p>
       } @else {
         @if (managerProject; as project) {
-        @if (edit) {
-          <div class="professor-manager__body">
-          <section class="professor-section professor-section--readonly">
-            <header class="professor-section__head"><h3>Dados institucionais (SIE)</h3></header>
-            <dl class="professor-details">
-              <div><dt>Código do processo</dt><dd>{{ project.process_code || 'Não informado' }}</dd></div>
-              <div><dt>Tipo</dt><dd>{{ project.institutional.type || 'Não informado' }}</dd></div>
-              <div><dt>Situação</dt><dd>{{ project.institutional.status || 'Não informada' }}</dd></div>
-              <div><dt>Período institucional</dt><dd>{{ project.institutional.starts_at || 'Não informado' }} — {{ project.institutional.ends_at || 'Não informado' }}</dd></div>
-              <div><dt>Centro</dt><dd>{{ project.institutional.center?.name || 'Não informado' }}</dd></div>
-              <div><dt>Unidade executora</dt><dd>{{ project.institutional.executing_unit?.name || 'Não informada' }}</dd></div>
-              <div class="professor-details__full"><dt>Resumo institucional</dt><dd>{{ project.institutional.summary || 'Não informado' }}</dd></div>
-            </dl>
-          </section>
-
-          <section class="professor-section">
-            <header class="professor-section__head">
-              <h3>Conteúdo editorial</h3>
-              <button type="button" class="professor-btn" [disabled]="savingProject" (click)="saveProject()">{{ savingProject ? 'Salvando...' : 'Salvar conteúdo' }}</button>
-            </header>
-            <label>Descrição curta</label>
-            <textarea rows="2" class="professor-input" maxlength="400" [(ngModel)]="edit.descricao_curta"></textarea>
-            <label>Descrição de divulgação</label>
-            <textarea rows="4" class="professor-input" maxlength="10000" [(ngModel)]="edit.descricao"></textarea>
-            <small class="professor-helper">Apague todo o texto e salve para remover uma descrição local.</small>
-          </section>
-
-          <section class="professor-section">
-            <header class="professor-section__head">
-              <h3>Capa editorial</h3>
-              <button type="button" class="professor-btn professor-btn--ghost" [disabled]="savingLogo" (click)="saveLogo()">{{ savingLogo ? 'Salvando...' : 'Salvar capa' }}</button>
-            </header>
-            @if (edit.preview_url || edit.image_url) {
-              <figure class="professor-cover-preview"><img [src]="edit.preview_url || edit.image_url" [alt]="edit.alt_text || project.title" /></figure>
-            }
-            <label>Arquivo da imagem</label>
-            <input type="file" class="professor-input" accept="image/jpeg,image/png,image/webp,image/gif" (change)="onLogoSelected($event)" />
-            <small class="professor-helper">Formatos aceitos: JPG, PNG, WEBP ou GIF. Tamanho máximo: 5MB.</small>
-            <label>Texto alternativo</label>
-            <input type="text" class="professor-input" maxlength="255" placeholder="Descreva a imagem para acessibilidade" [(ngModel)]="edit.alt_text" />
-          </section>
-
-          <section class="professor-section">
-            <header class="professor-section__head">
-              <h3>Oportunidades locais</h3>
-              <button type="button" class="professor-btn professor-btn--ghost" (click)="showNewOpportunityForm = !showNewOpportunityForm">{{ showNewOpportunityForm ? 'Cancelar nova oportunidade' : 'Nova oportunidade' }}</button>
-            </header>
-            <ul class="professor-list">
-              @if (!project.opportunities.length) {
-                <li class="professor-list__empty">Nenhuma oportunidade cadastrada para este projeto.</li>
-              } @else {
-                @for (opportunity of project.opportunities; track opportunity.id) {
-                  <li>
-                    <div class="professor-opportunity__header">
-                      <div class="professor-opportunity__title"><strong>Oportunidade #{{ opportunity.id }}</strong><small>{{ opportunity.courses.length }} curso(s)</small></div>
-                      <button type="button" class="professor-icon-btn" aria-label="Remover oportunidade" [disabled]="deletingOpportunityId === opportunity.id" (click)="deleteOpportunity(opportunity.id)"><i class="pi pi-trash" aria-hidden="true"></i></button>
-                    </div>
-                    <p>{{ opportunity.description }}</p>
-                    <details class="professor-opportunity-details"><summary>Cursos relacionados</summary><small>{{ getCourseNames(opportunity.courses) }}</small></details>
-                  </li>
-                }
+          @if (edit) {
+            <nav class="professor-manager__nav" aria-label="Seções de edição">
+              @for (section of managerSections; track section.id) {
+                <button type="button" [class.is-active]="managerSection === section.id"
+                  [attr.aria-pressed]="managerSection === section.id" [attr.aria-controls]="'manager-' + section.id"
+                  (click)="managerSection = section.id">
+                  <i [class]="section.icon" aria-hidden="true"></i>{{ section.label }}
+                </button>
               }
-            </ul>
+            </nav>
+            <div class="professor-manager__body">
+              <section id="manager-institutional" [hidden]="managerSection !== 'institutional'" class="professor-section professor-section--readonly">
+                <header class="professor-section__head">
+                  <h3>Dados institucionais</h3>
+                </header>
+                <dl class="professor-details">
+                  <div>
+                    <dt>Código do processo</dt>
+                    <dd>{{ project.process_code || "Não informado" }}</dd>
+                  </div>
+                  <div>
+                    <dt>Tipo</dt>
+                    <dd>{{ project.institutional.type || "Não informado" }}</dd>
+                  </div>
+                  <div>
+                    <dt>Situação</dt>
+                    <dd>
+                      {{ project.institutional.status || "Não informada" }}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Período institucional</dt>
+                    <dd>
+                      {{ project.institutional.starts_at || "Não informado" }} —
+                      {{ project.institutional.ends_at || "Não informado" }}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Centro</dt>
+                    <dd>
+                      {{
+                        project.institutional.center?.name || "Não informado"
+                      }}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Unidade executora</dt>
+                    <dd>
+                      {{
+                        project.institutional.executing_unit?.name ||
+                          "Não informada"
+                      }}
+                    </dd>
+                  </div>
+                  <div class="professor-details__full">
+                    <dt>Resumo institucional</dt>
+                    <dd>
+                      {{ project.institutional.summary || "Não informado" }}
+                    </dd>
+                  </div>
+                </dl>
+              </section>
 
-            @if (showNewOpportunityForm) {
-              <div class="professor-opportunity-builder">
-                <h4>Nova oportunidade</h4>
-                <p>Descreva a oportunidade e selecione somente cursos vinculados a este projeto.</p>
-                <label>Descrição da oportunidade</label>
-                <textarea rows="3" class="professor-input" maxlength="1000" [(ngModel)]="newOpportunity.descricao"></textarea>
-                <label>Cursos do projeto</label>
-                <p-multiSelect styleClass="professor-courses-select" [options]="project.editorial.courses" [(ngModel)]="newOpportunity.curso_ids" optionLabel="name" optionValue="id" placeholder="Selecione os cursos" display="chip" [showClear]="true" [maxSelectedLabels]="1" selectedItemsLabel="{0} selecionados" appendTo="body" [filter]="true" emptyMessage="Este projeto não possui cursos vinculados" emptyFilterMessage="Nenhum curso corresponde" />
-                @if (!project.editorial.courses.length) { <small class="professor-helper">Não é possível criar oportunidades sem cursos vinculados ao projeto.</small> }
-                <button type="button" class="professor-btn" [disabled]="creatingOpportunity || !project.editorial.courses.length" (click)="createOpportunity()">{{ creatingOpportunity ? 'Criando...' : 'Criar oportunidade' }}</button>
-              </div>
-            }
-          </section>
-          </div>
-        }
+              <section id="manager-content" [hidden]="managerSection !== 'content'" class="professor-section">
+                <header class="professor-section__head">
+                  <h3>Conteúdo editorial</h3>
+                  <button
+                    type="button"
+                    class="professor-btn"
+                    [disabled]="savingProject"
+                    (click)="saveProject()"
+                  >
+                    {{ savingProject ? "Salvando..." : "Salvar conteúdo" }}
+                  </button>
+                </header>
+                <p class="professor-section__intro">Apresente o projeto ao público. Cada seção tem seu próprio botão de salvar.</p>
+                <label for="project-short-description">Descrição curta <span>{{ edit.descricao_curta.length }}/400</span></label>
+                <textarea
+                  id="project-short-description"
+                  rows="2"
+                  class="professor-input"
+                  maxlength="400"
+                  [(ngModel)]="edit.descricao_curta"
+                ></textarea>
+                <label for="project-description">Descrição de divulgação <span>{{ edit.descricao.length }}/10000</span></label>
+                <textarea
+                  id="project-description"
+                  rows="4"
+                  class="professor-input"
+                  maxlength="10000"
+                  [(ngModel)]="edit.descricao"
+                ></textarea>
+                <small class="professor-helper"
+                  >Apague todo o texto e salve para remover uma descrição
+                  local.</small
+                >
+              </section>
+
+              <section id="manager-cover" [hidden]="managerSection !== 'cover'" class="professor-section">
+                <header class="professor-section__head">
+                  <h3>Capa editorial</h3>
+                  <button
+                    type="button"
+                    class="professor-btn professor-btn--ghost"
+                    [disabled]="savingLogo"
+                    (click)="saveLogo()"
+                  >
+                    {{ savingLogo ? "Salvando..." : "Salvar capa" }}
+                  </button>
+                </header>
+                @if (edit.preview_url || edit.image_url) {
+                  <figure class="professor-cover-preview">
+                    <img
+                      [src]="edit.preview_url || edit.image_url"
+                      [alt]="edit.alt_text || project.title"
+                    />
+                  </figure>
+                }
+                <label for="project-cover">Arquivo da imagem</label>
+                <input
+                  id="project-cover"
+                  type="file"
+                  class="professor-input"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  (change)="onLogoSelected($event)"
+                />
+                <small class="professor-helper"
+                  >Formatos aceitos: JPG, PNG, WEBP ou GIF. Tamanho máximo:
+                  5MB.</small
+                >
+                <label for="project-cover-alt">Texto alternativo</label>
+                <input
+                  type="text"
+                  class="professor-input"
+                  id="project-cover-alt"
+                  maxlength="255"
+                  placeholder="Descreva a imagem para acessibilidade"
+                  [(ngModel)]="edit.alt_text"
+                />
+              </section>
+
+              <section id="manager-opportunities" [hidden]="managerSection !== 'opportunities'" class="professor-section">
+                <header class="professor-section__head">
+                  <h3>Oportunidades locais</h3>
+                  <button
+                    type="button"
+                    class="professor-btn professor-btn--ghost"
+                    (click)="showNewOpportunityForm = !showNewOpportunityForm"
+                  >
+                    {{
+                      showNewOpportunityForm
+                        ? "Cancelar nova oportunidade"
+                        : "Nova oportunidade"
+                    }}
+                  </button>
+                </header>
+                <ul class="professor-list">
+                  @if (!project.opportunities.length) {
+                    <li class="professor-list__empty">
+                      Nenhuma oportunidade cadastrada para este projeto.
+                    </li>
+                  } @else {
+                    @for (
+                      opportunity of project.opportunities;
+                      track opportunity.id
+                    ) {
+                      <li>
+                        <div class="professor-opportunity__header">
+                          <div class="professor-opportunity__title">
+                            <strong>Oportunidade #{{ opportunity.id }}</strong
+                            ><small
+                              >{{ opportunity.courses.length }} curso(s)</small
+                            >
+                          </div>
+                          <button
+                            type="button"
+                            class="professor-icon-btn"
+                            aria-label="Remover oportunidade"
+                            [disabled]="
+                              deletingOpportunityId === opportunity.id
+                            "
+                            (click)="deleteOpportunity(opportunity.id)"
+                          >
+                            <i class="pi pi-trash" aria-hidden="true"></i>
+                          </button>
+                        </div>
+                        <p>{{ opportunity.description }}</p>
+                        <details class="professor-opportunity-details">
+                          <summary>Cursos relacionados</summary>
+                          <small>{{
+                            getCourseNames(opportunity.courses)
+                          }}</small>
+                        </details>
+                      </li>
+                    }
+                  }
+                </ul>
+
+                @if (showNewOpportunityForm) {
+                  <div class="professor-opportunity-builder">
+                    <h4>Nova oportunidade</h4>
+                    <p>
+                      Descreva a oportunidade e selecione somente cursos
+                      vinculados a este projeto.
+                    </p>
+                    <label for="opportunity-description"
+                      >Descrição da oportunidade</label
+                    >
+                    <textarea
+                      id="opportunity-description"
+                      rows="3"
+                      class="professor-input"
+                      maxlength="1000"
+                      [(ngModel)]="newOpportunity.descricao"
+                    ></textarea>
+                    <label for="opportunity-courses">Cursos do projeto</label>
+                    <p-multiSelect
+                      inputId="opportunity-courses"
+                      styleClass="professor-courses-select"
+                      [options]="project.editorial.courses"
+                      [(ngModel)]="newOpportunity.curso_ids"
+                      optionLabel="name"
+                      optionValue="id"
+                      placeholder="Selecione os cursos"
+                      display="chip"
+                      [showClear]="true"
+                      [maxSelectedLabels]="1"
+                      selectedItemsLabel="{0} selecionados"
+                      appendTo="body"
+                      [filter]="true"
+                      emptyMessage="Este projeto não possui cursos vinculados"
+                      emptyFilterMessage="Nenhum curso corresponde"
+                    />
+                    @if (!project.editorial.courses.length) {
+                      <small class="professor-helper"
+                        >Não é possível criar oportunidades sem cursos
+                        vinculados ao projeto.</small
+                      >
+                    }
+                    <button
+                      type="button"
+                      class="professor-btn"
+                      [disabled]="
+                        creatingOpportunity || !project.editorial.courses.length
+                      "
+                      (click)="createOpportunity()"
+                    >
+                      {{
+                        creatingOpportunity
+                          ? "Criando..."
+                          : "Criar oportunidade"
+                      }}
+                    </button>
+                  </div>
+                }
+              </section>
+            </div>
+          }
         }
       }
     </p-dialog>
