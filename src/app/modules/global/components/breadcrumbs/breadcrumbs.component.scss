@@ -44,7 +44,9 @@
   color: var(--on-surface-variant);
   text-decoration: none;
   font-weight: 500;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 
   &:hover {
     background: rgba(0, 75, 130, 0.06);

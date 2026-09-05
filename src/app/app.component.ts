@@ -1,5 +1,5 @@
 import { Component } from '@angular/core'
-import { Router, RouterOutlet } from '@angular/router'
+import { Router, RouterOutlet, RouterLink } from '@angular/router'
 import { PrimeNG } from 'primeng/config'
 import { ToastModule } from 'primeng/toast'
 import { HelpFabComponent } from './modules/global/components/help-fab/help-fab.component'
@@ -7,7 +7,7 @@ import { HelpFabComponent } from './modules/global/components/help-fab/help-fab.
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ToastModule, HelpFabComponent],
+  imports: [RouterOutlet, ToastModule, HelpFabComponent, RouterLink],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

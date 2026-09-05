@@ -1,0 +1,55 @@
+.portal-footer {
+  background: var(--surface);
+  border-top: 1px solid var(--outline-variant);
+  padding: 32px var(--gutter) 26px;
+}
+.portal-footer__inner {
+  max-width: calc(var(--container-max) - 2 * var(--gutter));
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  align-items: center;
+}
+.portal-footer__brand strong {
+  font-size: 1rem;
+  letter-spacing: 0.07em;
+  color: var(--primary-color);
+}
+.portal-footer__brand strong span {
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+.portal-footer__brand p {
+  font-size: 0.69rem;
+  color: var(--on-surface-variant);
+  margin: 7px 0 0;
+  max-width: 55ch;
+}
+.portal-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  font-size: 0.73rem;
+}
+.portal-footer nav i {
+  font-size: 0.6rem;
+}
+.portal-footer__institution {
+  max-width: calc(var(--container-max) - 2 * var(--gutter));
+  margin: 24px auto 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--outline-variant);
+  color: var(--on-surface-variant);
+  font-size: 0.63rem;
+}
+@media (max-width: 640px) {
+  .portal-footer {
+    padding-bottom: 75px;
+  }
+  .portal-footer__inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+  }
+}

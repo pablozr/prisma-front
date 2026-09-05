@@ -11,5 +11,28 @@
 />
 <router-outlet />
 @if (showHelpFab) {
+  <footer class="portal-footer">
+    <div class="portal-footer__inner">
+      <div class="portal-footer__brand">
+        <strong>PRISMA <span>· UNIRIO</span></strong>
+        <p>
+          Plataforma de Referência e Integração de Saberes e Mediação Acadêmica.
+        </p>
+      </div>
+      <nav aria-label="Links do rodapé">
+        <a routerLink="/home">Início</a><a routerLink="/catalogo">Catálogo</a
+        ><a
+          href="https://www.unirio.br/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Portal UNIRIO <i class="pi pi-arrow-up-right" aria-hidden="true"></i
+          ><span class="sr-only"> (abre em nova aba)</span></a
+        >
+      </nav>
+    </div>
+    <p class="portal-footer__institution">
+      Universidade Federal do Estado do Rio de Janeiro
+    </p>
+  </footer>
   <app-help-fab></app-help-fab>
 }
