@@ -1,140 +1,146 @@
 <div class="auth-split">
-  <aside class="auth-split__hero" aria-label="Identidade visual">
+  <aside
+    class="auth-split__hero"
+    aria-label="Identidade institucional da UNIRIO"
+  >
     <div class="auth-split__hero-media">
-      <img [src]="authHeroSrc" alt="" width="1200" height="1600" decoding="async" fetchpriority="high" />
-      <div class="auth-split__hero-overlay" aria-hidden="true"></div>
-      <app-auth-hero-caption />
+      <img
+        src="assets/images/maxresdefault.jpg"
+        alt="UNIRIO — Universidade Federal do Estado do Rio de Janeiro"
+        width="1280"
+        height="720"
+        fetchpriority="high"
+        decoding="async"
+      />
     </div>
+    <app-auth-hero-caption />
   </aside>
-
-  @if (isLoading) {
-    <div class="auth-split__loading" role="status" aria-live="polite">
-      <app-loading />
-    </div>
-  } @else {
-    <main class="auth-split__panel">
-      <aside class="auth-mobile-banner">
-        <div class="auth-mobile-banner__top">
-          <img
-            src="assets/images/novo-logo.png"
-            alt="UNIRIO — Universidade Federal do Estado do Rio de Janeiro"
-            class="auth-mobile-banner__logo"
-            width="72"
-            height="44"
-            decoding="async"
-          />
-          <div class="auth-mobile-banner__meta">
-            <span class="auth-mobile-banner__year">UNIRIO</span>
-            <span class="auth-mobile-banner__year-sub">2026.1</span>
-          </div>
-        </div>
-
-        <div class="auth-mobile-banner__body">
-          <p class="auth-mobile-banner__kicker">Portal institucional acadêmico</p>
-          <h2 class="auth-mobile-banner__title">
-            PRISMA
-            <span class="auth-mobile-banner__title-bar" aria-hidden="true"></span>
-          </h2>
-          <p class="auth-mobile-banner__lead">
-            Plataforma de Referência e Integração de Saberes e Mediação Acadêmica da Universidade Federal do Estado do Rio de Janeiro.
-          </p>
-        </div>
-
-        <span class="auth-mobile-banner__watermark" aria-hidden="true">PRISMA</span>
-      </aside>
-
+  <main class="auth-split__panel" id="conteudo" tabindex="-1">
+    <a routerLink="/home" class="auth-back"
+      ><i class="pi pi-arrow-left" aria-hidden="true"></i> Voltar ao portal</a
+    >
+    @if (isLoading) {
+      <div class="auth-split__loading" role="status" aria-live="polite">
+        <app-loading />
+        <p>Entrando na sua conta…</p>
+      </div>
+    } @else {
       <div class="auth-split__inner">
-        <p class="auth-split__brand">Portal institucional</p>
-
+        <span class="auth-mobile-brand">PRISMA <span>UNIRIO</span></span>
         <header class="auth-panel-header">
-          <p class="auth-panel-header__eyebrow">Autenticação</p>
-          <h1 class="auth-panel-header__title">Entrar</h1>
-          <p class="auth-panel-header__lead">Selecione a forma de acesso adequada ao seu perfil.</p>
+          <span class="eyebrow">Acesso institucional</span>
+          <h1>Entrar no PRISMA</h1>
+          <p>Selecione a forma de acesso correspondente ao seu perfil.</p>
         </header>
-
         <div class="auth-tabs" role="tablist" aria-label="Tipo de acesso">
           <button
+            id="community-tab"
             type="button"
             role="tab"
+            aria-controls="signin-panel"
+            [attr.tabindex]="activeTab === 'community' ? 0 : -1"
             class="auth-tab"
             [class.auth-tab--active]="activeTab === 'community'"
             [attr.aria-selected]="activeTab === 'community'"
+            (keydown.arrowright)="setTab('admin'); adminTab.focus()"
             (click)="setTab('community')"
+            #communityTab
           >
-            <i class="pi pi-users" aria-hidden="true"></i>
-            <span>Comunidade acadêmica</span>
+            Comunidade acadêmica
           </button>
           <button
+            id="admin-tab"
             type="button"
             role="tab"
+            aria-controls="signin-panel"
+            [attr.tabindex]="activeTab === 'admin' ? 0 : -1"
             class="auth-tab"
             [class.auth-tab--active]="activeTab === 'admin'"
             [attr.aria-selected]="activeTab === 'admin'"
+            (keydown.arrowleft)="setTab('community'); communityTab.focus()"
             (click)="setTab('admin')"
+            #adminTab
           >
-            <i class="pi pi-shield" aria-hidden="true"></i>
-            <span>Administrador</span>
+            Administrador
           </button>
         </div>
-
-        @if (activeTab === 'community') {
-          <section class="auth-tab-panel" role="tabpanel" aria-label="Acesso da comunidade acadêmica">
-            <div class="auth-google-card">
-              <div class="auth-google-card__header">
-                <span class="auth-google-card__badge">UNIRIO</span>
-                <div class="auth-google-card__copy">
-                  <h2>Acesso institucional</h2>
-                  <p>Você será redirecionado ao Google para entrar com sua conta institucional.</p>
-                </div>
-              </div>
-
-              <button type="button" class="google-login-button" (click)="loginWithGoogle()" [disabled]="googleLoginLoading">
-                <span class="google-login-button__icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="20" height="20" focusable="false" aria-hidden="true">
-                    <path fill="#EA4335" d="M12 10.2v3.95h5.5c-.24 1.27-.96 2.35-2.05 3.07l3.32 2.57c1.93-1.78 3.03-4.4 3.03-7.51 0-.72-.06-1.42-.19-2.08H12z"/>
-                    <path fill="#34A853" d="M12 22c2.75 0 5.07-.9 6.76-2.44l-3.32-2.57c-.92.62-2.1.99-3.44.99-2.65 0-4.9-1.79-5.7-4.19l-3.43 2.65C4.54 19.73 8 22 12 22z"/>
-                    <path fill="#4A90E2" d="M6.3 13.79A5.95 5.95 0 0 1 6 12c0-.62.1-1.22.3-1.79L2.87 7.56A9.98 9.98 0 0 0 2 12c0 1.61.39 3.13 1.07 4.44l3.23-2.65z"/>
-                    <path fill="#FBBC05" d="M12 5.96c1.5 0 2.84.52 3.9 1.53l2.92-2.92C17.06 2.94 14.74 2 12 2 8 2 4.54 4.27 2.87 7.56l3.43 2.65c.8-2.4 3.05-4.25 5.7-4.25z"/>
-                  </svg>
-                </span>
-
-                <span>
-                  @if (googleLoginLoading) {
-                    Redirecionando...
-                  } @else {
-                    Continuar com Google institucional
-                  }
-                </span>
-              </button>
-
-              <p class="auth-tab-panel__meta">
-                Use a conta institucional reconhecida pelo SIE, como um e-mail terminado em
-                <strong>&#64;unirio.br</strong>
-                ou
-                <strong>&#64;edu.unirio.br</strong>.
-              </p>
-            </div>
-          </section>
-        }
-
-        @if (activeTab === 'admin') {
-          <section class="auth-tab-panel" role="tabpanel" aria-label="Acesso administrador">
-            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form auth-form--tight">
+        <section
+          id="signin-panel"
+          class="auth-tab-panel"
+          role="tabpanel"
+          [attr.aria-labelledby]="
+            activeTab === 'community' ? 'community-tab' : 'admin-tab'
+          "
+        >
+          @if (activeTab === "community") {
+            <h2>Conta institucional UNIRIO</h2>
+            <p>
+              Alunos, docentes e técnicos devem utilizar a conta institucional
+              reconhecida pelo SIE.
+            </p>
+            <button
+              type="button"
+              class="google-login-button"
+              (click)="loginWithGoogle()"
+              [disabled]="googleLoginLoading"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                aria-hidden="true"
+              >
+                <path
+                  fill="#4285F4"
+                  d="M21.6 12.23c0-.71-.06-1.39-.18-2.05H12v3.88h5.38a4.61 4.61 0 0 1-2 3.03v2.52h3.24c1.89-1.74 2.98-4.3 2.98-7.38Z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 22c2.7 0 4.96-.9 6.62-2.39l-3.24-2.52c-.9.6-2.04.97-3.38.97-2.6 0-4.81-1.76-5.6-4.12H3.05v2.6A10 10 0 0 0 12 22Z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M6.4 13.94a6 6 0 0 1 0-3.88v-2.6H3.05a10 10 0 0 0 0 9.08l3.35-2.6Z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.94c1.47 0 2.79.5 3.82 1.5l2.87-2.87A9.61 9.61 0 0 0 12 2a10 10 0 0 0-8.95 5.46l3.35 2.6A5.99 5.99 0 0 1 12 5.94Z"
+                />
+              </svg>
+              {{
+                googleLoginLoading
+                  ? "Redirecionando…"
+                  : "Entrar com Google institucional"
+              }}
+            </button>
+            <p class="auth-account-hint">
+              <i class="pi pi-lock" aria-hidden="true"></i
+              ><span
+                >Use sua conta <strong>&#64;unirio.br</strong> ou
+                <strong>&#64;edu.unirio.br</strong> reconhecida pelo SIE.</span
+              >
+            </p>
+          } @else {
+            <form
+              [formGroup]="loginForm"
+              (ngSubmit)="onSubmit()"
+              class="auth-form"
+            >
               <div class="auth-field">
-                <label class="auth-label" for="email">E-mail</label>
-                <input
+                <label for="email">E-mail de administrador</label
+                ><input
                   pInputText
                   id="email"
                   class="auth-input"
                   formControlName="email"
                   type="email"
-                  autocomplete="email"
-                  placeholder="admin@unirio.br"
-                  [ngClass]="{ 'input-invalid': isInvalid }"
+                  autocomplete="username"
+                  placeholder="seu.email&#64;unirio.br"
+                  [attr.aria-invalid]="isInvalid"
                 />
               </div>
               <div class="auth-field">
-                <label class="auth-label" for="password">Palavra-passe</label>
+                <label for="password">Senha</label>
                 <div class="auth-password-wrap">
                   <input
                     pInputText
@@ -143,24 +149,43 @@
                     formControlName="password"
                     [type]="visiblePassword ? 'text' : 'password'"
                     autocomplete="current-password"
-                    placeholder="••••••••"
-                    [ngClass]="{ 'input-invalid': isInvalid }"
-                  />
-                  <button type="button" class="auth-eye" (click)="togglePassword()" aria-label="Mostrar ou ocultar palavra-passe">
-                    <i [class]="visiblePassword ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
+                    placeholder="Sua senha"
+                    [attr.aria-invalid]="isInvalid"
+                  /><button
+                    type="button"
+                    class="auth-eye"
+                    (click)="togglePassword()"
+                    [attr.aria-label]="
+                      visiblePassword ? 'Ocultar senha' : 'Mostrar senha'
+                    "
+                  >
+                    <i
+                      [class]="
+                        visiblePassword ? 'pi pi-eye-slash' : 'pi pi-eye'
+                      "
+                      aria-hidden="true"
+                    ></i>
                   </button>
                 </div>
               </div>
-              <button pButton pRipple type="submit" class="auth-submit">
-                <span>Entrar</span>
+              <button type="submit" class="portal-button">
+                Entrar <i class="pi pi-arrow-right" aria-hidden="true"></i>
               </button>
             </form>
-          </section>
-        }
+          }
+        </section>
+        <div class="auth-public">
+          <span>O catálogo de projetos é público.</span
+          ><a routerLink="/catalogo"
+            >Consultar sem entrar
+            <i class="pi pi-arrow-right" aria-hidden="true"></i
+          ></a>
+        </div>
       </div>
-    </main>
-  }
+    }
+    <span class="auth-panel-footer"
+      >PRISMA · Universidade Federal do Estado do Rio de Janeiro</span
+    >
+  </main>
 </div>
-<div class="auth-theme-fab">
-  <app-button-theme [compact]="true" />
-</div>
+<div class="auth-theme-fab"><app-button-theme [compact]="true" /></div>
