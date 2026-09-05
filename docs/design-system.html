@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>PRISMA — Sistema de design</title>
+<style>
+@charset "UTF-8";
+
+@layer reset, primeng;
+/* PRISMA — see DESIGN_SYSTEM.md. Institutional colors from UNIRIO's visual guide. */
+:root {
+  color-scheme: light;
+  --unirio-blue: #004169;
+  --unirio-navy: #132e53;
+  --unirio-cyan: #0099cc;
+  --primary-color: #004169;
+  --primary-strong: #132e53;
+  --secondary-color: #fff;
+  --link-color: #004169;
+  --secondary-green: #465f11;
+  --on-surface: #172b3c;
+  --on-surface-variant: #586a78;
+  --outline: #758795;
+  --outline-variant: #dde5eb;
+  --surface-tint: #007ea8;
+  --scrollbar-thumb: #acbbc5;
+  --canvas: #ffffff;
+  --surface: #fff;
+  --surface-soft: #f3f5f6;
+  --surface-paper: #f8f9f7;
+  --surface-blue: #e8f2f8;
+  --success-bg: #edf4e6;
+  --success-text: #465f11;
+  --shadow-color: rgba(19, 46, 83, 0.06);
+  --shadow-sm: none;
+  --shadow-lg: 0 24px 70px rgba(19, 46, 83, 0.14);
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-comfort: 12px;
+  --container-max: 1240px;
+  --gutter: clamp(20px, 4vw, 48px);
+  --overlay-bg: rgba(13, 31, 47, 0.45);
+  --accent-gradient: linear-gradient(120deg, #004169, #132e53);
+  --header-bg: #004169;
+  --header-text: var(--on-surface);
+  --header-muted: var(--on-surface-variant);
+  --header-role: var(--primary-color);
+  --auth-panel-bg: var(--canvas);
+  --auth-panel-solid: var(--surface);
+  --auth-text: var(--on-surface);
+  --auth-heading: var(--primary-strong);
+  --auth-muted: var(--on-surface-variant);
+  --auth-muted-strong: var(--on-surface-variant);
+  --auth-label: var(--on-surface);
+  --auth-input-bg: var(--surface);
+  --auth-input-border: var(--outline-variant);
+  --auth-input-focus-bg: var(--surface);
+  --auth-input-placeholder: var(--outline);
+  --auth-cta-bg: var(--surface-blue);
+  --auth-cta-border: var(--outline-variant);
+  --auth-cta-hover: var(--surface-soft);
+  --auth-divider: var(--outline-variant);
+}
+
+.my-app-dark {
+  color-scheme: dark;
+  --primary-color: #91cceb;
+  --primary-strong: #c0e6fb;
+  --secondary-color: #102a3e;
+  --link-color: #91cceb;
+  --secondary-green: #bfdb88;
+  --on-surface: #e8eff5;
+  --on-surface-variant: #a8bac9;
+  --outline: #93a9ba;
+  --outline-variant: #344858;
+  --surface-tint: #70c9ea;
+  --canvas: #111d28;
+  --surface: #1a2a38;
+  --surface-soft: #223644;
+  --surface-paper: #142330;
+  --surface-blue: #203c50;
+  --success-bg: #2b3c2b;
+  --success-text: #bfdb88;
+  --header-bg: rgba(26, 42, 56, 0.96);
+  --shadow-sm: none;
+  --shadow-lg: 0 24px 70px rgba(0, 0, 0, 0.35);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 130px;
+}
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--on-surface);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a,
+input,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--on-surface);
+  line-height: 1.25;
+}
+
+h1 {
+  letter-spacing: -0.045em;
+}
+
+h2 {
+  letter-spacing: -0.025em;
+}
+
+img {
+  max-width: 100%;
+}
+
+::selection {
+  background: #bde7f5;
+  color: #132e53;
+}
+
+:focus-visible {
+  outline: 3px solid var(--surface-tint);
+  outline-offset: 4px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--on-surface-variant);
+  opacity: 1;
+}
+
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 12px;
+  z-index: 15000;
+  transform: translateY(-150%);
+  padding: 12px 20px;
+  background: var(--surface);
+  border: 2px solid var(--primary-color);
+  border-radius: 10px;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.eyebrow {
+  display: block;
+  color: var(--primary-color);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.portal-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid var(--primary-color);
+  border-radius: var(--radius-md);
+  background: var(--primary-color);
+  color: var(--secondary-color);
+  font-size: 0.875rem;
+  font-weight: 650;
+  line-height: 1.4;
+  text-decoration: none;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+.portal-button:hover:not(:disabled) {
+  background: var(--primary-strong);
+  border-color: var(--primary-strong);
+  text-decoration: none;
+}
+.portal-button:focus-visible {
+  outline: 3px solid var(--surface-tint);
+  outline-offset: 3px;
+}
+.portal-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.portal-button:hover {
+  background: var(--primary-strong);
+  text-decoration: none;
+}
+
+.portal-button--secondary {
+  background: var(--surface);
+  color: var(--primary-color);
+  border-color: var(--outline);
+}
+.portal-button--secondary:hover:not(:disabled) {
+  background: var(--surface-blue);
+  border-color: var(--primary-color);
+}
+
+.portal-button--secondary:hover {
+  background: var(--surface-soft);
+}
+
+.portal-state {
+  text-align: center;
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  padding: 40px 24px;
+  background: var(--surface);
+}
+
+.portal-state > i {
+  display: inline-grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 16px;
+  background: var(--surface-blue);
+  color: var(--primary-color);
+  margin-bottom: 16px;
+  font-size: 1.3rem;
+}
+
+.portal-state h2,
+.portal-state h3 {
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+}
+
+.portal-state p {
+  color: var(--on-surface-variant);
+  max-width: 54ch;
+  margin: 0 auto 20px;
+  font-size: 0.9rem;
+}
+
+.skeleton-line {
+  display: block;
+  height: 14px;
+  width: 85%;
+  border-radius: 6px;
+  background: var(--surface-soft);
+  margin: 14px 0;
+  animation: breathe 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes breathe {
+  to {
+    opacity: 0.4;
+  }
+}
+.p-button,
+.p-inputtext,
+.p-select,
+.p-multiselect,
+.p-textarea {
+  border-radius: var(--radius-sm);
+}
+
+.p-button {
+  min-height: 44px;
+  font-weight: 650;
+  gap: 0.625rem;
+}
+
+.p-button-outlined, .p-button-secondary {
+  border-color: var(--outline);
+}
+
+.p-button:focus-visible {
+  outline: 3px solid var(--surface-tint);
+  outline-offset: 3px;
+}
+
+.p-dialog {
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  background: var(--surface);
+  color: var(--on-surface);
+  overflow: hidden;
+}
+
+.p-dialog-header,
+.p-dialog-content,
+.p-dialog-footer {
+  background: var(--surface);
+  color: var(--on-surface);
+}
+
+.p-dialog-mask {
+  background: var(--overlay-bg);
+}
+
+.p-toast.app-toast-stack {
+  width: min(24rem, 100vw - 2rem);
+}
+
+.p-toast.app-toast-stack .p-toast-message {
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+}
+
+.p-toast.app-toast-stack .p-toast-detail {
+  font-size: 0.875rem;
+}
+
+.p-tabpanels {
+  background: var(--surface);
+}
+
+.p-tablist-tab-list {
+  background: var(--surface);
+}
+
+.p-dataview-content,
+.p-paginator {
+  background: transparent;
+}
+
+.p-paginator {
+  margin-top: 24px;
+  font-size: 0.875rem;
+}
+
+.p-multiselect-overlay,
+.p-select-overlay {
+  max-width: calc(100vw - 32px);
+}
+
+.p-multiselect-label,
+.p-select-label {
+  min-width: 0;
+}
+
+.p-multiselect-option-label,
+.p-select-option-label {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .p-toast.app-toast-stack {
+    right: 1rem;
+  }
+  .p-dialog {
+    max-height: 94dvh;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+body .p-inputtext::placeholder {
+  color: var(--on-surface-variant);
+  opacity: 1;
+}
+
+.project-cover-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  background: var(--surface-soft);
+  color: var(--on-surface-variant);
+  text-align: center;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.project-cover-placeholder > i {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 1px dashed var(--outline);
+  border-radius: var(--radius-lg);
+  color: var(--on-surface-variant);
+  font-size: 1.5rem;
+}
+.ds-masthead{background:#004169;color:white;padding:26px max(24px,calc((100vw - 1120px)/2));display:flex;align-items:center;gap:28px}.ds-masthead img{width:160px;height:auto}.ds-masthead strong{border-left:1px solid #ffffff66;padding-left:28px;font-size:22px;letter-spacing:.05em}.ds-masthead span{font-size:13px;font-weight:400;display:block;letter-spacing:0;color:#d0e3ed}.ds-nav{border-bottom:1px solid var(--outline-variant);padding:0 max(24px,calc((100vw - 1120px)/2));display:flex;gap:25px;align-items:center;flex-wrap:wrap}.ds-nav a{padding:14px 0;font-size:13px}.ds-nav button{margin-left:auto;background:transparent;color:var(--primary-color);border:1px solid var(--outline);border-radius:4px;padding:7px 12px;font-size:12px}.ds-main{max-width:1168px;margin:auto;padding:40px 24px 70px}.ds-main>header{border-bottom:1px solid var(--outline-variant);padding-bottom:28px}.ds-main h1{font-size:36px;font-weight:600;margin-bottom:14px}.ds-main>header p{max-width:70ch;color:var(--on-surface-variant);font-size:15px}.ds-section{padding:32px 0;border-bottom:1px solid var(--outline-variant);display:grid;grid-template-columns:220px 1fr;gap:40px}.ds-section h2{font-size:20px;font-weight:600}.ds-section>div>p{font-size:14px;color:var(--on-surface-variant)}.ds-section h3{font-size:18px;font-weight:600}.ds-palette{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}.ds-swatch{height:64px;border:1px solid var(--outline-variant);margin-bottom:10px}.ds-palette strong{font-size:13px;display:block}.ds-palette code{font-size:11px;color:var(--on-surface-variant);display:block;margin-top:3px}.ds-table{border-collapse:collapse;width:100%;font-size:14px}.ds-table th{font-size:12px;color:var(--on-surface-variant);font-weight:600;background:var(--surface-soft);text-align:left}.ds-table th,.ds-table td{border-bottom:1px solid var(--outline-variant);padding:14px 12px;vertical-align:top}.ds-type-title{font-size:34px;line-height:1.2;font-weight:600;letter-spacing:-.035em}.ds-type-section{font-size:24px;font-weight:600}.ds-type-body{font-size:16px;line-height:1.7}.ds-type-meta{font-size:12px;color:var(--on-surface-variant)}.ds-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.ds-form{max-width:470px;display:grid;gap:8px;margin-top:25px}.ds-form label{font-size:14px;font-weight:600}.ds-form input{min-height:46px;border:1px solid var(--outline);border-radius:4px;background:var(--surface);color:var(--on-surface);padding:12px}.ds-form small{font-size:12px;color:var(--on-surface-variant)}.ds-note{border-left:3px solid var(--primary-color);background:var(--surface-soft);padding:18px 20px;font-size:14px}.ds-list{list-style:none;padding:0;margin:0}.ds-list li{padding:17px 0;border-top:1px solid var(--outline-variant)}.ds-list strong{display:block;font-size:15px;margin-bottom:6px}.ds-list span{font-size:14px;color:var(--on-surface-variant)}.ds-spacing{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap}.ds-spacing>div{display:grid;gap:8px;font-size:12px}.ds-spacing i{display:block;background:var(--primary-color);width:28px}.ds-dialog{max-width:460px;width:calc(100vw - 40px);padding:30px;border:1px solid var(--outline-variant);border-radius:10px;background:var(--surface);color:var(--on-surface);box-shadow:var(--shadow-lg)}.ds-dialog::backdrop{background:#10243588}.ds-dialog p{font-size:14px;color:var(--on-surface-variant)}.ds-footer{font-size:12px;color:var(--on-surface-variant);margin-top:24px}
+@media(max-width:700px){.ds-section{grid-template-columns:1fr;gap:16px}.ds-palette{grid-template-columns:repeat(2,1fr)}.ds-masthead{gap:18px}.ds-masthead img{width:120px}.ds-masthead strong{font-size:18px;padding-left:18px}.ds-nav{gap:15px}.ds-nav button{margin:8px 0}.ds-main h1{font-size:28px}}
+</style></head>
+<body>
+<header class="ds-masthead"><img src="data:image/png;base64,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" alt="UNIRIO"><strong>PRISMA<span>Sistema de design institucional</span></strong></header>
+<nav class="ds-nav" aria-label="Seções da referência"><a href="#identidade">Identidade</a><a href="#tipografia">Tipografia</a><a href="#componentes">Componentes</a><a href="#conteudo">Conteúdo</a><button id="theme" type="button" aria-pressed="false">Alternar tema</button></nav>
+<main class="ds-main">
+<header><h1>Referência de interface</h1><p>Fundamentos e componentes do portal acadêmico. Esta página utiliza os tokens reais do projeto e demonstra seus estados; não contém publicações ou dados institucionais simulados.</p></header>
+<section class="ds-section" id="identidade"><h2>01 / Identidade</h2><div><div class="ds-palette"><div><div class="ds-swatch" style="background:var(--unirio-blue)"></div><strong>Azul institucional</strong><code>--unirio-blue</code><code>Claro: #004169</code></div><div><div class="ds-swatch" style="background:var(--unirio-navy)"></div><strong>Azul de apoio</strong><code>--unirio-navy</code><code>Claro: #132E53</code></div><div><div class="ds-swatch" style="background:var(--unirio-cyan)"></div><strong>Ciano institucional</strong><code>--unirio-cyan</code><code>Claro: #0099CC</code></div><div><div class="ds-swatch" style="background:var(--on-surface)"></div><strong>Texto principal</strong><code>--on-surface</code><code>Claro: #172B3C</code></div><div><div class="ds-swatch" style="background:var(--on-surface-variant)"></div><strong>Texto complementar</strong><code>--on-surface-variant</code><code>Claro: #586A78</code></div><div><div class="ds-swatch" style="background:var(--surface-soft)"></div><strong>Superfície auxiliar</strong><code>--surface-soft</code><code>Claro: #F3F5F6</code></div></div><p style="margin-top:24px">Marca negativa sobre azul UNIRIO, proporção preservada, sem caixa ou efeitos adicionais. As cores de interface são semânticas e mudam com o tema.</p></div></section>
+<section class="ds-section" id="tipografia"><h2>02 / Tipografia</h2><div><table class="ds-table"><thead><tr><th>Estilo</th><th>Aplicação</th></tr></thead><tbody><tr><td class="ds-type-title">Projetos acadêmicos</td><td>Título / 32–44 px / 600</td></tr><tr><td class="ds-type-section">Projetos publicados</td><td>Seção / 22–26 px / 600</td></tr><tr><td class="ds-type-body">Consulta pública aos projetos da universidade.</td><td>Texto / 16 px / 1,7</td></tr><tr><td class="ds-type-meta">Período · Unidade · Responsáveis</td><td>Metadados / 12–13 px</td></tr></tbody></table></div></section>
+<section class="ds-section"><h2>03 / Espaçamento</h2><div><div class="ds-spacing"><div><i style="height:4px"></i><span>4 px</span></div><div><i style="height:8px"></i><span>8 px</span></div><div><i style="height:12px"></i><span>12 px</span></div><div><i style="height:16px"></i><span>16 px</span></div><div><i style="height:24px"></i><span>24 px</span></div><div><i style="height:32px"></i><span>32 px</span></div><div><i style="height:48px"></i><span>48 px</span></div><div><i style="height:64px"></i><span>64 px</span></div></div><p style="margin-top:24px">Container de 1240 px; margens responsivas de 20 a 48 px. Raios de 4 px para controles, 6 px para agrupamentos e 10 px para diálogos. Separadores e espaço organizam o conteúdo.</p></div></section>
+<section class="ds-section" id="componentes"><h2>04 / Componentes</h2><div><div class="ds-actions"><button class="portal-button" type="button" id="open-dialog">Abrir exemplo de diálogo</button><button class="portal-button portal-button--secondary" type="button" id="clear">Limpar campo</button><button class="portal-button" type="button" disabled>Indisponível</button></div><div class="ds-form"><label for="example">Campo de exemplo</label><input id="example" type="text" aria-describedby="field-help" placeholder="Digite para conferir o estado de foco"><small id="field-help">Use Tab para percorrer os controles e verificar o foco visível.</small></div><p class="ds-note" style="margin-top:24px">Aviso contextual: informar a situação, sua consequência e o próximo passo. Erros de leitura não devem parecer resultados vazios.</p></div></section>
+<section class="ds-section" id="conteudo"><h2>05 / Informação</h2><div><ul class="ds-list"><li><strong>Listas de publicações</strong><span>Tipo → título completo → resumo → unidade. A ação abre os detalhes do registro.</span></li><li><strong>Formulários de gestão</strong><span>Labels associados, seções por finalidade, ação de salvar junto ao conteúdo editável.</span></li><li><strong>Tabelas administrativas</strong><span>Cabeçalho explícito, separadores por linha e rolagem horizontal restrita à tabela.</span></li><li><strong>Imagens</strong><span>Materiais institucionais existentes e capas publicadas pela API. Sem substitutos fictícios.</span></li></ul></div></section>
+<section class="ds-section"><h2>06 / Linguagem</h2><div><table class="ds-table"><thead><tr><th>Contexto</th><th>Texto</th></tr></thead><tbody><tr><td>Busca</td><td>Buscar no catálogo</td></tr><tr><td>Autenticação</td><td>Entrar no PRISMA</td></tr><tr><td>Gestão</td><td>Salvar conteúdo</td></tr><tr><td>Falha de consulta</td><td>Consulta temporariamente indisponível</td></tr><tr><td>Ausência de dado</td><td>Não informado</td></tr></tbody></table></div></section>
+<p class="ds-footer">Gerado por scripts/build-design-system.mjs a partir de src/styles.scss. Regras de aplicação em DESIGN_SYSTEM.md.</p>
+</main>
+<dialog class="ds-dialog" id="sample-dialog" aria-labelledby="dialog-title"><h2 id="dialog-title">Diálogo de referência</h2><p>Este é um exemplo de componente. A interação não altera dados do portal.</p><form method="dialog"><button class="portal-button" type="submit">Fechar</button></form></dialog>
+<script>
+document.getElementById('theme').addEventListener('click', function(){const dark=document.documentElement.classList.toggle('my-app-dark');this.setAttribute('aria-pressed',String(dark))});
+document.getElementById('open-dialog').addEventListener('click',()=>document.getElementById('sample-dialog').showModal());
+document.getElementById('clear').addEventListener('click',()=>{const field=document.getElementById('example');field.value='';field.focus()});
+</script>
+</body></html>

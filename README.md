@@ -85,3 +85,7 @@ npm test -- --watch=false
 ## Regra de documentação
 
 Recursos ainda não implementados devem ser descritos no TCC como trabalhos futuros, limitações ou possibilidades de evolução. Notificações e envio automático de e-mails não fazem parte do projeto-base atual.
+
+## Sistema de design
+
+As regras de identidade, tipografia, componentes e responsividade estão em [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md). A referência visual está em [docs/design-system.html](docs/design-system.html); regenere-a com `node scripts/build-design-system.mjs`. Ela usa os estilos globais reais e não insere dados demonstrativos no portal.
