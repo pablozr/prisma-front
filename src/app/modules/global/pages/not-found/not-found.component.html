@@ -1,8 +1,18 @@
-<div class="not-found-container">
+<app-header />
+<main class="not-found-container" id="conteudo" tabindex="-1">
   <div class="not-found-content">
-    <span class="error-code">404</span>
-    <h1>Pagina nao encontrada</h1>
-    <p>O endereço que voce tentou acessar nao existe ou foi movido.</p>
-    <button pButton pRipple label="Voltar ao inicio" icon="pi pi-arrow-left" (click)="goHome()" class="back-button"></button>
+    <span class="error-code" aria-hidden="true">404</span>
+    <h1>Página não encontrada</h1>
+    <p>
+      O endereço acessado não existe ou foi alterado. Você pode voltar ao início
+      ou consultar o catálogo de projetos.
+    </p>
+    <div class="not-found-actions">
+      <a class="portal-button" routerLink="/home"
+        ><i class="pi pi-arrow-left" aria-hidden="true"></i> Voltar ao início</a
+      ><a class="portal-button portal-button--secondary" routerLink="/catalogo"
+        >Consultar catálogo</a
+      >
+    </div>
   </div>
-</div>
+</main>
