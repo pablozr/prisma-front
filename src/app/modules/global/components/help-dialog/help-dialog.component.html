@@ -2,6 +2,8 @@
   [visible]="visible"
   (visibleChange)="visibleChange.emit($event); visible = $event"
   [modal]="true"
+  transitionOptions="120ms ease-out"
+  [blockScroll]="true"
   [draggable]="false"
   [dismissableMask]="true"
   [closable]="false"
@@ -19,7 +21,8 @@
         </span>
         <h2 class="help-dialog__title">Como usar o PRISMA</h2>
         <p class="help-dialog__lead">
-          Descubra o que você pode fazer na plataforma e tire suas dúvidas rapidamente.
+          Descubra o que você pode fazer na plataforma e tire suas dúvidas
+          rapidamente.
         </p>
       </div>
       <button
@@ -36,7 +39,10 @@
   <div class="help-dialog__body">
     <ul class="help-dialog__list" role="list">
       @for (item of items; track item.id) {
-        <li class="help-dialog__item" [class.help-dialog__item--open]="openId === item.id">
+        <li
+          class="help-dialog__item"
+          [class.help-dialog__item--open]="openId === item.id"
+        >
           <button
             type="button"
             class="help-dialog__item-head"
@@ -72,10 +78,12 @@
     <div class="help-dialog__footer">
       <span class="help-dialog__hint">
         <i class="pi pi-info-circle" aria-hidden="true"></i>
-        Ainda com dúvidas? Fale com a equipe do PRISMA em
-        <a href="mailto:prisma@unirio.br">prisma&#64;unirio.br</a>.
+        Para saber mais sobre um projeto, consulte os contatos publicados em
+        seus detalhes.
       </span>
-      <button type="button" class="help-dialog__btn" (click)="close()">Entendi</button>
+      <button type="button" class="help-dialog__btn" (click)="close()">
+        Entendi
+      </button>
     </div>
   </ng-template>
 </p-dialog>
