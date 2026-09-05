@@ -1,7 +1,7 @@
 <div class="admin-shell">
   <app-header></app-header>
 
-  <main class="admin-page">
+  <main class="admin-page" id="conteudo" tabindex="-1">
     <app-breadcrumbs [items]="breadcrumbs"></app-breadcrumbs>
 
     <header class="admin-header">
@@ -10,15 +10,18 @@
         <p class="admin-header__eyebrow">Área restrita · Administração</p>
         <h1 class="admin-header__title">Painel administrativo</h1>
         <p class="admin-header__lead">
-          Visão geral do sistema. Bem-vindo(a), <strong>{{ firstName }}</strong>.
+          Visão geral do sistema. Bem-vindo(a), <strong>{{ firstName }}</strong
+          >.
         </p>
       </div>
-      <span class="admin-header__scope" aria-hidden="true">UNIRIO · PRISMA</span>
+      <span class="admin-header__scope" aria-hidden="true"
+        >UNIRIO · PRISMA</span
+      >
     </header>
 
     <section class="admin-metrics" aria-label="Indicadores">
       @if (metricsLoading) {
-        <p class="admin-loading">Carregando metricas...</p>
+        <p class="admin-loading">Carregando métricas...</p>
       } @else {
         @for (metric of metrics; track metric.label) {
           <article class="admin-metric">
@@ -32,10 +35,13 @@
       }
     </section>
 
-    <section class="admin-panel admin-panel--tabs" aria-label="Gestao administrativa">
+    <section
+      class="admin-panel admin-panel--tabs"
+      aria-label="Gestão administrativa"
+    >
       <p-tabs value="users">
         <p-tablist>
-          <p-tab value="users">Usuarios</p-tab>
+          <p-tab value="users">Usuários</p-tab>
           <p-tab value="projects">Projetos</p-tab>
           <p-tab value="sync-runs">Sincronizações</p-tab>
         </p-tablist>
@@ -46,28 +52,35 @@
               <input
                 pInputText
                 type="text"
-                placeholder="Buscar por nome ou email"
+                placeholder="Buscar por nome ou e-mail"
+                aria-label="Buscar usuários por nome ou e-mail"
                 [(ngModel)]="userSearch"
                 (keydown.enter)="onSearchUsers()"
               />
-              <button pButton type="button" label="Buscar" (click)="onSearchUsers()" [disabled]="usersLoading"></button>
+              <button
+                pButton
+                type="button"
+                label="Buscar"
+                (click)="onSearchUsers()"
+                [disabled]="usersLoading"
+              ></button>
             </div>
 
             @if (usersLoading) {
-              <p class="admin-loading">Carregando usuarios...</p>
+              <p class="admin-loading">Carregando usuários...</p>
             } @else if (!users.length) {
-              <p class="admin-loading">Nenhum usuario encontrado.</p>
+              <p class="admin-loading">Nenhum usuário encontrado.</p>
             } @else {
               <div class="admin-users__table-wrap">
                 <table class="admin-users__table">
                   <thead>
                     <tr>
                       <th>Nome</th>
-                      <th>Email</th>
+                      <th>E-mail</th>
                       <th>Perfil</th>
                       <th>Status</th>
                       <th>Acesso recente</th>
-                      <th>Acoes</th>
+                      <th>Ações</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -84,22 +97,41 @@
                             optionLabel="label"
                             optionValue="value"
                             [(ngModel)]="userDraftById[user.id].role"
+                            [ariaLabel]="'Perfil de ' + user.full_name"
                           />
                         </td>
                         <td>
                           <label class="admin-toggle">
-                            <input type="checkbox" [(ngModel)]="userDraftById[user.id].is_active" />
-                            <span class="admin-toggle__track" aria-hidden="true"></span>
-                            <span class="admin-toggle__label">{{ userDraftById[user.id].is_active ? 'Ativo' : 'Inativo' }}</span>
+                            <input
+                              type="checkbox"
+                              [(ngModel)]="userDraftById[user.id].is_active"
+                            />
+                            <span
+                              class="admin-toggle__track"
+                              aria-hidden="true"
+                            ></span>
+                            <span class="admin-toggle__label">{{
+                              userDraftById[user.id].is_active
+                                ? "Ativo"
+                                : "Inativo"
+                            }}</span>
                           </label>
                         </td>
-                        <td>{{ user.last_login_at ? (user.last_login_at | date: 'dd/MM/yyyy HH:mm') : 'Sem acesso' }}</td>
+                        <td>
+                          {{
+                            user.last_login_at
+                              ? (user.last_login_at | date: "dd/MM/yyyy HH:mm")
+                              : "Sem acesso"
+                          }}
+                        </td>
                         <td>
                           <button
                             pButton
                             type="button"
                             label="Salvar"
-                            [disabled]="!hasUserChanges(user) || savingUserById[user.id]"
+                            [disabled]="
+                              !hasUserChanges(user) || savingUserById[user.id]
+                            "
                             (click)="saveUser(user)"
                           ></button>
                         </td>
@@ -110,10 +142,30 @@
               </div>
 
               @if (usersPagination.total_pages > 1) {
-                <nav class="admin-pagination" aria-label="Paginacao de usuarios">
-                  <button pButton type="button" severity="secondary" label="Anterior" (click)="onUsersPageChange(usersPage - 1)"></button>
-                  <span>Pagina {{ usersPagination.page }} de {{ usersPagination.total_pages }}</span>
-                  <button pButton type="button" severity="secondary" label="Proxima" (click)="onUsersPageChange(usersPage + 1)"></button>
+                <nav
+                  class="admin-pagination"
+                  aria-label="Paginação de usuários"
+                >
+                  <button
+                    pButton
+                    type="button"
+                    severity="secondary"
+                    label="Anterior"
+                    [disabled]="usersPage <= 1"
+                    (click)="onUsersPageChange(usersPage - 1)"
+                  ></button>
+                  <span
+                    >Página {{ usersPagination.page }} de
+                    {{ usersPagination.total_pages }}</span
+                  >
+                  <button
+                    pButton
+                    type="button"
+                    severity="secondary"
+                    label="Próxima"
+                    [disabled]="usersPage >= usersPagination.total_pages"
+                    (click)="onUsersPageChange(usersPage + 1)"
+                  ></button>
                 </nav>
               }
             }
@@ -125,10 +177,17 @@
                 pInputText
                 type="text"
                 placeholder="Buscar por título ou descrição"
+                aria-label="Buscar projetos por título ou descrição"
                 [(ngModel)]="projectSearch"
                 (keydown.enter)="onSearchProjects()"
               />
-              <button pButton type="button" label="Buscar" (click)="onSearchProjects()" [disabled]="projectsLoading"></button>
+              <button
+                pButton
+                type="button"
+                label="Buscar"
+                (click)="onSearchProjects()"
+                [disabled]="projectsLoading"
+              ></button>
             </div>
 
             @if (projectsLoading) {
@@ -146,28 +205,42 @@
                       <th>Publicação editorial</th>
                       <th>Visível no catálogo</th>
                       <th>Atualizado em</th>
-                      <th>Acoes</th>
+                      <th>Ações</th>
                     </tr>
                   </thead>
                   <tbody>
                     @for (project of projects; track project.id) {
                       <tr>
                         <td>
-                          <div class="admin-projects__title">{{ project.title }}</div>
-                          <small>{{ project.process_code || 'Sem codigo' }}</small>
+                          <div class="admin-projects__title">
+                            {{ project.title }}
+                          </div>
+                          <small>{{
+                            project.process_code || "Sem código"
+                          }}</small>
                         </td>
                         <td>
                           @if (project.managers.length) {
-                            @for (manager of project.managers; track manager.person_id) {
-                              <div>{{ manager.profile | titlecase }} · {{ manager.permission_source }}</div>
+                            @for (
+                              manager of project.managers;
+                              track manager.person_id
+                            ) {
+                              <div>
+                                {{ manager.profile | titlecase }} ·
+                                {{ manager.permission_source }}
+                              </div>
                             }
                           } @else {
                             <span>Sem gestores com permissão ativa</span>
                           }
                         </td>
                         <td>
-                          <div>{{ project.source_status || 'Não informado' }}</div>
-                          <small>{{ project.source_type || 'Tipo não informado' }}</small>
+                          <div>
+                            {{ project.source_status || "Não informado" }}
+                          </div>
+                          <small>{{
+                            project.source_type || "Tipo não informado"
+                          }}</small>
                         </td>
                         <td>
                           <p-select
@@ -177,23 +250,43 @@
                             [options]="projectStatusOptions"
                             optionLabel="label"
                             optionValue="value"
-                            [(ngModel)]="projectDraftById[project.id].publication_status"
+                            [(ngModel)]="
+                              projectDraftById[project.id].publication_status
+                            "
+                            [ariaLabel]="'Publicação de ' + project.title"
                           />
                         </td>
                         <td>
                           <label class="admin-toggle">
-                            <input type="checkbox" [(ngModel)]="projectDraftById[project.id].is_visible" />
-                            <span class="admin-toggle__track" aria-hidden="true"></span>
-                            <span class="admin-toggle__label">{{ projectDraftById[project.id].is_visible ? 'Visível' : 'Oculto' }}</span>
+                            <input
+                              type="checkbox"
+                              [(ngModel)]="
+                                projectDraftById[project.id].is_visible
+                              "
+                            />
+                            <span
+                              class="admin-toggle__track"
+                              aria-hidden="true"
+                            ></span>
+                            <span class="admin-toggle__label">{{
+                              projectDraftById[project.id].is_visible
+                                ? "Visível"
+                                : "Oculto"
+                            }}</span>
                           </label>
                         </td>
-                        <td>{{ project.updated_at | date: 'dd/MM/yyyy HH:mm' }}</td>
+                        <td>
+                          {{ project.updated_at | date: "dd/MM/yyyy HH:mm" }}
+                        </td>
                         <td>
                           <button
                             pButton
                             type="button"
                             label="Salvar"
-                            [disabled]="!hasProjectChanges(project) || savingProjectById[project.id]"
+                            [disabled]="
+                              !hasProjectChanges(project) ||
+                              savingProjectById[project.id]
+                            "
                             (click)="saveProject(project)"
                           ></button>
                         </td>
@@ -204,22 +297,48 @@
               </div>
 
               @if (projectsPagination.total_pages > 1) {
-                <nav class="admin-pagination" aria-label="Paginacao de projetos">
-                  <button pButton type="button" severity="secondary" label="Anterior" (click)="onProjectsPageChange(projectsPage - 1)"></button>
-                  <span>Pagina {{ projectsPagination.page }} de {{ projectsPagination.total_pages }}</span>
-                  <button pButton type="button" severity="secondary" label="Proxima" (click)="onProjectsPageChange(projectsPage + 1)"></button>
+                <nav
+                  class="admin-pagination"
+                  aria-label="Paginação de projetos"
+                >
+                  <button
+                    pButton
+                    type="button"
+                    severity="secondary"
+                    label="Anterior"
+                    [disabled]="projectsPage <= 1"
+                    (click)="onProjectsPageChange(projectsPage - 1)"
+                  ></button>
+                  <span
+                    >Página {{ projectsPagination.page }} de
+                    {{ projectsPagination.total_pages }}</span
+                  >
+                  <button
+                    pButton
+                    type="button"
+                    severity="secondary"
+                    label="Próxima"
+                    [disabled]="projectsPage >= projectsPagination.total_pages"
+                    (click)="onProjectsPageChange(projectsPage + 1)"
+                  ></button>
                 </nav>
               }
             }
           </p-tabpanel>
 
           <p-tabpanel value="sync-runs">
-            <p class="admin-sync-runs__intro">Acompanhe as execuções automáticas de sincronização com o SIE.</p>
+            <p class="admin-sync-runs__intro">
+              Acompanhe as execuções automáticas de sincronização com o SIE.
+            </p>
 
             @if (syncRunsLoading) {
-              <p class="admin-loading">Carregando execuções de sincronização...</p>
+              <p class="admin-loading">
+                Carregando execuções de sincronização...
+              </p>
             } @else if (!syncRuns.length) {
-              <p class="admin-loading">Nenhuma execução de sincronização encontrada.</p>
+              <p class="admin-loading">
+                Nenhuma execução de sincronização encontrada.
+              </p>
             } @else {
               <div class="admin-users__table-wrap">
                 <table class="admin-users__table admin-sync-runs__table">
@@ -240,19 +359,43 @@
                         <td>#{{ run.id }}</td>
                         <td>{{ syncSourceLabel(run.source) }}</td>
                         <td>{{ syncRunStatusLabel(run.status) }}</td>
-                        <td>{{ run.is_complete ? 'Completa' : 'Incompleta' }}</td>
                         <td>
-                          <div>Início: {{ run.started_at | date: 'dd/MM/yyyy HH:mm' }}</div>
-                          <small>Fim: {{ run.finished_at ? (run.finished_at | date: 'dd/MM/yyyy HH:mm') : 'Em andamento' }}</small>
+                          {{ run.is_complete ? "Completa" : "Incompleta" }}
+                        </td>
+                        <td>
+                          <div>
+                            Início:
+                            {{ run.started_at | date: "dd/MM/yyyy HH:mm" }}
+                          </div>
+                          <small
+                            >Fim:
+                            {{
+                              run.finished_at
+                                ? (run.finished_at | date: "dd/MM/yyyy HH:mm")
+                                : "Em andamento"
+                            }}</small
+                          >
                         </td>
                         <td>
                           <div>Páginas: {{ run.pages_processed }}</div>
-                          <small>Linhas: {{ run.rows_received }} · Projetos: {{ run.projects_upserted }} · Participações: {{ run.participants_upserted }}</small>
+                          <small
+                            >Linhas: {{ run.rows_received }} · Projetos:
+                            {{ run.projects_upserted }} · Participações:
+                            {{ run.participants_upserted }}</small
+                          >
                         </td>
                         <td>
                           @if (run.error_summary) {
-                            <p class="admin-sync-runs__failure">{{ formatFailureSummary(run.error_summary) }}</p>
-                            <button pButton type="button" label="Ver detalhes" severity="secondary" (click)="openSyncRunFailures(run.id)"></button>
+                            <p class="admin-sync-runs__failure">
+                              {{ formatFailureSummary(run.error_summary) }}
+                            </p>
+                            <button
+                              pButton
+                              type="button"
+                              label="Ver detalhes"
+                              severity="secondary"
+                              (click)="openSyncRunFailures(run.id)"
+                            ></button>
                           } @else {
                             <span>Sem falhas registradas</span>
                           }
@@ -264,10 +407,30 @@
               </div>
 
               @if (syncRunsPagination.total_pages > 1) {
-                <nav class="admin-pagination" aria-label="Paginação de sincronizações">
-                  <button pButton type="button" severity="secondary" label="Anterior" (click)="onSyncRunsPageChange(syncRunsPage - 1)"></button>
-                  <span>Página {{ syncRunsPagination.page }} de {{ syncRunsPagination.total_pages }}</span>
-                  <button pButton type="button" severity="secondary" label="Próxima" (click)="onSyncRunsPageChange(syncRunsPage + 1)"></button>
+                <nav
+                  class="admin-pagination"
+                  aria-label="Paginação de sincronizações"
+                >
+                  <button
+                    pButton
+                    type="button"
+                    severity="secondary"
+                    label="Anterior"
+                    [disabled]="syncRunsPage <= 1"
+                    (click)="onSyncRunsPageChange(syncRunsPage - 1)"
+                  ></button>
+                  <span
+                    >Página {{ syncRunsPagination.page }} de
+                    {{ syncRunsPagination.total_pages }}</span
+                  >
+                  <button
+                    pButton
+                    type="button"
+                    severity="secondary"
+                    label="Próxima"
+                    [disabled]="syncRunsPage >= syncRunsPagination.total_pages"
+                    (click)="onSyncRunsPageChange(syncRunsPage + 1)"
+                  ></button>
                 </nav>
               }
             }
@@ -278,10 +441,15 @@
                 @if (syncRunFailuresLoading) {
                   <p class="admin-loading">Carregando falhas...</p>
                 } @else if (!syncRunFailures.length) {
-                  <p class="admin-loading">Essa execução não possui falhas detalhadas.</p>
+                  <p class="admin-loading">
+                    Essa execução não possui falhas detalhadas.
+                  </p>
                 } @else {
                   <ul>
-                    @for (failure of syncRunFailures; track failure.sync_run_id) {
+                    @for (
+                      failure of syncRunFailures;
+                      track failure.sync_run_id
+                    ) {
                       <li>{{ formatFailureSummary(failure.error_summary) }}</li>
                     }
                   </ul>
