@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core'
 import { CommonModule } from '@angular/common'
-import { Subject, Subscription, debounceTime, distinctUntilChanged, forkJoin, switchMap } from 'rxjs'
+import { ActivatedRoute } from '@angular/router'
+import { Subject, Subscription, debounceTime, forkJoin, switchMap } from 'rxjs'
 import { DataViewModule } from 'primeng/dataview'
 import { DataViewPageEvent } from 'primeng/dataview'
 import { HeaderComponent } from '../../../global/components/header/header.component'
@@ -25,6 +26,7 @@ interface IProjectsQueryState {
 })
 export class EditaisComponent implements OnInit, OnDestroy {
   private projectsService = inject(ProjectsService)
+  private route = inject(ActivatedRoute)
   private readonly filtersUpdates$ = new Subject<IProjectsQueryState>()
   private filtersSubscription?: Subscription
   private catalogueSubscription?: Subscription
@@ -39,6 +41,7 @@ export class EditaisComponent implements OnInit, OnDestroy {
   courses: ICourse[] = []
   units: IOrganizationalUnit[] = []
   loading = true
+  loadFailed = false
   readonly rowsPerPageOptions = [3, 6, 9, 21]
   pageSize = 9
   currentPage = 1
@@ -49,6 +52,14 @@ export class EditaisComponent implements OnInit, OnDestroy {
   detailsProject: IProject | null = null
 
   ngOnInit() {
+    this.filters.search = this.route.snapshot.queryParamMap.get('q') || ''
+    const projectId = Number(this.route.snapshot.queryParamMap.get('projeto'))
+    if (Number.isInteger(projectId) && projectId > 0) {
+      this.detailsLoadSubscription = this.projectsService.getProjectDetails(projectId).subscribe({
+        next: project => { this.detailsProject = project; this.detailsDialogVisible = true },
+        error: () => undefined
+      })
+    }
     this.startFiltersSync()
     this.refreshProjects()
     this.catalogueSubscription = forkJoin({
@@ -114,22 +125,22 @@ export class EditaisComponent implements OnInit, OnDestroy {
     return { search: '', areaIds: [], courseIds: [], centerIds: [], academicUnitIds: [], sort: 'recent' }
   }
 
-  private refreshProjects() {
+  refreshProjects() {
     this.filtersUpdates$.next({ filters: this.cloneFilters(this.filters), page: this.currentPage })
   }
 
   private startFiltersSync() {
     this.filtersSubscription = this.filtersUpdates$.pipe(
       debounceTime(350),
-      distinctUntilChanged((previous, next) => previous.page === next.page && JSON.stringify(previous.filters) === JSON.stringify(next.filters)),
       switchMap(query => {
         this.loading = true
-        return this.projectsService.listProjects(query.filters, query.page, this.pageSize)
+        return this.projectsService.listProjects(query.filters, query.page, this.pageSize, false)
       })
     ).subscribe(response => this.applyProjectsPage(response))
   }
 
   private applyProjectsPage(response: IProjectsListResponse) {
+    this.loadFailed = !!response.failed
     this.filteredProjects = response.projects
     this.currentPage = response.pagination.page
     this.totalProjects = response.pagination.total
