@@ -1,7 +1,7 @@
 import { Component, DestroyRef, ElementRef, HostListener, inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { CommonModule } from '@angular/common'
-import { Router, RouterLink } from '@angular/router'
+import { Router, RouterLink, RouterLinkActive } from '@angular/router'
 import { SidebarComponent } from '../sidebar/sidebar.component'
 import { ISigninData } from '../../interfaces/ISignin'
 import { UsersService } from '../../services/users/users.service'
@@ -10,7 +10,7 @@ import { ThemeService } from '../../services/theme/theme.service'
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, SidebarComponent, RouterLink],
+  imports: [CommonModule, SidebarComponent, RouterLink, RouterLinkActive],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
@@ -73,6 +73,13 @@ export class HeaderComponent {
 
   toggleTheme() {
     this.themeService.toggleDarkMode()
+  }
+
+  skipToContent(event: Event) {
+    event.preventDefault()
+    const main = document.getElementById('conteudo')
+    main?.focus({ preventScroll: true })
+    main?.scrollIntoView({ behavior: 'instant', block: 'start' })
   }
 
   toggleMenu(event: MouseEvent) {

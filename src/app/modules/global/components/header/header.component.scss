@@ -1,789 +1,267 @@
-/* =========================================================================
-   PRISMA Header — faixa institucional sóbria com logo UNIRIO
-   ========================================================================= */
-
 :host {
   display: block;
   position: sticky;
   top: 0;
-  z-index: 10000;
+  z-index: 100;
 }
-
 .prisma-header {
-  background: var(--primary-color);
-  color: var(--header-text);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background: var(--surface);
 }
-
-:host-context(.my-app-dark) .prisma-header {
-  background: var(--header-bg);
-  border-bottom-color: rgba(255, 255, 255, 0.08);
+.institution-bar {
+  background: #003653;
+  color: #d0e3ed;
+  font-size: 0.68rem;
 }
-
+.institution-bar__inner {
+  max-width: var(--container-max);
+  padding: 7px var(--gutter);
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.institution-bar a {
+  color: #fff;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 0.7rem;
+}
+.prisma-header__masthead {
+  background: #004169;
+}
 .prisma-header__inner {
+  max-width: var(--container-max);
+  min-height: 96px;
+  padding: 20px var(--gutter);
+  margin: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.65rem clamp(0.75rem, 2.5vw, 1.5rem);
-  max-width: 100%;
-  min-height: 72px;
+  gap: 28px;
 }
-
-/* ----- Esquerda: menu + logo UNIRIO + marca ----- */
-
-.prisma-header__left {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-width: 0;
-}
-
 .prisma-header__brand {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 14px;
-  padding: 4px 12px 4px 16px;
-  border-left: 1px solid rgba(255, 255, 255, 0.2);
-  min-width: 0;
+  gap: 27px;
+  color: #fff;
   text-decoration: none;
-  color: inherit;
-  border-radius: 0 4px 4px 0;
-  transition: background 0.15s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.06);
-    text-decoration: none;
-  }
-
-  &:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.65);
-    outline-offset: 2px;
-  }
 }
-
 .prisma-header__logo {
-  height: 54px;
-  width: auto;
-  flex-shrink: 0;
+  width: 160px;
+  height: auto;
   object-fit: contain;
   display: block;
-
-  @media (max-width: 520px) {
-    height: 44px;
-  }
 }
-
 .prisma-header__brand-copy {
   display: flex;
   flex-direction: column;
-  gap: 0;
-  min-width: 0;
-  line-height: 1.15;
-
-  @media (max-width: 420px) {
-    display: none;
-  }
+  border-left: 1px solid #ffffff55;
+  padding-left: 27px;
 }
-
 .prisma-header__title {
-  font-size: 1.2rem;
+  font-family: Calibri, "Segoe UI", sans-serif;
+  font-size: 1.55rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  color: #fff;
-  line-height: 1.1;
+  letter-spacing: 0.05em;
+  line-height: 1.25;
 }
-
 .prisma-header__subtitle {
-  font-size: 0.75rem;
-  font-weight: 400;
-  letter-spacing: 0.01em;
-  color: rgba(255, 255, 255, 0.78);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 44ch;
-  margin-top: 2px;
-
-  @media (max-width: 960px) {
-    display: none;
-  }
+  font-size: 0.77rem;
+  color: #d0e3ed;
+  margin-top: 4px;
 }
-
-/* ----- Direita: ações ----- */
-
 .prisma-header__right {
   display: flex;
   align-items: center;
-  gap: 10px;
 }
-
-/* ----- Toggle de tema (sol/lua) ----- */
-
+.prisma-header__signin {
+  display: inline-flex;
+  align-items: center;
+  gap: 20px;
+  color: #fff;
+  padding: 11px 0;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.prisma-header__signin i {
+  font-size: 0.8rem;
+}
+.prisma-navigation {
+  border-bottom: 1px solid var(--outline-variant);
+  background: var(--surface);
+}
+.prisma-navigation__inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: var(--container-max);
+  padding: 0 var(--gutter);
+  margin: auto;
+}
+.portal-nav {
+  display: flex;
+  align-items: stretch;
+  gap: 28px;
+  min-width: 0;
+  overflow-x: auto;
+}
+.portal-nav a {
+  display: inline-flex;
+  align-items: center;
+  padding: 14px 0 12px;
+  border-bottom: 3px solid transparent;
+  color: var(--on-surface-variant);
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.portal-nav a.active {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+  font-weight: 650;
+}
+.portal-nav a:hover {
+  color: var(--primary-color);
+  text-decoration: none;
+  border-bottom-color: var(--outline);
+}
 .prisma-header__theme {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
+  margin-left: auto;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 4px;
+  color: var(--on-surface-variant);
   background: transparent;
-  border: none;
-  border-radius: 50%;
-  color: rgba(255, 255, 255, 0.88);
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, transform 0.2s ease;
-
-  i {
-    font-size: 1rem;
-    transition: transform 0.35s ease;
-  }
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
-
-    i {
-      transform: rotate(20deg);
-    }
-  }
-
-  &:active i {
-    transform: rotate(-15deg) scale(0.92);
-  }
-
-  &:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.75);
-    outline-offset: 2px;
-  }
 }
-
-/* ----- Skeleton (enquanto a sessão ainda não foi resolvida) ----- */
-
-.prisma-header__skeleton {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 4px 12px 4px 4px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+.prisma-header__theme:hover {
+  background: var(--surface-soft);
 }
-
-.prisma-header__skeleton-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(90deg,
-    rgba(255, 255, 255, 0.14) 0%,
-    rgba(255, 255, 255, 0.22) 50%,
-    rgba(255, 255, 255, 0.14) 100%);
-  background-size: 200% 100%;
-  animation: prisma-header-pulse 1.3s ease-in-out infinite;
-}
-
-.prisma-header__skeleton-line {
-  width: 72px;
-  height: 10px;
-  border-radius: 6px;
-  background: linear-gradient(90deg,
-    rgba(255, 255, 255, 0.14) 0%,
-    rgba(255, 255, 255, 0.22) 50%,
-    rgba(255, 255, 255, 0.14) 100%);
-  background-size: 200% 100%;
-  animation: prisma-header-pulse 1.3s ease-in-out infinite;
-
-  @media (max-width: 560px) {
-    display: none;
-  }
-}
-
-@keyframes prisma-header-pulse {
-  0% { background-position: 0% 0; }
-  100% { background-position: -200% 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .prisma-header__skeleton-avatar,
-  .prisma-header__skeleton-line {
-    animation: none !important;
-  }
-}
-
-/* =========================================================================
-   Conta / Avatar — padrão Google (trigger redondo + popup com card)
-   ========================================================================= */
-
 .prisma-account {
   position: relative;
 }
-
 .prisma-account__trigger {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 8px;
-  height: 40px;
-  padding: 4px 10px 4px 4px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 999px;
-  cursor: pointer;
-  color: #ffffff;
-  font-family: inherit;
-  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease,
-    box-shadow 0.15s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.16);
-    border-color: rgba(255, 255, 255, 0.25);
-  }
-
-  &:focus-visible {
-    outline: none;
-    background: rgba(255, 255, 255, 0.16);
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.75);
-  }
-
-  &:active {
-    transform: scale(0.97);
-  }
+  gap: 10px;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  padding: 4px;
+  font-size: 0.85rem;
 }
-
-.prisma-account--open .prisma-account__trigger {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-.prisma-account__trigger-img {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
-  flex-shrink: 0;
-}
-
-.prisma-account__trigger-name {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  color: #ffffff;
-  max-width: 14ch;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
-  @media (max-width: 520px) {
-    display: none;
-  }
-}
-
-.prisma-account__trigger-chev {
+.prisma-account__trigger > i {
   font-size: 0.65rem;
-  color: rgba(255, 255, 255, 0.75);
-  transition: transform 0.2s ease, color 0.15s ease;
-
-  @media (max-width: 520px) {
-    display: none;
-  }
 }
-
-.prisma-account--open .prisma-account__trigger-chev {
-  transform: rotate(180deg);
-  color: #ffffff;
+.prisma-account__initials {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #ffffff66;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 0.7rem;
 }
-
-/* ----- Popup (menu) — estilo Google Account ----- */
-
 .prisma-account__menu {
   position: absolute;
-  top: calc(100% + 10px);
-  right: -4px;
-  width: min(360px, calc(100vw - 24px));
-  padding: 0;
-  background: #f1f3f4;
-  border: 1px solid rgba(15, 23, 32, 0.08);
-  border-radius: 20px;
-  box-shadow: 0 12px 32px rgba(60, 64, 67, 0.18), 0 4px 12px rgba(60, 64, 67, 0.08);
-  z-index: 10050;
-  animation: prisma-account-in 0.18s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  right: 0;
+  top: calc(100% + 16px);
+  background: var(--surface);
   color: var(--on-surface);
-  overflow: hidden;
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  width: min(320px, calc(100vw - 32px));
+  padding: 20px;
+  z-index: 5;
 }
-
-:host-context(.my-app-dark) .prisma-account__menu {
-  background: #1a1d21;
-  border-color: rgba(255, 255, 255, 0.08);
-  color: #e8eaed;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65), 0 4px 12px rgba(0, 0, 0, 0.4);
-}
-
-@keyframes prisma-account-in {
-  from {
-    opacity: 0;
-    transform: translateY(-6px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* ----- Top bar com email + X ----- */
-
 .prisma-account__top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 10px 10px 10px 16px;
-  background: transparent;
-}
-
-.prisma-account__top-email {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: #5f6368;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-  flex: 1;
-}
-
-:host-context(.my-app-dark) .prisma-account__top-email {
-  color: #9aa0a6;
-}
-
-.prisma-account__close {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: transparent;
-  border: none;
-  border-radius: 50%;
-  color: #5f6368;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background 0.15s ease, color 0.15s ease;
-
-  i {
-    font-size: 0.9rem;
-  }
-
-  &:hover {
-    background: rgba(60, 64, 67, 0.08);
-    color: #202124;
-  }
-
-  &:focus-visible {
-    outline: 2px solid rgba(26, 115, 232, 0.5);
-    outline-offset: -2px;
-  }
-}
-
-:host-context(.my-app-dark) .prisma-account__close {
-  color: #9aa0a6;
-
-  &:hover {
-    background: rgba(232, 234, 237, 0.1);
-    color: #e8eaed;
-  }
-}
-
-/* ----- Hero (avatar + saudação + papel) ----- */
-
-.prisma-account__hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 4px 16px 16px;
-}
-
-.prisma-account__avatar-wrap {
-  position: relative;
-  margin-bottom: 12px;
-}
-
-.prisma-account__avatar-lg {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #fff;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-}
-
-.prisma-account__avatar-edit {
-  position: absolute;
-  bottom: -2px;
-  right: -2px;
-  width: 30px;
-  height: 30px;
-  background: #fff;
-  color: #5f6368;
-  border: 2px solid #f1f3f4;
-  border-radius: 50%;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 1px 3px rgba(60, 64, 67, 0.16);
-  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
-
-  i {
-    font-size: 0.75rem;
-  }
-
-  &:hover {
-    background: #f8f9fa;
-    color: #202124;
-    transform: scale(1.05);
-  }
-
-  &:focus-visible {
-    outline: 2px solid rgba(26, 115, 232, 0.5);
-    outline-offset: 2px;
-  }
-}
-
-:host-context(.my-app-dark) .prisma-account__avatar-edit {
-  background: #3c4043;
-  border-color: #1a1d21;
-  color: #e8eaed;
-
-  &:hover {
-    background: #5f6368;
-  }
-}
-
-.prisma-account__hi {
-  margin: 0 0 6px;
-  font-size: 1.25rem;
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  color: #202124;
-  line-height: 1.3;
-  max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-:host-context(.my-app-dark) .prisma-account__hi {
-  color: #e8eaed;
-}
-
-.prisma-account__role-pill {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 10px;
-  background: rgba(26, 115, 232, 0.1);
-  color: var(--primary-strong);
-  border-radius: 999px;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-:host-context(.my-app-dark) .prisma-account__role-pill {
-  background: rgba(137, 188, 250, 0.14);
-  color: var(--primary-color);
-}
-
-/* ----- Botão primário "Gerenciar sua conta" (pílula) ----- */
-
-.prisma-account__primary {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: calc(100% - 32px);
-  margin: 0 16px 12px;
-  padding: 0.625rem 1rem;
-  background: #fff;
-  border: 1px solid #dadce0;
-  border-radius: 999px;
-  font-family: inherit;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #1a73e8;
-  cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-
-  &:hover {
-    background: #f8faff;
-    border-color: #c6d7f4;
-    box-shadow: 0 1px 3px rgba(60, 64, 67, 0.12);
-  }
-
-  &:focus-visible {
-    outline: 2px solid rgba(26, 115, 232, 0.5);
-    outline-offset: 2px;
-  }
-
-  &:active {
-    background: #e8f0fe;
-  }
-}
-
-:host-context(.my-app-dark) .prisma-account__primary {
-  background: #1a1d21;
-  border-color: rgba(255, 255, 255, 0.14);
-  color: #8ab4f8;
-
-  &:hover {
-    background: rgba(138, 180, 248, 0.08);
-    border-color: rgba(138, 180, 248, 0.28);
-  }
-
-  &:active {
-    background: rgba(138, 180, 248, 0.14);
-  }
-}
-
-/* ----- Divisor ----- */
-
-.prisma-account__divider {
-  height: 1px;
-  background: rgba(60, 64, 67, 0.12);
-  margin: 0;
-}
-
-:host-context(.my-app-dark) .prisma-account__divider {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-/* ----- Lista de ações ----- */
-
-.prisma-account__list {
-  list-style: none;
-  margin: 0;
-  padding: 8px 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  background: transparent;
-}
-
-.prisma-account__item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  padding: 0.6rem 0.85rem;
-  background: transparent;
-  border: none;
-  border-radius: 999px;
-  cursor: pointer;
-  font-family: inherit;
-  text-align: left;
-  color: #202124;
-  transition: background 0.12s ease, color 0.12s ease;
-
-  &:hover {
-    background: rgba(60, 64, 67, 0.08);
-  }
-
-  &:focus-visible {
-    outline: none;
-    background: rgba(26, 115, 232, 0.08);
-  }
-}
-
-:host-context(.my-app-dark) .prisma-account__item {
-  color: #e8eaed;
-
-  &:hover {
-    background: rgba(232, 234, 237, 0.08);
-  }
-
-  &:focus-visible {
-    background: rgba(138, 180, 248, 0.12);
-  }
-}
-
-.prisma-account__item-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  color: #5f6368;
-  flex-shrink: 0;
-
-  i {
-    font-size: 1rem;
-  }
-}
-
-:host-context(.my-app-dark) .prisma-account__item-icon {
-  color: #9aa0a6;
-}
-
-.prisma-account__item-label {
-  font-size: 0.875rem;
-  font-weight: 400;
-  color: inherit;
-  letter-spacing: 0.01em;
-}
-
-.prisma-account__item--danger:hover {
-  background: rgba(217, 48, 37, 0.08);
-  color: #d93025;
-
-  .prisma-account__item-icon {
-    color: #d93025;
-  }
-}
-
-:host-context(.my-app-dark) .prisma-account__item--danger:hover {
-  background: rgba(242, 139, 130, 0.1);
-  color: #f28b82;
-
-  .prisma-account__item-icon {
-    color: #f28b82;
-  }
-}
-
-/* ----- Footer (políticas) ----- */
-
-.prisma-account__footer {
-  padding: 10px 16px 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 8px;
+  color: var(--on-surface-variant);
+  font-size: 0.72rem;
+  overflow-wrap: anywhere;
+}
+.prisma-account__close {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: transparent;
+  color: var(--on-surface-variant);
+}
+.prisma-account__hi {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 16px 0 5px;
+}
+.prisma-account__role-pill {
+  color: var(--on-surface-variant);
   font-size: 0.75rem;
-  color: #5f6368;
-
-  a {
-    color: inherit;
-    text-decoration: none;
-    padding: 2px 6px;
-    border-radius: 4px;
-    transition: background 0.15s ease, color 0.15s ease;
-
-    &:hover {
-      background: rgba(60, 64, 67, 0.08);
-      color: #202124;
-      text-decoration: none;
-    }
-  }
 }
-
-.prisma-account__footer-sep {
-  opacity: 0.5;
-}
-
-:host-context(.my-app-dark) .prisma-account__footer {
-  color: #9aa0a6;
-
-  a:hover {
-    background: rgba(232, 234, 237, 0.1);
-    color: #e8eaed;
-  }
-}
-
-/* ----- CTA Entrar (visitante) ----- */
-
-.prisma-header__guest {
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-  padding: 4px 4px 4px 12px;
-  border-left: 1px solid rgba(255, 255, 255, 0.18);
-  margin-left: 4px;
-
-  @media (max-width: 520px) {
-    padding-left: 8px;
-    gap: 10px;
-  }
-}
-
-.prisma-header__guest-copy {
+.prisma-account__item {
+  border: 0;
+  border-top: 1px solid var(--outline-variant);
+  width: 100%;
+  background: transparent;
+  color: var(--primary-color);
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  line-height: 1.2;
-  min-width: 0;
-
-  @media (max-width: 720px) {
+  gap: 10px;
+  padding: 15px 0 0;
+  margin-top: 18px;
+  text-align: left;
+  font-size: 0.8rem;
+}
+@media (max-width: 600px) {
+  .prisma-header__inner {
+    min-height: 86px;
+    gap: 16px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+  .prisma-header__logo {
+    width: 113px;
+  }
+  .prisma-header__brand {
+    gap: 16px;
+  }
+  .prisma-header__brand-copy {
+    padding-left: 16px;
+  }
+  .prisma-header__title {
+    font-size: 1.2rem;
+  }
+  .prisma-header__subtitle {
+    font-size: 0.65rem;
+  }
+  .prisma-header__signin {
+    max-width: 75px;
+    line-height: 1.5;
+    font-size: 0.7rem;
+    gap: 8px;
+  }
+  .prisma-header__signin i {
+    display: none;
+  }
+  .institution-bar__inner > span {
+    font-size: 0.6rem;
+    max-width: 250px;
+  }
+  .institution-bar a {
+    font-size: 0.63rem;
+  }
+  .portal-nav {
+    gap: 24px;
+  }
+  .portal-nav a {
+    font-size: 0.77rem;
+  }
+  .prisma-account__trigger-name {
     display: none;
   }
 }
-
-.prisma-header__guest-kicker {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.62);
-  margin-bottom: 2px;
-}
-
-.prisma-header__guest-text {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.88);
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-  max-width: 26ch;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.prisma-header__signin {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0.5rem 1.1rem;
-  background: #ffffff;
-  color: var(--primary-color);
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-
-  i {
-    font-size: 0.9rem;
-  }
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.94);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
-    text-decoration: none;
-    transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  &:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.9);
-    outline-offset: 2px;
-  }
-}
-
-:host-context(.my-app-dark) .prisma-header__signin {
-  background: var(--primary-color);
-  color: #ffffff;
-
-  &:hover {
-    background: var(--primary-strong, #3b82f6);
-  }
-}
-
