@@ -1,0 +1,35 @@
+# Version control / local metadata
+.git
+.gitignore
+.editorconfig
+
+# Node / Angular build artifacts (rebuilt inside the image)
+node_modules
+dist
+.angular
+tmp
+out-tsc
+coverage
+.sass-cache
+
+# Tests and tooling not required to build
+e2e
+test-results
+playwright-report
+blob-report
+playwright
+playwright.config.ts
+
+# Editors
+.vscode
+.idea
+
+# Docs and Docker meta (nginx/ is kept: the Dockerfile copies it)
+*.md
+docs
+Dockerfile
+.dockerignore
+
+# Never bake local secrets
+.env
+.env.*
